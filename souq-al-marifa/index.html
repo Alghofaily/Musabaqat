@@ -1,0 +1,836 @@
+<!doctype html>
+<!-- PROTOTYPE - NOT FOR PRODUCTION -->
+<!-- Question: is a quiz that pays into a live stock market more exciting than plain points? -->
+<!-- Date: 2026-11-14 -->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>سوق المعرفة</title>
+<style>
+  :root { --up: #16c784; --down: #ea3943; --gold: #f5b301; }
+  .dark { --bg: #0b1220; --panel: #121a2b; --panel2: #0f1726; --line: #1f2a40; --text: #e6edf7; --muted: #8a99b4; --accent: #3b82f6; --hover: #182238; --upbg: rgba(22,199,132,.14); --downbg: rgba(234,57,67,.14); --grid: rgba(120,150,200,.06); }
+  .light { --bg: #eef2f8; --panel: #ffffff; --panel2: #f5f7fb; --line: #e2e8f0; --text: #0f172a; --muted: #5b6b84; --accent: #2563eb; --hover: #eef3fb; --upbg: rgba(22,199,132,.13); --downbg: rgba(234,57,67,.11); --grid: rgba(30,60,120,.06); --up: #0b9e66; --down: #d92d3a; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+  body { font-family: Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; font-variant-numeric: tabular-nums; }
+  #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: var(--bg); color: var(--text); }
+  #game { position: absolute; inset: 0; width: 1280px; height: 720px; }
+  #ui { position: absolute; inset: 0; direction: rtl; }
+  button { font: inherit; cursor: pointer; border: 0; border-radius: 8px; color: inherit; }
+  input, select { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; outline: none; }
+  input:focus, select:focus { border-color: var(--accent); }
+  .num { direction: ltr; unicode-bidi: isolate; display: inline-block; }
+  .up { color: var(--up); } .down { color: var(--down); } .muted { color: var(--muted); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+  .ph { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: bold; font-size: 15px; }
+  .btn { padding: 10px 18px; font-weight: bold; font-size: 16px; background: var(--panel2); border: 1px solid var(--line); }
+  .btn:hover { background: var(--hover); }
+  .btn.pri { background: var(--accent); color: #fff; border-color: transparent; }
+  .btn.buy { background: var(--up); color: #fff; border-color: transparent; }
+  .btn.sell { background: var(--down); color: #fff; border-color: transparent; }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .seg { display: inline-flex; background: var(--panel2); border: 1px solid var(--line); border-radius: 9px; padding: 3px; gap: 3px; }
+  .seg button { padding: 7px 14px; background: transparent; font-size: 14px; font-weight: bold; color: var(--muted); }
+  .seg button.on { background: var(--accent); color: #fff; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); font-size: 13px; font-weight: bold; }
+  .pill { display: inline-block; min-width: 64px; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 13px; text-align: center; direction: ltr; }
+  .pill.up { background: var(--upbg); } .pill.down { background: var(--downbg); } .pill.flat { background: var(--panel2); color: var(--muted); }
+
+  /* dashboard */
+  #app { position: absolute; inset: 0; display: grid; grid-template-rows: 54px 34px 1fr; }
+  header { display: flex; align-items: center; gap: 12px; padding: 0 14px; background: var(--panel); border-bottom: 1px solid var(--line); }
+  header .sp { flex: 1; }
+  .ticker { position: relative; overflow: hidden; background: var(--panel2); border-bottom: 1px solid var(--line); direction: ltr; }
+  .ticker .tape { position: absolute; top: 0; left: 0; height: 34px; display: flex; align-items: center; white-space: nowrap; will-change: transform; }
+  .ticker .it { display: inline-flex; gap: 8px; align-items: center; padding: 0 22px; font-size: 13px; font-weight: bold; direction: rtl; border-left: 1px solid var(--line); }
+  main { display: grid; grid-template-columns: 1fr 462px; gap: 10px; padding: 10px; min-height: 0; }
+  .side { display: grid; grid-template-rows: 1fr auto; gap: 10px; min-height: 0; }
+  table.mw { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.mw th { color: var(--muted); font-weight: normal; font-size: 12px; text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+  table.mw td { padding: 0 10px; height: 49px; border-bottom: 1px solid var(--line); }
+  table.mw tr.row.pick { cursor: pointer; }
+  table.mw tr.row.pick:hover { background: var(--hover); }
+  table.mw tr.sel { background: var(--hover); box-shadow: inset -3px 0 0 var(--accent); }
+  .co { display: flex; align-items: center; gap: 10px; }
+  .co b { font-size: 15px; } .co small { color: var(--muted); font-size: 11px; display: block; }
+  .price { font-weight: bold; font-size: 16px; }
+  @keyframes fUp { from { background: rgba(22,199,132,.45); } to { background: transparent; } }
+  @keyframes fDown { from { background: rgba(234,57,67,.45); } to { background: transparent; } }
+  .fUp { animation: fUp 1.1s ease-out; } .fDown { animation: fDown 1.1s ease-out; }
+  .card { position: relative; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+  .card .body { flex: 1; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+  .q { font-size: 21px; font-weight: bold; line-height: 1.5; }
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .choice { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; font-weight: bold; font-size: 15px; text-align: right; min-height: 46px; }
+  .choice:hover:not(:disabled) { border-color: var(--accent); }
+  .choice .k { flex: none; width: 24px; height: 24px; border-radius: 6px; background: var(--line); display: grid; place-items: center; font-size: 13px; }
+  .choice.right { background: var(--upbg); border-color: var(--up); } .choice.wrong { background: var(--downbg); border-color: var(--down); }
+  .choice:disabled { cursor: default; }
+  .answer { padding: 10px 12px; border-radius: 10px; background: var(--upbg); border: 1px solid var(--up); font-weight: bold; }
+  .big { font-size: 40px; font-weight: bold; }
+  .teams { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tchip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 6px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); font-weight: bold; font-size: 13px; }
+  .tchip.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+  table.lb { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.lb th { color: var(--muted); font-weight: normal; font-size: 11px; text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  table.lb td { padding: 0 10px; height: 33px; border-bottom: 1px solid var(--line); }
+  table.lb tr.cur { background: var(--hover); box-shadow: inset -3px 0 0 var(--accent); }
+  .ring { position: relative; width: 74px; height: 74px; flex: none; }
+  .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 20px; }
+  .ticket { display: grid; gap: 8px; }
+  .qtyrow { display: flex; gap: 6px; align-items: center; }
+  .qtyrow input { width: 110px; text-align: center; font-size: 18px; font-weight: bold; direction: ltr; }
+  .qtyrow button { padding: 7px 10px; background: var(--panel2); border: 1px solid var(--line); font-size: 13px; font-weight: bold; }
+  .msg { min-height: 18px; font-size: 13px; font-weight: bold; }
+  .news { position: absolute; left: 0; right: 0; top: 54px; height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 14px;
+    background: var(--down); color: #fff; font-weight: bold; font-size: 15px; z-index: 5; animation: slide .5s ease-out; }
+  .news.good { background: var(--up); }
+  .news .tag { background: rgba(0,0,0,.25); padding: 2px 10px; border-radius: 4px; font-size: 12px; }
+  @keyframes slide { from { transform: translateX(-100%); } to { transform: none; } }
+  .gain { color: var(--gold); }
+  @keyframes pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+  .pop { animation: pop .5s ease-out; display: inline-block; }
+  .ov { position: absolute; inset: 0; background: rgba(5,10,20,.66); display: flex; align-items: center; justify-content: center; z-index: 20; }
+  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px 26px; min-width: 380px; display: grid; gap: 14px; text-align: center; }
+
+  /* title, setup, bank, results */
+  .screen { position: absolute; inset: 0; padding: 28px 40px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: grid; gap: 6px; font-size: 13px; color: var(--muted); font-weight: bold; }
+  .field input { width: 120px; direction: ltr; text-align: center; font-size: 16px; font-weight: bold; }
+  .box { padding: 14px 16px; display: grid; gap: 12px; align-content: start; }
+  .box h3 { margin: 0; font-size: 16px; }
+  .names { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .names input { width: 100%; box-sizing: border-box; direction: rtl; text-align: right; font-size: 14px; }
+  .banklist { overflow: auto; flex: 1; min-height: 0; }
+  .bq { display: grid; grid-template-columns: 110px 1fr 190px 70px; gap: 10px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .addq { display: grid; grid-template-columns: 130px minmax(0,1fr); gap: 8px; }
+  .addq input { direction: rtl; text-align: right; }
+</style>
+</head>
+<body class="dark">
+<div id="stage"><canvas id="game"></canvas><div id="ui"></div></div>
+<script src="config.js"></script>
+<script src="questions.js"></script>
+<script src="csv.js"></script>
+<script>
+'use strict';
+// سوق المعرفة: a host-run team quiz on a live trading-platform screen. A right answer pays cash
+// and opens a trading window; trades move prices, news moves sectors, the richest team wins.
+// The UI is DOM over a canvas background; all game logic runs on the fixed step.
+
+// ---- Built to be checked ----------------------------------------------------------------
+const params = new URLSearchParams(location.search);
+const tune = new Proxy({}, { get: (_, k) => CONFIG[k].value }); // live: tune.speed is CONFIG.speed.value
+const STEP = 1 / 60;
+const W = 1280, H = 720;
+const PIXEL = false;
+const FONT = "Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif";
+const TITLE = 'سوق المعرفة';
+const CONTROLS = ['الفأرة أو اللمس: كل شيء', '1-4: اختيار الإجابة', 'Enter: الزر الرئيسي', 'P: إيقاف مؤقت · M: كتم الصوت'];
+const clock = window.GAME_CLOCK || { now: () => performance.now() / 1000 };
+const CHEAP = params.get('render') === 'cheap';
+let seed;
+function rng() { // mulberry32; every gameplay random call reads this, never Math.random
+  seed = (seed + 0x6D2B79F5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), seed | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+let vseed = 11; // decoration's own stream (background chart, confetti), never the game's chance
+function vrng() { vseed = (vseed + 0x6D2B79F5) | 0; let t = Math.imul(vseed ^ (vseed >>> 15), vseed | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+const events = [];
+
+// ---- Screen ---------------------------------------------------------------------------
+const stage = document.getElementById('stage');
+const canvas = document.getElementById('game');
+const ui = document.getElementById('ui');
+const ctx = canvas.getContext('2d');
+function fit() {
+  const s = Math.min(innerWidth / W, innerHeight / H), r = s * (devicePixelRatio || 1);
+  canvas.width = Math.round(W * r); canvas.height = Math.round(H * r); ctx.setTransform(r, 0, 0, r, 0, 0);
+  stage.style.transform = `translate(${Math.round((innerWidth - W * s) / 2)}px, ${Math.round((innerHeight - H * s) / 2)}px) scale(${s})`;
+}
+addEventListener('resize', fit); fit();
+
+// ---- Input ------------------------------------------------------------------------------
+const down = new Set(), hit = new Set();
+const pressed = code => hit.has(code);
+const typing = () => document.activeElement && ['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName);
+addEventListener('keydown', e => {
+  startAudio();
+  if (!e.repeat) { down.add(e.code); hit.add(e.code); }
+  if (e.code === 'Space' && !typing()) e.preventDefault();
+});
+addEventListener('keyup', e => down.delete(e.code));
+addEventListener('pointerdown', () => startAudio());
+addEventListener('blur', () => down.clear());
+
+// ---- Audio --------------------------------------------------------------------------------
+let audio = null, muted = false;
+function startAudio() {
+  if (!audio) {
+    const ac = window.GAME_AUDIO || new (window.AudioContext || window.webkitAudioContext)();
+    const out = ac.createGain(); out.gain.value = muted ? 0 : tune.volume; out.connect(ac.destination); audio = { ac, out };
+  }
+  if (audio.ac.state === 'suspended') audio.ac.resume();
+}
+function setMuted(m) { muted = m; if (audio) audio.out.gain.value = m ? 0 : tune.volume; if (scene === 'play') renderHeader(); }
+addEventListener('tune', () => setMuted(muted));
+function tone(freq, dur, type = 'sine', vol = 0.25, delay = 0) {
+  if (!audio || muted) return;
+  const t = audio.ac.currentTime + delay, o = audio.ac.createOscillator(), g = audio.ac.createGain();
+  o.type = type; o.frequency.value = freq; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(g).connect(audio.out); o.start(t); o.stop(t + dur);
+}
+const sfx = {
+  click: () => tone(880, 0.05, 'triangle', 0.12),
+  right: () => [660, 880, 1320].forEach((f, i) => tone(f, 0.16, 'triangle', 0.22, i * 0.08)),
+  wrong: () => { tone(200, 0.3, 'sawtooth', 0.16); tone(150, 0.4, 'sawtooth', 0.14, 0.1); },
+  cash: () => [1500, 1900, 2300].forEach((f, i) => tone(f, 0.08, 'square', 0.08, 0.3 + i * 0.05)),
+  tick: () => tone(1200, 0.035, 'square', 0.1),
+  buy: () => { tone(620, 0.07, 'triangle', 0.2); tone(930, 0.1, 'triangle', 0.2, 0.06); },
+  sell: () => { tone(620, 0.07, 'triangle', 0.2); tone(410, 0.1, 'triangle', 0.2, 0.06); },
+  news: () => [988, 784, 988, 784].forEach((f, i) => tone(f, 0.1, 'square', 0.12, i * 0.12)),
+  bad: () => tone(240, 0.12, 'square', 0.12),
+  win: () => [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.22, 'triangle', 0.22, i * 0.12)),
+};
+
+// ---- Helpers ---------------------------------------------------------------------------
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const pct = x => (x > 0 ? '+' : '') + (x * 100).toFixed(2) + '%';
+const uni = (a, b) => a + (b - a) * rng();
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const toNum = s => parseInt(String(s).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d-]/g, ''), 10);
+function h(tag, props = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'style') e.style.cssText = v;
+    else if (k === 'html') e.innerHTML = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat()) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(c));
+  return e;
+}
+const B = (label, cls, fn, extra = {}) => h('button', { class: 'btn ' + cls, onclick: () => { sfx.click(); fn(); }, ...extra }, label);
+const N = v => h('span', { class: 'num' }, v);
+
+// ---- Drawn figures -------------------------------------------------------------------------
+const TEAM_COLORS = ['#3b82f6', '#f59e0b', '#a855f7', '#14b8a6', '#ec4899', '#84cc16'];
+function shield(i, size = 22) { // a team's badge: a shield in its colour with its number
+  return h('span', { style: `display:inline-block;width:${size}px;height:${Math.round(size * 1.15)}px;flex:none`, html:
+    `<svg viewBox="0 0 20 23" width="${size}" height="${Math.round(size * 1.15)}"><path d="M10 0 L20 3.5 V11 C20 17 15 21 10 23 C5 21 0 17 0 11 V3.5 Z" fill="${TEAM_COLORS[i]}"/>
+     <path d="M10 2 L18 4.8 V11 C18 15.6 14.4 19 10 20.8 Z" fill="rgba(255,255,255,.18)"/>
+     <text x="10" y="15.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff" font-family="Arial">${i + 1}</text></svg>` });
+}
+const LOGO = (s = 1) => `<svg width="${46 * s}" height="${36 * s}" viewBox="0 0 46 36">
+  <line x1="7" y1="4" x2="7" y2="30" stroke="var(--up)" stroke-width="2"/><rect x="3" y="10" width="8" height="14" rx="1.5" fill="var(--up)"/>
+  <line x1="21" y1="8" x2="21" y2="34" stroke="var(--down)" stroke-width="2"/><rect x="17" y="14" width="8" height="12" rx="1.5" fill="var(--down)"/>
+  <line x1="35" y1="1" x2="35" y2="24" stroke="var(--up)" stroke-width="2"/><rect x="31" y="4" width="8" height="14" rx="1.5" fill="var(--up)"/>
+  <path d="M2 31 L16 22 L26 26 L44 8" fill="none" stroke="var(--gold)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M38 7 L44 8 L43 14" fill="none" stroke="var(--gold)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const SECTOR_ICON = { // each sector's own small glyph, drawn
+  'طاقة': '<path d="M11 1 L4 12 H9 L7 21 L16 8 H11 Z" fill="currentColor"/>',
+  'بنوك': '<path d="M10 1 L19 6 H1 Z M3 8 H5 V16 H3 Z M9 8 H11 V16 H9 Z M15 8 H17 V16 H15 Z M1 17 H19 V20 H1 Z" fill="currentColor"/>',
+  'اتصالات': '<path d="M10 20 V9" stroke="currentColor" stroke-width="2"/><circle cx="10" cy="7" r="2" fill="currentColor"/><path d="M5 2 Q1 7 5 12 M15 2 Q19 7 15 12" stroke="currentColor" stroke-width="1.8" fill="none"/>',
+  'تجزئة': '<path d="M2 3 H5 L7 14 H17 L19 6 H6" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="8" cy="18" r="1.8" fill="currentColor"/><circle cx="16" cy="18" r="1.8" fill="currentColor"/>',
+  'عقار': '<path d="M2 20 V9 L8 4 L14 9 V20 Z M14 20 V12 H19 V20 Z" fill="currentColor"/><rect x="6" y="13" width="4" height="7" fill="var(--panel)"/>',
+};
+const secIcon = (s, c) => h('span', { style: `display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;flex:none;background:${c}22;color:${c}`,
+  html: `<svg viewBox="0 0 20 21" width="18" height="18">${SECTOR_ICON[s]}</svg>` });
+function spark(hist, w = 120, hh = 30) { // a sparkline with a soft area under it
+  const lo = Math.min(...hist), hi = Math.max(...hist), span = hi - lo || 1;
+  const pts = hist.map((v, i) => [hist.length === 1 ? w : (i / (hist.length - 1)) * w, hist.length === 1 ? hh / 2 : hh - 3 - ((v - lo) / span) * (hh - 6)]);
+  if (pts.length === 1) pts.unshift([0, hh / 2]);
+  const c = hist[hist.length - 1] > hist[0] ? 'var(--up)' : hist[hist.length - 1] < hist[0] ? 'var(--down)' : 'var(--muted)';
+  const line = pts.map(p => p.map(n => n.toFixed(1)).join(',')).join(' ');
+  return `<svg width="${w}" height="${hh}" viewBox="0 0 ${w} ${hh}" style="direction:ltr;display:block"><polygon points="0,${hh} ${line} ${w},${hh}" fill="${c}" opacity=".12"/>
+    <polyline points="${line}" fill="none" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
+}
+function ring(left, total, size = 74) { // countdown ring: blue, then red in the last seconds
+  const r = size / 2 - 6, c = 2 * Math.PI * r, f = clamp(left / total, 0, 1);
+  const col = left <= tune.tickWarn ? 'var(--down)' : 'var(--accent)';
+  return `<svg width="${size}" height="${size}" style="transform:rotate(-90deg);display:block"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="6"/>
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${col}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${(c * (1 - f)).toFixed(2)}"/></svg>`;
+}
+const TROPHY = `<svg width="70" height="70" viewBox="0 0 70 70"><path d="M20 8 H50 V24 C50 36 43 42 35 42 C27 42 20 36 20 24 Z" fill="var(--gold)"/>
+  <path d="M20 12 H10 C10 24 16 28 22 28 M50 12 H60 C60 24 54 28 48 28" fill="none" stroke="var(--gold)" stroke-width="4"/>
+  <rect x="31" y="42" width="8" height="10" fill="#d49400"/><rect x="22" y="52" width="26" height="8" rx="2" fill="#d49400"/>
+  <path d="M27 12 V24 C27 30 30 34 34 35" stroke="rgba(255,255,255,.55)" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+
+// ---- The market -----------------------------------------------------------------------------
+const SECTORS = { 'طاقة': '#f59e0b', 'بنوك': '#3b82f6', 'اتصالات': '#a855f7', 'تجزئة': '#ec4899', 'عقار': '#14b8a6' };
+const COMPANIES = [ // fictional companies, two per sector
+  { name: 'نفط الواحة', code: '2041', sector: 'طاقة' }, { name: 'شمس للطاقة', code: '2087', sector: 'طاقة' },
+  { name: 'بنك الأمانة', code: '1124', sector: 'بنوك' }, { name: 'مصرف الرواد', code: '1168', sector: 'بنوك' },
+  { name: 'اتصالات المدى', code: '7031', sector: 'اتصالات' }, { name: 'سحابة نت', code: '7055', sector: 'اتصالات' },
+  { name: 'أسواق النخلة', code: '4162', sector: 'تجزئة' }, { name: 'دار القهوة', code: '4190', sector: 'تجزئة' },
+  { name: 'عمران', code: '4310', sector: 'عقار' }, { name: 'أبراج الساحل', code: '4335', sector: 'عقار' },
+];
+const HEADLINES = {
+  'طاقة': ['ارتفاع أسعار النفط عالمياً يدعم شركات الطاقة', 'تراجع الطلب العالمي على الطاقة'],
+  'بنوك': ['أرباح قياسية للقطاع المصرفي هذا الربع', 'ارتفاع تكلفة الإقراض يضغط على البنوك'],
+  'اتصالات': ['إطلاق شبكة الجيل الجديد في المملكة', 'عطل واسع يضرب شبكات الاتصال'],
+  'تجزئة': ['موسم تسوق قوي يرفع مبيعات التجزئة', 'تراجع إنفاق المستهلكين يضغط على التجزئة'],
+  'عقار': ['الإعلان عن مشاريع إسكان كبرى', 'ركود يخيم على سوق العقار'],
+};
+
+// ---- Settings, bank and theme (kept in the browser) -------------------------------------------
+const store = { get: (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } } };
+function loadBank() { // a saved bank is used only when every row has the right shape
+  const b = store.get('souq.bank', null);
+  return Array.isArray(b) && b.length && b.every(r => Array.isArray(r) && r.length === 6 && r.every(x => typeof x === 'string' && x)) ? b : DEFAULT_BANK.map(r => r.slice());
+}
+let bank = loadBank();
+const saveBank = () => store.set('souq.bank', bank);
+let bankMsg = null; // the last import's result, shown once on the bank screen
+const WHY = { missing: 'خانة فارغة', duplicate: 'خيارات مكررة', long: 'نص أطول من ' + SouqCSV.MAX_CELL + ' حرف', limit: 'تجاوز ' + SouqCSV.MAX_ROWS + ' سؤال' };
+const whyList = sk => sk.slice(0, 5).map(x => `السطر ${x.line} (${WHY[x.why]})`).join('، ') + (sk.length > 5 ? ` و${sk.length - 5} غيرها` : '');
+async function importCSV(file) { // the host's file: السؤال، الخيار 1 (الإجابة)، الخيار 2، الخيار 3، الخيار 4
+  const say = (text, good) => { bankMsg = { text, good }; go('bank'); };
+  if (!/\.(csv|txt)$/i.test(file.name)) return say('اختر ملفاً بصيغة CSV', false);
+  if (file.size > 2e6) return say('الملف أكبر من 2 ميغابايت', false);
+  const buf = await file.arrayBuffer();
+  let text; // Excel's "CSV UTF-8" is UTF-8; its plain "CSV" saves Arabic as Windows-1256
+  try { text = new TextDecoder('utf-8', { fatal: true }).decode(buf); } catch { text = new TextDecoder('windows-1256').decode(buf); }
+  const cat = file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim().slice(0, 30) || 'مستورد';
+  const { questions, skipped } = SouqCSV.questionsFromCSV(text, cat);
+  if (!questions.length) return say('لم أجد أسئلة صالحة في الملف' + (skipped.length ? ': ' + whyList(skipped) : '. تأكد من الأعمدة الخمسة.'), false);
+  const apply = replace => { // the host chose: replace the existing questions, or add to them
+    bank = replace ? questions : questions.concat(bank);
+    const saved = saveBank();
+    say(`${replace ? 'استُبدلت الأسئلة بـ' : 'أُضيف'} ${questions.length} سؤالاً من "${file.name}"` + (skipped.length ? ` · تُجوهل ${skipped.length}: ${whyList(skipped)}` : '')
+      + (saved ? '' : ' · تنبيه: تعذر الحفظ في المتصفح، ستبقى الأسئلة حتى إغلاق الصفحة فقط'), saved);
+  };
+  const close = () => document.getElementById('importask')?.remove();
+  close();
+  ui.append(h('div', { class: 'ov', id: 'importask' }, h('div', { class: 'modal', style: 'max-width:560px' },
+    h('b', { style: 'font-size:20px' }, `في الملف ${questions.length} سؤالاً`),
+    skipped.length ? h('div', { class: 'down', style: 'font-size:13px' }, `سيُتجاهل ${skipped.length}: ${whyList(skipped)}`) : null,
+    h('div', { class: 'muted' }, `في البنك الآن ${bank.length} سؤالاً. ماذا تريد أن تفعل بها؟`),
+    h('div', { style: 'display:flex;gap:10px;justify-content:center;flex-wrap:wrap' },
+      B('إضافتها إلى الأسئلة الحالية', 'buy', () => { close(); apply(false); }, { 'data-primary': '1' }),
+      B('استبدال الأسئلة الحالية', 'sell', () => { close(); apply(true); }),
+      B('إلغاء', '', close)))));
+}
+function downloadTemplate() {
+  const a = h('a', { href: URL.createObjectURL(new Blob([SouqCSV.TEMPLATE], { type: 'text/csv;charset=utf-8' })), download: 'questions-template.csv' });
+  document.body.append(a); a.click(); a.remove();
+}
+function defaults() {
+  return { teams: tune.teams, names: Array.from({ length: 6 }, (_, i) => `الفريق ${i + 1}`), cash: tune.startCash, price: tune.startPrice,
+    answerTime: tune.answerTime, tradeTime: tune.tradeTime, mode: 'seq', qmode: 'choices', end: 'rounds', rounds: tune.rounds, minutes: tune.minutes };
+}
+function loadSettings() { // saved settings, each value checked against its limits
+  const s = Object.assign(defaults(), store.get('souq.settings', {}));
+  const lim = { teams: CONFIG.teams, cash: CONFIG.startCash, price: CONFIG.startPrice, answerTime: CONFIG.answerTime, tradeTime: CONFIG.tradeTime, rounds: CONFIG.rounds, minutes: CONFIG.minutes };
+  for (const [k, c] of Object.entries(lim)) s[k] = clamp(Number(s[k]) || c.value, c.min, c.max);
+  if (!['seq', 'fast'].includes(s.mode)) s.mode = 'seq';
+  if (!['choices', 'judge'].includes(s.qmode)) s.qmode = 'choices';
+  if (!['manual', 'timed', 'rounds'].includes(s.end)) s.end = 'rounds';
+  s.names = Array.from({ length: 6 }, (_, i) => (Array.isArray(s.names) && typeof s.names[i] === 'string' && s.names[i].trim()) || `الفريق ${i + 1}`);
+  return s;
+}
+let settings = loadSettings();
+let theme = store.get('souq.theme', 'dark') === 'light' ? 'light' : 'dark';
+function setTheme(t) { theme = t; document.body.className = t; store.set('souq.theme', t); }
+setTheme(theme);
+
+// ---- Game state and rules ----------------------------------------------------------------------
+let scene, state;
+function reset() {
+  seed = Number(params.get('seed')) || CONFIG.seed || (Date.now() | 0); // seed 0: a new game every time
+  const s = settings, n = s.teams;
+  const price = COMPANIES.map(() => Math.max(5, Math.round(s.price * (1 + uni(-tune.priceSpread, tune.priceSpread)))));
+  const hist = price.map(p => { // a short walk before the open, so every chart is alive from the first screen
+    const pts = [p]; for (let i = 0; i < 11; i++) pts.unshift(Math.max(1, Math.round(pts[0] * (1 + uni(-tune.driftMax, tune.driftMax) * 1.5))));
+    return pts; });
+  state = {
+    t: 0, score: 0, gained: '', paused: false,
+    n, names: s.names.slice(0, n), cash: Array(n).fill(s.cash), shares: Array.from({ length: n }, () => Array(10).fill(0)), startWorth: s.cash,
+    price, open: price.slice(), hist, flash: Array(10).fill(null),
+    cur: 0, turns: 0, round: 1, elapsed: 0, lastCall: false,
+    phase: 'ready', timer: 0, ticked: -1, q: null, answeredBy: null, picked: null, result: null, reward: 0, news: null,
+    sel: 0, buys: 0, sells: 0, msg: '', msgGood: false, deck: [], reveal: false, final: null,
+  };
+}
+function drawQuestion() { // no question repeats until the whole bank has been asked
+  if (!state.deck.length) { state.deck = bank.map((_, i) => i); for (let i = state.deck.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [state.deck[i], state.deck[j]] = [state.deck[j], state.deck[i]]; } }
+  const row = bank[state.deck.pop()];
+  const order = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+  return { cat: row[0], text: row[1], choices: order.map(k => row[2 + k]), right: order.indexOf(0) };
+}
+const worth = i => state.cash[i] + state.shares[i].reduce((a, n, c) => a + n * state.price[c], 0);
+function movePrice(co, np) {
+  np = Math.max(1, Math.round(np));
+  if (np === state.price[co]) return;
+  state.flash[co] = { dir: Math.sign(np - state.price[co]), t: state.t };
+  state.price[co] = np; state.hist[co].push(np);
+  if (state.hist[co].length > tune.historyLength) state.hist[co].shift();
+}
+function tradeMove(price, qty, buy) { // Ma3aliSahmuk's impact: k grows for big orders; one trade moves at most impactCap
+  const k = qty < tune.bigOrder ? uni(tune.smallImpactMin, tune.smallImpactMax) : uni(tune.bigImpactMin, tune.bigImpactMax);
+  const d = Math.max(1, Math.min(price * k * qty / tune.impactDivisor, price * tune.impactCap * uni(0.7, 1)));
+  return buy ? price + d : price - d;
+}
+function trade(buy) {
+  const t = state.cur, co = state.sel, p = state.price[co], qty = toNum(document.getElementById('qty')?.value);
+  const fail = m => { state.msg = m; state.msgGood = false; sfx.bad(); renderCard(); };
+  if (!(qty > 0)) return fail('أدخل كمية صحيحة');
+  if (buy) {
+    if (state.buys >= tune.maxBuys) return fail(`انتهت عمليات الشراء لهذا الدور (${tune.maxBuys})`);
+    if (qty * p > state.cash[t]) return fail('الرصيد لا يكفي');
+    state.cash[t] -= qty * p; state.shares[t][co] += qty; state.buys++;
+  } else {
+    if (state.sells >= tune.maxSells) return fail(`انتهت عمليات البيع لهذا الدور (${tune.maxSells})`);
+    if (qty > state.shares[t][co]) return fail('لا تملك هذه الكمية');
+    state.cash[t] += qty * p; state.shares[t][co] -= qty; state.sells++;
+  }
+  movePrice(co, tradeMove(p, qty, buy));
+  state.msg = `${buy ? 'شراء' : 'بيع'} ${fmt(qty)} سهم من ${COMPANIES[co].name} بسعر ${fmt(p)}`; state.msgGood = true;
+  refs.qtyVal = '';
+  (buy ? sfx.buy : sfx.sell)(); events.push({ trade: buy ? 'buy' : 'sell', co, qty });
+  if (state.buys >= tune.maxBuys && state.sells >= tune.maxSells) return endTurn();
+  renderAll();
+}
+function rollNews() { // my twists: sector news, dividend day, trading halt; never on the first turn
+  if (state.turns === 0 || rng() * 100 >= tune.newsChance) return null;
+  const total = tune.newsSector + tune.newsDividend + tune.newsHalt; let r = rng() * total;
+  if ((r -= tune.newsSector) < 0) {
+    const secs = Object.keys(SECTORS), sec = secs[Math.floor(rng() * secs.length)], good = rng() < 0.5;
+    const mag = uni(tune.sectorMoveMin, tune.sectorMoveMax), moves = [];
+    COMPANIES.forEach((c, co) => { if (c.sector === sec) { const before = state.price[co]; movePrice(co, before * (1 + (good ? 1 : -1) * mag * uni(0.8, 1.2))); moves.push([co, before, state.price[co]]); } });
+    return { kind: 'sector', good, sec, text: HEADLINES[sec][good ? 0 : 1], moves };
+  }
+  if ((r -= tune.newsDividend) < 0) {
+    const co = Math.floor(rng() * 10), rate = uni(tune.dividendMin, tune.dividendMax), per = state.price[co] * rate, paid = [];
+    for (let i = 0; i < state.n; i++) if (state.shares[i][co]) { const amt = Math.round(state.shares[i][co] * per); state.cash[i] += amt; paid.push([i, amt]); }
+    return { kind: 'dividend', good: true, co, rate, paid, text: `${COMPANIES[co].name} توزع أرباحاً نقدية بنسبة ${(rate * 100).toFixed(1)}٪ من سعر السهم` };
+  }
+  return { kind: 'halt', good: false, text: `إيقاف التداول مؤقتاً لـ ${state.names[state.cur]} بسبب عطل فني` };
+}
+function marketTick() { // each full round every price drifts a little, so the charts keep living
+  COMPANIES.forEach((_, co) => movePrice(co, state.price[co] * (1 + uni(-tune.driftMax, tune.driftMax))));
+}
+function gameOverDue() {
+  if (settings.end === 'rounds') return state.round > settings.rounds;
+  if (settings.end === 'timed') return state.elapsed >= settings.minutes * 60;
+  return false;
+}
+function setPhase(p) { state.phase = p; state.msg = ''; refs.qtyVal = ''; events.push({ phase: p }); renderAll(); }
+function newQuestion() {
+  state.q = drawQuestion(); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.result = null; state.reveal = false;
+  state.answeredBy = settings.mode === 'seq' ? state.cur : null; setPhase('question');
+}
+function answer(right, picked = null) {
+  if (state.answeredBy == null || state.phase !== 'question') return;
+  state.cur = state.answeredBy; state.picked = picked; state.result = right ? 'right' : 'wrong'; state.reveal = true;
+  if (right) { // Ma3aliSahmuk's reward: int(U(.25, 1) * 1% * cash) * 5
+    state.reward = Math.trunc(uni(tune.rewardMin, tune.rewardMax) * 0.01 * state.cash[state.cur]) * 5;
+    state.cash[state.cur] += state.reward; sfx.right(); sfx.cash();
+  } else sfx.wrong();
+  events.push({ answer: state.result }); setPhase('reveal');
+}
+function timeUp() { state.result = 'time'; state.reveal = true; sfx.wrong(); setPhase('reveal'); }
+function afterReveal() {
+  if (state.result !== 'right') return endTurn();
+  const n = rollNews(); state.news = n;
+  if (n) { sfx.news(); events.push({ news: n.kind }); setPhase('news'); } else openTrade();
+}
+function openTrade() { state.buys = 0; state.sells = 0; state.timer = settings.tradeTime; state.ticked = -1; setPhase('trade'); }
+function endTurn() {
+  state.turns++; state.news = null;
+  if (settings.mode === 'seq') state.cur = (state.cur + 1) % state.n;
+  if (state.turns % state.n === 0) { state.round++; marketTick(); }
+  if (gameOverDue()) return endGame();
+  setPhase('ready');
+}
+function endGame() { // every share is valued at the market price
+  state.final = [...Array(state.n).keys()].map(i => ({ i, cash: state.cash[i], stock: worth(i) - state.cash[i], worth: worth(i) })).sort((a, b) => b.worth - a.worth);
+  state.score = Math.round(state.final[0].worth); state.gained = `${state.names[state.final[0].i]}: ${fmt(state.final[0].worth)}`;
+  sfx.win(); go('results');
+}
+
+// ---- Scenes --------------------------------------------------------------------------------
+function go(name) { scene = name; state.paused = false; ui.replaceChildren(); (scenes[name].enter || (() => {}))(); events.push({ scene: name }); }
+
+// The dashboard's parts, each re-rendered when its data changes
+let refs = {};
+function renderAll() { if (scene !== 'play') return; renderHeader(); renderTicker(); renderMarket(); renderCard(); renderBoard(); renderNews(); }
+function themeSeg(after) {
+  return h('div', { class: 'seg' }, h('button', { class: theme === 'dark' ? 'on' : '', onclick: () => { setTheme('dark'); after(); } }, 'داكن'),
+    h('button', { class: theme === 'light' ? 'on' : '', onclick: () => { setTheme('light'); after(); } }, 'فاتح'));
+}
+function renderHeader() {
+  const end = settings.end === 'rounds' ? h('span', { class: 'chip' }, 'الجولة ', N(`${Math.min(state.round, settings.rounds)} / ${settings.rounds}`))
+    : settings.end === 'timed' ? h('span', { class: 'chip', id: 'clockchip' }, 'الوقت المتبقي') : h('span', { class: 'chip' }, 'الجولة ', N(state.round), ' · إنهاء يدوي');
+  refs.header.replaceChildren(
+    h('span', { html: LOGO(0.9), style: 'display:flex' }), h('b', { style: 'font-size:20px' }, TITLE),
+    h('span', { class: 'chip muted' }, settings.mode === 'seq' ? 'متتالي' : 'الأسرع'),
+    h('span', { class: 'chip muted' }, settings.qmode === 'choices' ? 'أربعة خيارات' : 'المقدّم يحكم'), end,
+    h('span', { class: 'sp' }), themeSeg(renderAll),
+    B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', '', () => setMuted(!muted), { style: 'padding:7px 12px;font-size:13px' }),
+    B(state.paused ? 'متابعة' : 'إيقاف مؤقت', '', () => { state.paused = !state.paused; renderHeader(); }, { style: 'padding:7px 12px;font-size:13px' }),
+    B('إنهاء المسابقة', 'sell', confirmEnd, { style: 'padding:7px 12px;font-size:13px' }));
+}
+function renderTicker() {
+  const items = COMPANIES.map((c, co) => {
+    const ch = (state.price[co] - state.open[co]) / state.open[co], cls = ch > 0 ? 'up' : ch < 0 ? 'down' : 'muted';
+    return h('span', { class: 'it' }, c.name, N(fmt(state.price[co])), h('span', { class: 'num ' + cls, style: 'display:inline-flex;gap:4px;align-items:center' },
+      h('span', { html: ch > 0 ? '<svg width="9" height="8"><path d="M4.5 0 L9 8 H0 Z" fill="currentColor"/></svg>' : ch < 0 ? '<svg width="9" height="8"><path d="M0 0 H9 L4.5 8 Z" fill="currentColor"/></svg>' : '' }), pct(ch)));
+  });
+  refs.tape.replaceChildren(...items, ...items.map(e => e.cloneNode(true)));
+}
+function renderMarket() {
+  const t = state.cur, trading = state.phase === 'trade';
+  const rows = COMPANIES.map((c, co) => {
+    const ch = (state.price[co] - state.open[co]) / state.open[co], f = state.flash[co];
+    const fl = f && state.t - f.t < 1.1 ? (f.dir > 0 ? 'fUp' : 'fDown') : '';
+    const cls = ch > 0 ? 'up' : ch < 0 ? 'down' : 'flat';
+    return h('tr', { class: `row ${trading ? 'pick' : ''} ${trading && state.sel === co ? 'sel' : ''}`, onclick: trading ? () => { state.sel = co; sfx.click(); refs.qtyVal = ''; state.msg = ''; renderMarket(); renderCard(); } : null },
+      h('td', {}, h('div', { class: 'co' }, secIcon(c.sector, SECTORS[c.sector]), h('div', {}, h('b', {}, c.name), h('small', {}, c.sector, ' · ', N(c.code))))),
+      h('td', { html: spark(state.hist[co]) }),
+      h('td', { class: 'price ' + fl }, N(fmt(state.price[co]))),
+      h('td', {}, h('span', { class: 'pill ' + cls }, pct(ch))),
+      h('td', {}, state.shares[t][co] ? N(fmt(state.shares[t][co])) : h('span', { class: 'muted' }, '—')),
+      h('td', { class: 'muted' }, state.shares[t][co] ? N(fmt(state.shares[t][co] * state.price[co])) : ''));
+  });
+  refs.market.replaceChildren(
+    h('div', { class: 'ph' }, h('span', {}, 'السوق'), h('span', { class: 'muted', style: 'font-weight:normal;font-size:12px' },
+      trading ? 'اختر شركة من الجدول ثم أدخل الكمية' : `محفظة ${state.names[t]} معروضة`)),
+    h('table', { class: 'mw' }, h('tr', {}, ...['الشركة', 'الأداء', 'السعر', 'التغير منذ الافتتاح', 'لديك', 'القيمة'].map(s => h('th', {}, s))), ...rows));
+}
+function teamChip(i, on, fn) {
+  return h('button', { class: 'tchip' + (on ? ' on' : ''), onclick: fn ? () => { sfx.click(); fn(); } : null, style: fn ? '' : 'cursor:default' }, shield(i, 18), state.names[i]);
+}
+function renderCard() {
+  const p = state.phase, c = refs.card, t = state.cur;
+  const head = (title, right) => h('div', { class: 'ph' }, h('span', {}, title), right || '');
+  const timerBox = total => h('div', { class: 'ring' }, h('span', { id: 'ringsvg', html: ring(state.timer, total) }), h('b', { id: 'ringnum' }, N(Math.ceil(state.timer))));
+  if (p === 'ready') {
+    const body = settings.mode === 'seq'
+      ? [h('div', { class: 'muted' }, 'الدور على'), h('div', { style: 'display:flex;align-items:center;gap:12px' }, shield(t, 46), h('div', { class: 'big' }, state.names[t])),
+         h('div', { class: 'muted' }, 'الرصيد ', N(fmt(state.cash[t])), ' · صافي الثروة ', N(fmt(worth(t))))]
+      : [h('div', { class: 'big', style: 'font-size:30px' }, 'جولة الأسرع'), h('div', { class: 'muted' }, 'يظهر السؤال للجميع، ثم اضغط على الفريق الذي أجاب أولاً.')];
+    c.replaceChildren(head(settings.mode === 'seq' ? 'الدور التالي' : 'سؤال جديد', state.lastCall ? h('span', { class: 'chip down' }, 'انتهى الوقت · آخر دور') : null),
+      h('div', { class: 'body', style: 'justify-content:center;align-items:flex-start' }, ...body,
+        B('اطرح السؤال', 'pri', newQuestion, { 'data-primary': '1', style: 'margin-top:8px;padding:12px 30px;font-size:18px' })));
+    return;
+  }
+  if (p === 'question' || p === 'reveal') {
+    const q = state.q, done = p === 'reveal', canAnswer = !done && state.answeredBy != null;
+    const parts = [h('div', { style: 'display:flex;gap:12px;align-items:center' }, done ? null : timerBox(settings.answerTime),
+      h('div', { style: 'flex:1' }, h('span', { class: 'chip muted' }, q.cat), h('div', { class: 'q', style: 'margin-top:6px' }, q.text)))];
+    if (settings.mode === 'fast' && !done) parts.push(h('div', {}, h('div', { class: 'muted', style: 'font-size:12px;margin-bottom:5px' }, state.answeredBy == null ? 'من أجاب أولاً؟ (أو اضغط رقم الفريق)' : 'يجيب الآن:'),
+      h('div', { class: 'teams' }, ...[...Array(state.n).keys()].map(i => teamChip(i, state.answeredBy === i, () => { state.answeredBy = i; renderCard(); renderBoard(); })))));
+    if (settings.qmode === 'choices') {
+      parts.push(h('div', { class: 'choices' }, ...q.choices.map((txt, k) => {
+        const cls = done && k === q.right ? ' right' : done && k === state.picked ? ' wrong' : '';
+        return h('button', { class: 'choice' + cls, disabled: !canAnswer, onclick: canAnswer ? () => answer(k === q.right, k) : null }, h('span', { class: 'k' }, k + 1), txt);
+      })));
+    } else {
+      if (state.reveal) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right]));
+      else parts.push(B('إظهار الإجابة', '', () => { state.reveal = true; renderCard(); }, { style: 'align-self:flex-start;font-size:13px;padding:6px 12px' }));
+      if (!done) parts.push(h('div', { style: 'display:flex;gap:10px' },
+        B('إجابة صحيحة', 'buy', () => answer(true), { disabled: !canAnswer, 'data-primary': canAnswer ? '1' : null, style: 'flex:1' }),
+        B('إجابة خاطئة', 'sell', () => answer(false), { disabled: !canAnswer, style: 'flex:1' })));
+    }
+    if (done) {
+      const right = state.result === 'right';
+      parts.push(h('div', { style: 'display:flex;align-items:center;gap:12px;margin-top:auto' },
+        right ? h('div', { class: 'big gain pop' }, N('+' + fmt(state.reward))) : h('div', { class: 'big down pop', style: 'font-size:28px' }, state.result === 'time' ? 'انتهى الوقت' : 'إجابة خاطئة'),
+        h('div', { class: 'muted', style: 'flex:1;font-size:13px' }, right ? `مكافأة ${state.names[state.cur]} أُضيفت إلى الرصيد، والسوق يفتح الآن` : state.answeredBy == null ? 'لم يُجب أحد' : `تُلغى فرصة ${state.names[state.answeredBy]} في هذه الجولة`),
+        B(right ? 'افتح السوق' : 'التالي', 'pri', afterReveal, { 'data-primary': '1' })));
+    }
+    c.replaceChildren(head(settings.mode === 'seq' ? `سؤال ${state.names[t]}` : 'سؤال الأسرع'), h('div', { class: 'body' }, ...parts));
+    return;
+  }
+  if (p === 'news') {
+    const n = state.news, lines = [];
+    if (n.kind === 'sector') n.moves.forEach(([co, a, b]) => lines.push(h('div', { style: 'display:flex;justify-content:space-between' }, COMPANIES[co].name,
+      h('span', { class: 'num ' + (b > a ? 'up' : 'down') }, `${fmt(a)} → ${fmt(b)}  (${pct((b - a) / a)})`))));
+    if (n.kind === 'dividend') lines.push(...(n.paid.length ? n.paid.map(([i, amt]) => h('div', { style: 'display:flex;justify-content:space-between' }, h('span', { style: 'display:flex;gap:6px;align-items:center' }, shield(i, 16), state.names[i]), h('span', { class: 'num gain' }, '+' + fmt(amt))))
+      : [h('div', { class: 'muted' }, 'لا يملك أي فريق أسهماً فيها: لم يستفد أحد')]));
+    if (n.kind === 'halt') lines.push(h('div', { class: 'muted' }, 'لا يمكن لهذا الفريق البيع أو الشراء في هذا الدور.'));
+    c.replaceChildren(head('خبر عاجل', h('span', { class: 'chip ' + (n.good ? 'up' : 'down') }, { sector: 'أخبار القطاع', dividend: 'توزيعات أرباح', halt: 'إيقاف تداول' }[n.kind])),
+      h('div', { class: 'body' }, h('div', { class: 'q' }, n.text), ...lines,
+        h('div', { style: 'margin-top:auto' }, B(n.kind === 'halt' ? 'التالي' : 'إلى التداول', 'pri', () => n.kind === 'halt' ? endTurn() : openTrade(), { 'data-primary': '1' }))));
+    return;
+  }
+  if (p === 'trade') {
+    const co = state.sel, cpy = COMPANIES[co], price = state.price[co], qtyNow = refs.qtyVal ?? '';
+    const cost = h('b', { class: 'num', style: 'color:var(--text)' }, fmt((toNum(qtyNow) || 0) * price));
+    const qty = h('input', { id: 'qty', inputmode: 'numeric', value: qtyNow, placeholder: '0',
+      oninput: e => { refs.qtyVal = e.target.value; cost.textContent = fmt((toNum(e.target.value) || 0) * price); },
+      onkeydown: e => { if (e.code === 'Enter' || e.code === 'NumpadEnter') { e.preventDefault(); e.stopPropagation(); trade(true); } } });
+    const setQ = v => { qty.value = String(v); refs.qtyVal = qty.value; cost.textContent = fmt(v * price); };
+    const maxBuy = Math.floor(state.cash[t] / price);
+    c.replaceChildren(head(`تداول ${state.names[t]}`, h('span', { class: 'muted', style: 'font-weight:normal;font-size:12px' }, `شراء متبقٍ ${tune.maxBuys - state.buys} · بيع متبقٍ ${tune.maxSells - state.sells}`)),
+      h('div', { class: 'body' },
+        h('div', { style: 'display:flex;gap:12px;align-items:center' }, timerBox(settings.tradeTime),
+          h('div', { style: 'flex:1' }, h('div', { style: 'display:flex;align-items:center;gap:8px' }, secIcon(cpy.sector, SECTORS[cpy.sector]), h('b', { style: 'font-size:19px' }, cpy.name)),
+            h('div', { class: 'muted', style: 'margin-top:4px' }, 'السعر ', h('b', { class: 'num', style: 'color:var(--text);font-size:18px' }, fmt(price)), ' · لديك ', N(fmt(state.shares[t][co])), ' سهم'))),
+        h('div', { class: 'ticket' },
+          h('div', { class: 'qtyrow' }, qty, ...[10, 50, 100].map(v => h('button', { onclick: () => setQ(v) }, N(v))),
+            h('button', { onclick: () => setQ(maxBuy), title: 'أقصى كمية يسمح بها الرصيد' }, 'الأقصى'), h('button', { onclick: () => setQ(state.shares[t][co]), title: 'كل الأسهم التي لديك' }, 'الكل')),
+          h('div', { class: 'muted', style: 'font-size:13px' }, 'القيمة: ', cost, ' · الرصيد ', N(fmt(state.cash[t]))),
+          h('div', { style: 'display:flex;gap:10px' },
+            B('شراء', 'buy', () => trade(true), { style: 'flex:1;font-size:18px', disabled: state.buys >= tune.maxBuys }),
+            B('بيع', 'sell', () => trade(false), { style: 'flex:1;font-size:18px', disabled: state.sells >= tune.maxSells || !state.shares[t][co] })),
+          h('div', { class: 'msg ' + (state.msgGood ? 'up' : 'down') }, state.msg)),
+        h('div', { style: 'margin-top:auto;display:flex;justify-content:space-between;align-items:center' },
+          h('span', { class: 'muted', style: 'font-size:12px' }, 'كل صفقة تحرك السعر: الشراء يرفعه والبيع يخفضه'),
+          B('إنهاء التداول', 'pri', endTurn, { 'data-primary': '1' }))));
+  }
+}
+function renderBoard() {
+  const order = [...Array(state.n).keys()].sort((a, b) => worth(b) - worth(a));
+  const active = state.phase === 'ready' && settings.mode === 'fast' ? -1 : state.phase === 'question' && settings.mode === 'fast' ? state.answeredBy : state.cur;
+  refs.board.replaceChildren(h('div', { class: 'ph' }, 'الترتيب', h('span', { class: 'muted', style: 'font-weight:normal;font-size:12px' }, 'صافي الثروة = الرصيد + قيمة الأسهم')),
+    h('table', { class: 'lb' }, h('tr', {}, ...['#', 'الفريق', 'الرصيد', 'صافي الثروة', 'الأداء'].map(s => h('th', {}, s))),
+      ...order.map((i, r) => { const g = (worth(i) - state.startWorth) / state.startWorth;
+        return h('tr', { class: i === active ? 'cur' : '' },
+          h('td', { class: 'muted' }, N(r + 1)), h('td', {}, h('span', { style: 'display:flex;gap:7px;align-items:center;font-weight:bold' }, shield(i, 18), state.names[i])),
+          h('td', {}, N(fmt(state.cash[i]))), h('td', { style: 'font-weight:bold' }, N(fmt(worth(i)))),
+          h('td', {}, h('span', { class: 'pill ' + (g > 0 ? 'up' : g < 0 ? 'down' : 'flat') }, pct(g)))); })));
+}
+function renderNews() {
+  document.getElementById('newsbar')?.remove();
+  if (state.phase === 'news' && state.news) ui.append(h('div', { id: 'newsbar', class: 'news' + (state.news.good ? ' good' : '') }, h('span', { class: 'tag' }, 'عاجل'), state.news.text));
+}
+function confirmEnd() {
+  if (document.getElementById('confirm')) return;
+  ui.append(h('div', { class: 'ov', id: 'confirm' }, h('div', { class: 'modal' }, h('b', { style: 'font-size:20px' }, 'إنهاء المسابقة الآن؟'),
+    h('div', { class: 'muted' }, 'تُقيّم كل الأسهم بسعر السوق الحالي ويُعلن الترتيب.'),
+    h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('نعم، أنهِ المسابقة', 'sell', endGame), B('متابعة اللعب', '', () => document.getElementById('confirm').remove())))));
+}
+
+const scenes = {
+  title: {
+    enter() {
+      ui.append(h('div', { class: 'screen', style: 'align-items:center;justify-content:center;gap:22px;text-align:center' },
+        h('span', { html: LOGO(2.6) }), h('div', { style: 'font-size:60px;font-weight:bold' }, TITLE),
+        h('div', { class: 'muted', style: 'font-size:20px' }, 'مسابقة معلومات للفرق على شاشة تداول حية: أجب صحيحاً، اربح المال، واستثمره في السوق'),
+        h('div', { style: 'display:flex;gap:12px' }, B('مسابقة جديدة', 'pri', () => go('setup'), { 'data-primary': '1', style: 'padding:14px 34px;font-size:20px' }),
+          B('بنك الأسئلة', '', () => go('bank'), { style: 'padding:14px 26px;font-size:18px' })),
+        themeSeg(() => go('title')),
+        h('div', { class: 'panel', style: 'padding:12px 20px;display:flex;gap:26px;font-size:14px' }, ...CONTROLS.map(c => h('span', { class: 'muted' }, c))),
+        h('div', { class: 'muted', style: 'font-size:14px' }, N(bank.length), ' سؤالاً في البنك')));
+    },
+    update() {}, draw() { backdrop(true); },
+  },
+  setup: {
+    enter() {
+      const s = settings;
+      const numF = (label, key, cfg, suffix = '') => h('label', { class: 'field' }, label, h('span', { style: 'display:flex;gap:6px;align-items:center' },
+        h('input', { value: String(s[key]), inputmode: 'numeric', onchange: e => { s[key] = clamp(toNum(e.target.value) || cfg.value, cfg.min, cfg.max); e.target.value = s[key]; } }),
+        h('span', { class: 'muted' }, suffix)), h('span', { style: 'font-weight:normal;font-size:11px' }, 'من ', N(fmt(cfg.min)), ' إلى ', N(fmt(cfg.max))));
+      const seg = (key, opts) => h('div', { class: 'seg' }, ...opts.map(([v, l]) => h('button', { class: s[key] === v ? 'on' : '', onclick: () => { sfx.click(); s[key] = v; go('setup'); } }, l)));
+      const names = h('div', { class: 'names' }, ...[...Array(s.teams).keys()].map(i => h('span', { style: 'display:flex;gap:6px;align-items:center' }, shield(i, 20),
+        h('input', { value: s.names[i], maxlength: '18', oninput: e => { s.names[i] = e.target.value.trim() || `الفريق ${i + 1}`; } }))));
+      ui.append(h('div', { class: 'screen' },
+        h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('span', { html: LOGO(1) }), h('b', { style: 'font-size:26px' }, 'إعداد المسابقة'), h('span', { style: 'flex:1' }),
+          B('رجوع', '', () => go('title')), B('ابدأ التداول', 'pri', () => { store.set('souq.settings', s); reset(); go('play'); }, { 'data-primary': '1', style: 'padding:12px 30px;font-size:18px' })),
+        h('div', { class: 'grid2', style: 'flex:1;min-height:0' },
+          h('div', { style: 'display:grid;gap:14px;align-content:start' },
+            h('div', { class: 'panel box' }, h('h3', {}, 'الفرق'), h('div', { style: 'display:flex;gap:10px;align-items:center' }, 'عدد الفرق',
+              seg('teams', [2, 3, 4, 5, 6].map(n => [n, String(n)]))), names),
+            h('div', { class: 'panel box' }, h('h3', {}, 'المال والسوق'), h('div', { style: 'display:flex;gap:22px' },
+              numF('الرصيد الابتدائي لكل فريق', 'cash', CONFIG.startCash, 'ريال'), numF('متوسط سعر السهم عند الافتتاح', 'price', CONFIG.startPrice, 'ريال'))),
+            h('div', { class: 'panel box' }, h('h3', {}, 'الوقت'), h('div', { style: 'display:flex;gap:22px' },
+              numF('وقت الإجابة', 'answerTime', CONFIG.answerTime, 'ثانية'), numF('وقت التداول', 'tradeTime', CONFIG.tradeTime, 'ثانية')))),
+          h('div', { style: 'display:grid;gap:14px;align-content:start' },
+            h('div', { class: 'panel box' }, h('h3', {}, 'طريقة اللعب'), seg('mode', [['seq', 'متتالي: كل فريق في دوره'], ['fast', 'الأسرع: من يجيب أولاً']])),
+            h('div', { class: 'panel box' }, h('h3', {}, 'عرض الأسئلة'), seg('qmode', [['choices', 'أربعة خيارات على الشاشة'], ['judge', 'السؤال فقط والمقدّم يحكم']]),
+              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode === 'choices' ? 'تختار الفرق الإجابة من الخيارات، وتظهر الإجابة الصحيحة بعدها.' : 'يظهر السؤال، ويضغط المقدّم صحيحة أو خاطئة، ثم تظهر الإجابة الصحيحة.')),
+            h('div', { class: 'panel box' }, h('h3', {}, 'نهاية المسابقة'), seg('end', [['manual', 'يدوياً'], ['timed', 'بعد مدة'], ['rounds', 'بعد عدد جولات']]),
+              s.end === 'timed' ? numF('مدة المسابقة', 'minutes', CONFIG.minutes, 'دقيقة') : s.end === 'rounds' ? numF('عدد الجولات', 'rounds', CONFIG.rounds, 'جولة') : h('div', { class: 'muted', style: 'font-size:12px' }, 'ينهي المقدّم المسابقة متى شاء بزر "إنهاء المسابقة".')),
+            h('div', { class: 'panel box' }, h('h3', {}, 'المظهر'), themeSeg(() => go('setup')))))));
+    },
+    update() {}, draw() { backdrop(false); },
+  },
+  bank: {
+    enter() {
+      const f = {}; const inp = (k, ph) => (f[k] = h('input', { placeholder: ph, maxlength: '160' }));
+      const err = h('span', { class: 'down', style: 'font-size:13px;font-weight:bold' });
+      const fileIn = h('input', { type: 'file', accept: '.csv,text/csv', style: 'display:none' });
+      fileIn.addEventListener('change', () => { const f = fileIn.files[0]; fileIn.value = ''; if (f) importCSV(f); });
+      const add = () => {
+        const row = ['cat', 'q', 'a', 'w1', 'w2', 'w3'].map(k => f[k].value.trim());
+        if (row.some(v => !v)) { err.textContent = 'املأ كل الحقول'; sfx.bad(); return; }
+        if (new Set(row.slice(2)).size < 4) { err.textContent = 'الخيارات الأربعة يجب أن تكون مختلفة'; sfx.bad(); return; }
+        bank.unshift(row); saveBank(); go('bank');
+      };
+      ui.append(h('div', { class: 'screen' },
+        h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('b', { style: 'font-size:26px' }, 'بنك الأسئلة'), h('span', { class: 'chip' }, N(bank.length), ' سؤال'), h('span', { style: 'flex:1' }),
+          B('استعادة الأسئلة الأصلية', '', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); go('bank'); }), B('رجوع', 'pri', () => go('title'), { 'data-primary': '1' })),
+        h('div', { class: 'grid2', style: 'grid-template-columns:minmax(0,1fr) minmax(0,1fr)' },
+          h('div', { class: 'panel box' }, h('h3', {}, 'إضافة سؤال'),
+            h('div', { class: 'addq' }, inp('cat', 'التصنيف'), inp('q', 'نص السؤال')),
+            h('div', { style: 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px' }, inp('a', 'الإجابة الصحيحة'), inp('w1', 'إجابة خاطئة'), inp('w2', 'إجابة خاطئة'), inp('w3', 'إجابة خاطئة')),
+            h('div', { style: 'display:flex;gap:12px;align-items:center' }, B('إضافة إلى البنك', 'buy', add), err)),
+          h('div', { class: 'panel box' }, h('h3', {}, 'استيراد من ملف CSV'),
+            h('div', { class: 'muted', style: 'font-size:13px;line-height:1.7' }, 'الأعمدة بالترتيب: ',
+              h('b', { style: 'color:var(--text)' }, SouqCSV.HEADERS.join('، ')),
+              h('br'), 'الخيار 1 هو الإجابة الصحيحة، ويُخلط الترتيب عند العرض. اسم الملف يصبح تصنيف أسئلته.'),
+            h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' },
+              B('استيراد أسئلة من ملف', 'buy', () => fileIn.click()), B('تنزيل نموذج', '', downloadTemplate), fileIn))),
+        bankMsg ? h('div', { id: 'bankmsg', class: 'panel', style: `padding:10px 14px;font-size:14px;font-weight:bold;color:var(--${bankMsg.good ? 'up' : 'down'})` }, bankMsg.text) : null,
+        h('div', { class: 'panel banklist' }, ...bank.map((r, i) => h('div', { class: 'bq' }, h('span', { class: 'chip muted', title: r[0], style: 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;box-sizing:border-box' }, r[0]), h('span', {}, r[1]),
+          h('span', { class: 'up', style: 'font-weight:bold' }, r[2]), B('حذف', '', () => { if (bank.length > 1) { bank.splice(i, 1); saveBank(); go('bank'); } }, { style: 'padding:5px 10px;font-size:12px' }))))));
+      for (const k of ['cat', 'q', 'a', 'w1', 'w2', 'w3']) f[k].style.direction = 'rtl';
+      f.cat.setAttribute('list', 'cats'); bankMsg = null;
+      ui.append(h('datalist', { id: 'cats' }, ...[...new Set(bank.map(r => r[0]))].map(c => h('option', { value: c }))));
+    },
+    update() {}, draw() { backdrop(false); },
+  },
+  play: {
+    enter() {
+      refs = {};
+      refs.header = h('header'); refs.tape = h('div', { class: 'tape' });
+      refs.market = h('section', { class: 'panel', style: 'overflow:hidden' });
+      refs.card = h('section', { class: 'panel card' }); refs.board = h('section', { class: 'panel' });
+      ui.append(h('div', { id: 'app' }, refs.header, h('div', { class: 'ticker' }, refs.tape), h('main', {}, refs.market, h('div', { class: 'side' }, refs.card, refs.board))));
+      renderAll();
+    },
+    update(dt) {
+      if (state.paused) return;
+      if (settings.end === 'timed') {
+        state.elapsed += dt;
+        if (!state.lastCall && state.elapsed >= settings.minutes * 60) { state.lastCall = true; if (state.phase === 'ready') return endGame(); renderCard(); }
+      }
+      if (state.phase === 'question' || state.phase === 'trade') {
+        state.timer -= dt;
+        const s = Math.ceil(state.timer);
+        if (s <= tune.tickWarn && s > 0 && s !== state.ticked) { state.ticked = s; sfx.tick(); }
+        if (state.timer <= 0) { state.timer = 0; return state.phase === 'question' ? timeUp() : endTurn(); }
+      }
+      if (state.phase === 'question' && !typing()) for (let k = 1; k <= 6; k++) if (pressed('Digit' + k) || pressed('Numpad' + k)) {
+        if (settings.mode === 'fast' && state.answeredBy == null) { if (k <= state.n) { state.answeredBy = k - 1; renderCard(); renderBoard(); } }
+        else if (settings.qmode === 'choices' && k <= 4) answer(k - 1 === state.q.right, k - 1);
+        break;
+      }
+    },
+    draw() {
+      backdrop(false);
+      const half = refs.tape.scrollWidth / 2 || 1;
+      refs.tickerX = ((refs.tickerX || 0) + tune.tickerSpeed * STEP) % half; // ticker moves with the frames: decoration only
+      refs.tape.style.transform = `translateX(${refs.tickerX - half}px)`;
+      const rs = document.getElementById('ringsvg');
+      if (rs) { const total = state.phase === 'trade' ? settings.tradeTime : settings.answerTime; rs.innerHTML = ring(state.timer, total); document.getElementById('ringnum').textContent = Math.ceil(state.timer); }
+      const cc = document.getElementById('clockchip');
+      if (cc) { const left = Math.max(0, settings.minutes * 60 - state.elapsed); cc.textContent = `الوقت المتبقي ${String(Math.floor(left / 60)).padStart(2, '0')}:${String(Math.floor(left % 60)).padStart(2, '0')}`; }
+      const ov = document.getElementById('pause');
+      if (state.paused && !ov) ui.append(h('div', { id: 'pause', class: 'ov', onclick: () => { state.paused = false; renderHeader(); } }, h('div', { class: 'modal' }, h('b', { style: 'font-size:26px' }, 'إيقاف مؤقت'), h('span', { class: 'muted' }, 'اضغط للمتابعة (P)'))));
+      if (!state.paused && ov) ov.remove();
+    },
+  },
+  results: {
+    enter() {
+      if (!state.final) { reset(); endGameValues(); }
+      const f = state.final, podium = [1, 0, 2].filter(r => f[r]); // second, first, third, right to left
+      const heights = { 0: 170, 1: 125, 2: 95 }, medal = ['#e0a100', '#94a3b8', '#b8733a'];
+      ui.append(h('div', { class: 'screen', style: 'align-items:center;gap:12px' },
+        h('div', { style: 'font-size:32px;font-weight:bold' }, 'النتائج النهائية'),
+        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;height:320px' }, ...podium.map(r => { const e = f[r];
+          return h('div', { style: 'display:flex;flex-direction:column;align-items:center;gap:6px;width:210px' },
+            r === 0 ? h('span', { html: TROPHY }) : null, shield(e.i, r === 0 ? 50 : 40), h('b', { style: 'font-size:' + (r === 0 ? 22 : 18) + 'px' }, state.names[e.i]),
+            h('span', { class: 'num', style: 'font-weight:bold;font-size:18px' }, fmt(e.worth)),
+            h('div', { style: `width:100%;height:${heights[r]}px;border-radius:10px 10px 0 0;background:linear-gradient(${medal[r]}, ${medal[r]}aa);display:grid;place-items:center;font-size:54px;font-weight:bold;color:#fff;text-shadow:0 2px 4px #0006` }, N(r + 1))); })),
+        h('div', { class: 'panel', style: 'width:780px' }, h('table', { class: 'lb' },
+          h('tr', {}, ...['المركز', 'الفريق', 'الرصيد', 'قيمة الأسهم', 'صافي الثروة', 'الأداء'].map(s => h('th', {}, s))),
+          ...f.map((e, r) => { const g = (e.worth - state.startWorth) / state.startWorth;
+            return h('tr', {}, h('td', {}, N(r + 1)), h('td', {}, h('span', { style: 'display:flex;gap:7px;align-items:center;font-weight:bold' }, shield(e.i, 18), state.names[e.i])),
+              h('td', {}, N(fmt(e.cash))), h('td', {}, N(fmt(e.stock))), h('td', { style: 'font-weight:bold' }, N(fmt(e.worth))),
+              h('td', {}, h('span', { class: 'pill ' + (g > 0 ? 'up' : g < 0 ? 'down' : 'flat') }, pct(g)))); }))),
+        h('div', { style: 'display:flex;gap:12px' }, B('مسابقة جديدة بنفس الإعدادات', 'pri', () => { reset(); go('play'); }, { 'data-primary': '1' }), B('الشاشة الرئيسية', '', () => go('title')))));
+      confetti = Array.from({ length: CHEAP ? 0 : 120 }, () => ({ x: vrng() * W, y: -vrng() * H, v: 60 + vrng() * 90, s: 5 + vrng() * 5, c: TEAM_COLORS[(vrng() * state.n) | 0], a: vrng() * 6, w: 1 + vrng() * 3 }));
+    },
+    update(dt) { for (const p of confetti) { p.y += p.v * dt; p.a += p.w * dt; if (p.y > H + 10) p.y = -10; } },
+    draw() {
+      backdrop(false);
+      for (const p of confetti) { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore(); }
+    },
+  },
+  figures: { // every drawn figure side by side, each named
+    enter() {
+      const cell = (el, name) => h('div', { class: 'panel', style: 'display:grid;place-items:center;gap:8px;padding:14px;min-height:120px' }, el, h('b', {}, name));
+      ui.append(h('div', { class: 'screen', style: 'display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-content:start' },
+        cell(h('span', { html: LOGO(1.6) }), 'الشعار'), cell(h('span', { html: TROPHY }), 'الكأس'),
+        cell(h('span', { html: ring(18, 30) }), 'عداد الوقت'), cell(h('span', { html: spark([100, 104, 99, 108, 112, 109, 118]) }), 'رسم الأداء'),
+        cell(h('span', { style: 'display:flex;gap:6px' }, ...[0, 1, 2, 3, 4, 5].map(i => shield(i, 26))), 'شعارات الفرق'),
+        ...Object.keys(SECTORS).map(s => cell(secIcon(s, SECTORS[s]), 'قطاع ' + s))));
+    },
+    update() {}, draw() { backdrop(false); },
+  },
+};
+function endGameValues() { state.final = [...Array(state.n).keys()].map(i => ({ i, cash: state.cash[i], stock: 0, worth: worth(i) })); }
+let confetti = [];
+
+// ---- Background: the platform's faint grid, and on the title a slow candle chart --------------
+let candleData = null;
+function backdrop(chart) {
+  const cs = getComputedStyle(document.body);
+  ctx.fillStyle = cs.getPropertyValue('--bg').trim() || '#0b1220'; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = cs.getPropertyValue('--grid').trim() || 'rgba(120,150,200,.06)'; ctx.lineWidth = 1;
+  for (let x = 0; x <= W; x += 40) { ctx.beginPath(); ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, H); ctx.stroke(); }
+  for (let y = 0; y <= H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(W, y + 0.5); ctx.stroke(); }
+  if (!chart) return;
+  if (!candleData) { let p = 0; candleData = Array.from({ length: 52 }, () => { const o = p; p += (vrng() - 0.42) * 22; return { o, c: p, hi: Math.max(o, p) + vrng() * 12, lo: Math.min(o, p) - vrng() * 12 }; }); }
+  const up = cs.getPropertyValue('--up').trim(), dn = cs.getPropertyValue('--down').trim(), off = (state.t * 14) % 26, base = H * 0.8;
+  ctx.globalAlpha = 0.14;
+  candleData.forEach((k, i) => {
+    const x = i * 26 - off, y = base - k.o, y2 = base - k.c;
+    ctx.strokeStyle = ctx.fillStyle = k.c >= k.o ? up : dn;
+    ctx.beginPath(); ctx.moveTo(x + 6, base - k.hi); ctx.lineTo(x + 6, base - k.lo); ctx.stroke();
+    ctx.fillRect(x, Math.min(y, y2), 12, Math.max(2, Math.abs(y2 - y)));
+  });
+  ctx.globalAlpha = 1;
+}
+
+// ---- Loop: fixed step, frame time clamped ---------------------------------------------
+function step() {
+  if (pressed('KeyM') && !typing()) setMuted(!muted);
+  if ((pressed('KeyP') || pressed('Space')) && !typing() && scene === 'play') { state.paused = !state.paused; renderHeader(); }
+  if ((pressed('Enter') || pressed('NumpadEnter')) && !typing() && !document.getElementById('confirm')) { // Enter: the screen's main button
+    const p = (document.getElementById('importask') || ui).querySelector('[data-primary]:not([disabled])'); // an open dialog's own button first
+    if (p) p.click();
+  }
+  if (pressed('Escape')) { document.getElementById('confirm')?.remove(); document.getElementById('importask')?.remove(); }
+  state.t += STEP;
+  scenes[scene].update(STEP); hit.clear();
+}
+let last, acc = 0, ALPHA = 1;
+function tick() {
+  const now = clock.now();
+  acc += Math.min(now - last, 0.25); last = now;
+  while (acc >= STEP) { step(); acc -= STEP; }
+  ALPHA = acc / STEP; drawFrame();
+}
+function drawFrame() { scenes[scene].draw(); }
+function frame() { tick(); requestAnimationFrame(frame); }
+function timer() { if (document.visibilityState === 'visible' && clock.now() - last > 0.1) tick(); }
+
+// ---- What a check can read and drive (?manual=1 stops the loop; players never see it) ----
+window.game = {
+  get scene() { return scene; },
+  get state() { return state; },
+  press(code) { hit.add(code); },
+  hold(code, on) { on ? down.add(code) : down.delete(code); },
+  get events() { return events; },
+  step(n = 1, draw = true, alpha = 1) { for (let i = 0; i < n; i++) step(); if (draw) { ALPHA = alpha; drawFrame(); } },
+};
+
+reset();
+go(params.get('scene') || 'title');
+last = clock.now();
+if (params.get('manual') === '1') drawFrame();
+else { requestAnimationFrame(frame); setInterval(timer, 50); }
+</script>
+</body>
+</html>
