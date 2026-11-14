@@ -46,7 +46,7 @@ Harder levels pay four times the easy ones, but a wrong answer earns nothing and
 - [x] Question bank: 60 starter questions (20 per level) written for this game; add, delete, reset
 - [x] CSV import with Arabic headers السؤال، الخيار 1 (الإجابة)، الخيار 2، الخيار 3، الخيار 4، المستوى; a blank or wrong المستوى rejects the whole file with its lines; then add or replace
 - [ ] Podium and standings; sounds with mute
-- [ ] Arabic README, and a row in the games repo's main README
+- [x] Arabic README, and a row in the games repo's main README
 
 ## Your systems
 - luck cards · in the slice
