@@ -6,47 +6,78 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="assets/favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <title>سوق المعرفة</title>
 <style>
+  @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-arabic-500.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-arabic-700.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-latin-500.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-latin-700.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
   :root { --up: #16c784; --down: #ea3943; --gold: #f5b301; }
   .dark { --bg: #0b1220; --panel: #121a2b; --panel2: #0f1726; --line: #1f2a40; --text: #e6edf7; --muted: #8a99b4; --accent: #3b82f6; --hover: #182238; --upbg: rgba(22,199,132,.14); --downbg: rgba(234,57,67,.14); --grid: rgba(120,150,200,.06); }
-  .light { --bg: #eef2f8; --panel: #ffffff; --panel2: #f5f7fb; --line: #e2e8f0; --text: #0f172a; --muted: #5b6b84; --accent: #2563eb; --hover: #eef3fb; --upbg: rgba(22,199,132,.13); --downbg: rgba(234,57,67,.11); --grid: rgba(30,60,120,.06); --up: #0b9e66; --down: #d92d3a; }
+  .light { --bg: #eef2f8; --panel: #ffffff; --panel2: #f5f7fb; --line: #e2e8f0; --text: #0f172a; --muted: #5b6b84; --accent: #2563eb; --hover: #eef3fb; --upbg: rgba(22,199,132,.13); --downbg: rgba(234,57,67,.11); --grid: rgba(30,60,120,.06); --up: #067a4d; --down: #c5222f; --gold: #9a6700; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
-  body { font-family: Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; font-variant-numeric: tabular-nums; }
+  body { font-family: 'Plex', Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; font-weight: 500; font-variant-numeric: tabular-nums; }
   #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: var(--bg); color: var(--text); }
   #game { position: absolute; inset: 0; width: 1280px; height: 720px; }
   #ui { position: absolute; inset: 0; direction: rtl; }
-  button { font: inherit; cursor: pointer; border: 0; border-radius: 8px; color: inherit; }
-  input, select { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; outline: none; }
+  button { font: inherit; cursor: pointer; border: 0; border-radius: 6px; color: inherit; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  input, select { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; outline: none; min-height: 40px; box-sizing: border-box; }
   input:focus, select:focus { border-color: var(--accent); }
   .num { direction: ltr; unicode-bidi: isolate; display: inline-block; }
   .up { color: var(--up); } .down { color: var(--down); } .muted { color: var(--muted); }
-  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
   .ph { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: bold; font-size: 15px; }
-  .btn { padding: 10px 18px; font-weight: bold; font-size: 16px; background: var(--panel2); border: 1px solid var(--line); }
+  .btn { padding: 10px 18px; min-height: 44px; font-weight: 700; font-size: 16px; background: var(--panel2); border: 1px solid var(--line); }
   .btn:hover { background: var(--hover); }
   .btn.pri { background: var(--accent); color: #fff; border-color: transparent; }
   .btn.buy { background: var(--up); color: #fff; border-color: transparent; }
+  .dark .btn.buy { color: #03150d; }
+  .btn.ghost { background: transparent; color: var(--muted); }
+  .btn.ghost.danger { color: var(--down); }
+  .btn.ghost:hover { color: var(--text); }
   .btn.sell { background: var(--down); color: #fff; border-color: transparent; }
   .btn:disabled { opacity: .35; cursor: default; }
-  .seg { display: inline-flex; background: var(--panel2); border: 1px solid var(--line); border-radius: 9px; padding: 3px; gap: 3px; }
-  .seg button { padding: 7px 14px; background: transparent; font-size: 14px; font-weight: bold; color: var(--muted); }
+  .seg { display: inline-flex; background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 3px; gap: 3px; }
+  .seg button { padding: 7px 14px; min-height: 38px; background: transparent; font-size: 14px; font-weight: 700; color: var(--muted); }
   .seg button.on { background: var(--accent); color: #fff; }
-  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); font-size: 13px; font-weight: bold; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 4px; background: var(--panel2); border: 1px solid var(--line); font-size: 13px; font-weight: 700; }
   .pill { display: inline-block; min-width: 64px; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 13px; text-align: center; direction: ltr; }
   .pill.up { background: var(--upbg); } .pill.down { background: var(--downbg); } .pill.flat { background: var(--panel2); color: var(--muted); }
 
   /* dashboard */
-  #app { position: absolute; inset: 0; display: grid; grid-template-rows: 54px 34px 1fr; }
+  #app { position: absolute; inset: 0; display: grid; grid-template-rows: 60px 34px 1fr; }
   header { display: flex; align-items: center; gap: 12px; padding: 0 14px; background: var(--panel); border-bottom: 1px solid var(--line); }
   header .sp { flex: 1; }
+  header .btn { min-height: 44px; padding: 8px 14px; font-size: 14px; }
+  .hgroup { display: flex; gap: 6px; align-items: center; padding-inline-start: 12px; margin-inline-start: 6px; border-inline-start: 1px solid var(--line); }
   .ticker { position: relative; overflow: hidden; background: var(--panel2); border-bottom: 1px solid var(--line); direction: ltr; }
   .ticker .tape { position: absolute; top: 0; left: 0; height: 34px; display: flex; align-items: center; white-space: nowrap; will-change: transform; }
   .ticker .it { display: inline-flex; gap: 8px; align-items: center; padding: 0 22px; font-size: 13px; font-weight: bold; direction: rtl; border-left: 1px solid var(--line); }
-  main { display: grid; grid-template-columns: 1fr 462px; gap: 10px; padding: 10px; min-height: 0; }
-  .side { display: grid; grid-template-rows: 1fr auto; gap: 10px; min-height: 0; }
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 440px; grid-template-rows: minmax(0, 1fr) auto; gap: 8px; padding: 8px; min-height: 0; }
+  /* the room reads the question first (card wide), then the market (market wide, card becomes the ticket) */
+  main > .card { grid-column: 1; grid-row: 1 / 3; }
+  main > #mk { grid-column: 2; grid-row: 1; overflow: auto; }
+  main > #lb { grid-column: 2; grid-row: 2; }
+  main.trade > #mk { grid-column: 1; grid-row: 1 / 3; }
+  main.trade > .card { grid-column: 2; grid-row: 1; }
+  main.focus table.mw :is(th, td):is(:nth-child(2), :nth-child(5), :nth-child(6)) { display: none; }
+  main.focus table.mw td { height: 26px; padding: 0 8px; }
+  main.focus .co small { display: none; }
+  main.focus .co > span { width: 20px !important; height: 20px !important; }
+  main.focus .co b { font-size: 13px; }
+  main.focus .price { font-size: 14px; }
+  main.focus .pill { min-width: 54px; font-size: 12px; padding: 1px 6px; }
+  main.focus table.lb td { height: 26px; }
+  main.focus table.lb th { padding: 4px 10px; }
+  main.focus table.mw th { padding: 4px 8px; }
+  main.trade table.lb :is(th, td):is(:nth-child(3), :nth-child(5)) { display: none; }
+  main.trade table.lb td { height: 26px; }
+  main.trade #lb .ph { display: none; }
   table.mw { width: 100%; border-collapse: collapse; font-size: 14px; }
-  table.mw th { color: var(--muted); font-weight: normal; font-size: 12px; text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+  table.mw th { color: var(--muted); font-weight: 500; font-size: 12px; text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--line); }
   table.mw td { padding: 0 10px; height: 49px; border-bottom: 1px solid var(--line); }
   table.mw tr.row.pick { cursor: pointer; }
   table.mw tr.row.pick:hover { background: var(--hover); }
@@ -61,15 +92,15 @@
   .card .body { flex: 1; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
   .q { font-size: 21px; font-weight: bold; line-height: 1.5; }
   .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .choice { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; font-weight: bold; font-size: 15px; text-align: right; min-height: 46px; }
+  .choice { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; font-weight: 700; font-size: 15px; text-align: right; min-height: 46px; }
   .choice:hover:not(:disabled) { border-color: var(--accent); }
   .choice .k { flex: none; width: 24px; height: 24px; border-radius: 6px; background: var(--line); display: grid; place-items: center; font-size: 13px; }
   .choice.right { background: var(--upbg); border-color: var(--up); } .choice.wrong { background: var(--downbg); border-color: var(--down); }
   .choice:disabled { cursor: default; }
-  .answer { padding: 10px 12px; border-radius: 10px; background: var(--upbg); border: 1px solid var(--up); font-weight: bold; }
+  .answer { padding: 10px 12px; border-radius: 6px; background: var(--upbg); border: 1px solid var(--up); font-weight: bold; }
   .big { font-size: 40px; font-weight: bold; }
   .teams { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tchip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 6px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); font-weight: bold; font-size: 13px; }
+  .tchip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px 8px 10px; min-height: 44px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--line); font-weight: bold; font-size: 13px; }
   .tchip.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
   table.lb { width: 100%; border-collapse: collapse; font-size: 13px; }
   table.lb th { color: var(--muted); font-weight: normal; font-size: 11px; text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--line); }
@@ -77,12 +108,13 @@
   table.lb tr.cur { background: var(--hover); box-shadow: inset -3px 0 0 var(--accent); }
   .ring { position: relative; width: 74px; height: 74px; flex: none; }
   .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 20px; }
+  main.focus .ring b { font-size: 30px; }
   .ticket { display: grid; gap: 8px; }
   .qtyrow { display: flex; gap: 6px; align-items: center; }
   .qtyrow input { width: 110px; text-align: center; font-size: 18px; font-weight: bold; direction: ltr; }
-  .qtyrow button { padding: 7px 10px; background: var(--panel2); border: 1px solid var(--line); font-size: 13px; font-weight: bold; }
+  .qtyrow button { padding: 7px 10px; min-height: 44px; background: var(--panel2); border: 1px solid var(--line); font-size: 13px; font-weight: bold; }
   .msg { min-height: 18px; font-size: 13px; font-weight: bold; }
-  .news { position: absolute; left: 0; right: 0; top: 54px; height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 14px;
+  .news { position: absolute; left: 0; right: 0; top: 60px; height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 14px;
     background: var(--down); color: #fff; font-weight: bold; font-size: 15px; z-index: 5; animation: slide .5s ease-out; }
   .news.good { background: var(--up); }
   .news .tag { background: rgba(0,0,0,.25); padding: 2px 10px; border-radius: 4px; font-size: 12px; }
@@ -91,12 +123,12 @@
   @keyframes pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
   .pop { animation: pop .5s ease-out; display: inline-block; }
   .ov { position: absolute; inset: 0; background: rgba(5,10,20,.66); display: flex; align-items: center; justify-content: center; z-index: 20; }
-  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px 26px; min-width: 380px; display: grid; gap: 14px; text-align: center; }
+  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 22px 26px; min-width: 380px; display: grid; gap: 14px; text-align: center; }
 
   /* title, setup, bank, results */
-  .screen { position: absolute; inset: 0; padding: 28px 40px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; }
+  .screen { position: absolute; inset: 0; padding: 20px 40px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .field { display: grid; gap: 6px; font-size: 13px; color: var(--muted); font-weight: bold; }
+  .field { display: grid; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 700; }
   .field input { width: 120px; direction: ltr; text-align: center; font-size: 16px; font-weight: bold; }
   .box { padding: 14px 16px; display: grid; gap: 12px; align-content: start; }
   .box h3 { margin: 0; font-size: 16px; }
@@ -104,6 +136,27 @@
   .names input { width: 100%; box-sizing: border-box; direction: rtl; text-align: right; font-size: 14px; }
   .banklist { overflow: auto; flex: 1; min-height: 0; }
   .bq { display: grid; grid-template-columns: 110px 1fr 190px 70px; gap: 10px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .pips { display: inline-flex; gap: 3px; vertical-align: middle; margin-inline: 4px; }
+  .pips i { width: 9px; height: 9px; border-radius: 2px; border: 1px solid var(--muted); box-sizing: border-box; }
+  .pips i.on { background: var(--accent); border-color: var(--accent); }
+  .reward { font-size: 76px; font-weight: 700; color: var(--gold); line-height: 1; }
+  main.focus .card .body { padding: 22px 28px; gap: 18px; }
+  main.focus .q { font-size: 38px; line-height: 1.45; }
+  main.focus .choices { gap: 12px; flex: 1; grid-auto-rows: 1fr; }
+  main.focus .choice { font-size: 26px; min-height: 92px; padding: 14px 18px; }
+  main.focus .choice .k { width: 38px; height: 38px; font-size: 18px; border-radius: 4px; }
+  /* long text steps the type down so the choices and the main button always fit */
+  main.focus .card[data-size=m] .q { font-size: 30px; }
+  main.focus .card[data-size=m] .choice { font-size: 21px; min-height: 72px; padding: 10px 14px; }
+  main.focus .card[data-size=l] .q { font-size: 24px; line-height: 1.4; }
+  main.focus .card[data-size=l] .choice { font-size: 18px; min-height: 60px; padding: 8px 12px; }
+  main.focus .card[data-size=l] .choice .k { width: 30px; height: 30px; font-size: 15px; }
+  main.focus .card[data-size=l] .body, main.focus .card[data-size=m] .body { gap: 12px; padding: 16px 22px; }
+  main.focus .answer { font-size: 26px; padding: 16px 18px; }
+  main.focus .card .ph { font-size: 16px; padding: 12px 18px; }
+  main.focus .card .big { font-size: 48px; }
+  main.focus .card .btn { font-size: 20px; min-height: 52px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
   .addq { display: grid; grid-template-columns: 130px minmax(0,1fr); gap: 8px; }
   .addq input { direction: rtl; text-align: right; }
 </style>
@@ -225,14 +278,10 @@ function shield(i, size = 22) { // a team's badge: a shield in its colour with i
   return h('span', { style: `display:inline-block;width:${size}px;height:${Math.round(size * 1.15)}px;flex:none`, html:
     `<svg viewBox="0 0 20 23" width="${size}" height="${Math.round(size * 1.15)}"><path d="M10 0 L20 3.5 V11 C20 17 15 21 10 23 C5 21 0 17 0 11 V3.5 Z" fill="${TEAM_COLORS[i]}"/>
      <path d="M10 2 L18 4.8 V11 C18 15.6 14.4 19 10 20.8 Z" fill="rgba(255,255,255,.18)"/>
-     <text x="10" y="15.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff" font-family="Arial">${i + 1}</text></svg>` });
+     <text x="10" y="15.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff" font-family="Plex, Arial">${i + 1}</text></svg>` });
 }
-const LOGO = (s = 1) => `<svg width="${46 * s}" height="${36 * s}" viewBox="0 0 46 36">
-  <line x1="7" y1="4" x2="7" y2="30" stroke="var(--up)" stroke-width="2"/><rect x="3" y="10" width="8" height="14" rx="1.5" fill="var(--up)"/>
-  <line x1="21" y1="8" x2="21" y2="34" stroke="var(--down)" stroke-width="2"/><rect x="17" y="14" width="8" height="12" rx="1.5" fill="var(--down)"/>
-  <line x1="35" y1="1" x2="35" y2="24" stroke="var(--up)" stroke-width="2"/><rect x="31" y="4" width="8" height="14" rx="1.5" fill="var(--up)"/>
-  <path d="M2 31 L16 22 L26 26 L44 8" fill="none" stroke="var(--gold)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M38 7 L44 8 L43 14" fill="none" stroke="var(--gold)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const LOGO = (s = 1) => `<svg width="${46 * s}" height="${36 * s}" viewBox="19 35 222 174">
+  <g fill="none" stroke="var(--up)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M40 128 L96 184 L208 72"/><path d="M132 60 H220 V148"/></g></svg>`; // the same mark as assets/favicon.svg
 const SECTOR_ICON = { // each sector's own small glyph, drawn
   'طاقة': '<path d="M11 1 L4 12 H9 L7 21 L16 8 H11 Z" fill="currentColor"/>',
   'بنوك': '<path d="M10 1 L19 6 H1 Z M3 8 H5 V16 H3 Z M9 8 H11 V16 H9 Z M15 8 H17 V16 H15 Z M1 17 H19 V20 H1 Z" fill="currentColor"/>',
@@ -251,6 +300,7 @@ function spark(hist, w = 120, hh = 30) { // a sparkline with a soft area under i
   return `<svg width="${w}" height="${hh}" viewBox="0 0 ${w} ${hh}" style="direction:ltr;display:block"><polygon points="0,${hh} ${line} ${w},${hh}" fill="${c}" opacity=".12"/>
     <polyline points="${line}" fill="none" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
 }
+const ringSize = () => state.phase === 'trade' ? 74 : 104;
 function ring(left, total, size = 74) { // countdown ring: blue, then red in the last seconds
   const r = size / 2 - 6, c = 2 * Math.PI * r, f = clamp(left / total, 0, 1);
   const col = left <= tune.tickWarn ? 'var(--down)' : 'var(--accent)';
@@ -461,7 +511,7 @@ function go(name) { scene = name; state.paused = false; ui.replaceChildren(); (s
 
 // The dashboard's parts, each re-rendered when its data changes
 let refs = {};
-function renderAll() { if (scene !== 'play') return; renderHeader(); renderTicker(); renderMarket(); renderCard(); renderBoard(); renderNews(); }
+function renderAll() { if (scene !== 'play') return; refs.main.className = state.phase === 'trade' ? 'trade' : 'focus'; renderHeader(); renderTicker(); renderMarket(); renderCard(); renderBoard(); renderNews(); }
 function themeSeg(after) {
   return h('div', { class: 'seg' }, h('button', { class: theme === 'dark' ? 'on' : '', onclick: () => { setTheme('dark'); after(); } }, 'داكن'),
     h('button', { class: theme === 'light' ? 'on' : '', onclick: () => { setTheme('light'); after(); } }, 'فاتح'));
@@ -474,9 +524,10 @@ function renderHeader() {
     h('span', { class: 'chip muted' }, settings.mode === 'seq' ? 'متتالي' : 'الأسرع'),
     h('span', { class: 'chip muted' }, settings.qmode === 'choices' ? 'أربعة خيارات' : 'المقدّم يحكم'), end,
     h('span', { class: 'sp' }), themeSeg(renderAll),
-    B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', '', () => setMuted(!muted), { style: 'padding:7px 12px;font-size:13px' }),
-    B(state.paused ? 'متابعة' : 'إيقاف مؤقت', '', () => { state.paused = !state.paused; renderHeader(); }, { style: 'padding:7px 12px;font-size:13px' }),
-    B('إنهاء المسابقة', 'sell', confirmEnd, { style: 'padding:7px 12px;font-size:13px' }));
+    h('span', { class: 'hgroup' },
+      B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', 'ghost', () => setMuted(!muted)),
+      B(state.paused ? 'متابعة' : 'إيقاف مؤقت', 'ghost', () => { state.paused = !state.paused; renderHeader(); }),
+      B('إنهاء المسابقة', 'ghost danger', confirmEnd)));
 }
 function renderTicker() {
   const items = COMPANIES.map((c, co) => {
@@ -508,10 +559,18 @@ function renderMarket() {
 function teamChip(i, on, fn) {
   return h('button', { class: 'tchip' + (on ? ' on' : ''), onclick: fn ? () => { sfx.click(); fn(); } : null, style: fn ? '' : 'cursor:default' }, shield(i, 18), state.names[i]);
 }
+function countUp(el, to) { // the reward counts up to its value; decoration only, skipped for reduced motion
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let t0 = null;
+  const stepFn = now => { t0 ??= now; const k = Math.min(1, (now - t0) / 700); el.textContent = '+' + fmt(Math.round(to * (1 - Math.pow(1 - k, 3)))); if (k < 1) requestAnimationFrame(stepFn); };
+  requestAnimationFrame(stepFn);
+}
+const pips = (left, total) => h('span', { class: 'pips' }, ...[...Array(total).keys()].map(i => h('i', { class: i < left ? 'on' : '' })));
 function renderCard() {
   const p = state.phase, c = refs.card, t = state.cur;
   const head = (title, right) => h('div', { class: 'ph' }, h('span', {}, title), right || '');
-  const timerBox = total => h('div', { class: 'ring' }, h('span', { id: 'ringsvg', html: ring(state.timer, total) }), h('b', { id: 'ringnum' }, N(Math.ceil(state.timer))));
+  c.dataset.size = '';
+  const timerBox = total => h('div', { class: 'ring', style: `width:${ringSize()}px;height:${ringSize()}px` }, h('span', { id: 'ringsvg', html: ring(state.timer, total, ringSize()) }), h('b', { id: 'ringnum' }, N(Math.ceil(state.timer))));
   if (p === 'ready') {
     const body = settings.mode === 'seq'
       ? [h('div', { class: 'muted' }, 'الدور على'), h('div', { style: 'display:flex;align-items:center;gap:12px' }, shield(t, 46), h('div', { class: 'big' }, state.names[t])),
@@ -524,6 +583,8 @@ function renderCard() {
   }
   if (p === 'question' || p === 'reveal') {
     const q = state.q, done = p === 'reveal', canAnswer = !done && state.answeredBy != null;
+    const longest = Math.max(...q.choices.map(x => x.length));
+    c.dataset.size = q.text.length > 110 || longest > 45 ? 'l' : q.text.length > 70 || longest > 30 ? 'm' : '';
     const parts = [h('div', { style: 'display:flex;gap:12px;align-items:center' }, done ? null : timerBox(settings.answerTime),
       h('div', { style: 'flex:1' }, h('span', { class: 'chip muted' }, q.cat), h('div', { class: 'q', style: 'margin-top:6px' }, q.text)))];
     if (settings.mode === 'fast' && !done) parts.push(h('div', {}, h('div', { class: 'muted', style: 'font-size:12px;margin-bottom:5px' }, state.answeredBy == null ? 'من أجاب أولاً؟ (أو اضغط رقم الفريق)' : 'يجيب الآن:'),
@@ -543,11 +604,13 @@ function renderCard() {
     if (done) {
       const right = state.result === 'right';
       parts.push(h('div', { style: 'display:flex;align-items:center;gap:12px;margin-top:auto' },
-        right ? h('div', { class: 'big gain pop' }, N('+' + fmt(state.reward))) : h('div', { class: 'big down pop', style: 'font-size:28px' }, state.result === 'time' ? 'انتهى الوقت' : 'إجابة خاطئة'),
+        right ? h('div', { class: 'reward pop', id: 'rew' }, N('+' + fmt(state.reward))) : h('div', { class: 'big down pop', style: 'font-size:28px' }, state.result === 'time' ? 'انتهى الوقت' : 'إجابة خاطئة'),
         h('div', { class: 'muted', style: 'flex:1;font-size:13px' }, right ? `مكافأة ${state.names[state.cur]} أُضيفت إلى الرصيد، والسوق يفتح الآن` : state.answeredBy == null ? 'لم يُجب أحد' : `تُلغى فرصة ${state.names[state.answeredBy]} في هذه الجولة`),
         B(right ? 'افتح السوق' : 'التالي', 'pri', afterReveal, { 'data-primary': '1' })));
     }
     c.replaceChildren(head(settings.mode === 'seq' ? `سؤال ${state.names[t]}` : 'سؤال الأسرع'), h('div', { class: 'body' }, ...parts));
+    const rew = document.getElementById('rew');
+    if (rew && refs.countFor !== state.q) { refs.countFor = state.q; countUp(rew.firstChild, state.reward); }
     return;
   }
   if (p === 'news') {
@@ -565,12 +628,13 @@ function renderCard() {
   if (p === 'trade') {
     const co = state.sel, cpy = COMPANIES[co], price = state.price[co], qtyNow = refs.qtyVal ?? '';
     const cost = h('b', { class: 'num', style: 'color:var(--text)' }, fmt((toNum(qtyNow) || 0) * price));
+    const after = h('b', { class: 'num', style: 'color:var(--text)' }, fmt(state.cash[t] - (toNum(qtyNow) || 0) * price));
     const qty = h('input', { id: 'qty', inputmode: 'numeric', value: qtyNow, placeholder: '0',
-      oninput: e => { refs.qtyVal = e.target.value; cost.textContent = fmt((toNum(e.target.value) || 0) * price); },
+      oninput: e => { refs.qtyVal = e.target.value; cost.textContent = fmt((toNum(e.target.value) || 0) * price); after.textContent = fmt(state.cash[t] - (toNum(e.target.value) || 0) * price); },
       onkeydown: e => { if (e.code === 'Enter' || e.code === 'NumpadEnter') { e.preventDefault(); e.stopPropagation(); trade(true); } } });
-    const setQ = v => { qty.value = String(v); refs.qtyVal = qty.value; cost.textContent = fmt(v * price); };
+    const setQ = v => { qty.value = String(v); refs.qtyVal = qty.value; cost.textContent = fmt(v * price); after.textContent = fmt(state.cash[t] - v * price); };
     const maxBuy = Math.floor(state.cash[t] / price);
-    c.replaceChildren(head(`تداول ${state.names[t]}`, h('span', { class: 'muted', style: 'font-weight:normal;font-size:12px' }, `شراء متبقٍ ${tune.maxBuys - state.buys} · بيع متبقٍ ${tune.maxSells - state.sells}`)),
+    c.replaceChildren(head(`تداول ${state.names[t]}`, h('span', { class: 'muted', style: 'font-weight:normal;font-size:12px' }, 'شراء', pips(tune.maxBuys - state.buys, tune.maxBuys), 'بيع', pips(tune.maxSells - state.sells, tune.maxSells))),
       h('div', { class: 'body' },
         h('div', { style: 'display:flex;gap:12px;align-items:center' }, timerBox(settings.tradeTime),
           h('div', { style: 'flex:1' }, h('div', { style: 'display:flex;align-items:center;gap:8px' }, secIcon(cpy.sector, SECTORS[cpy.sector]), h('b', { style: 'font-size:19px' }, cpy.name)),
@@ -578,7 +642,7 @@ function renderCard() {
         h('div', { class: 'ticket' },
           h('div', { class: 'qtyrow' }, qty, ...[10, 50, 100].map(v => h('button', { onclick: () => setQ(v) }, N(v))),
             h('button', { onclick: () => setQ(maxBuy), title: 'أقصى كمية يسمح بها الرصيد' }, 'الأقصى'), h('button', { onclick: () => setQ(state.shares[t][co]), title: 'كل الأسهم التي لديك' }, 'الكل')),
-          h('div', { class: 'muted', style: 'font-size:13px' }, 'القيمة: ', cost, ' · الرصيد ', N(fmt(state.cash[t]))),
+          h('div', { class: 'muted', style: 'font-size:13px' }, 'القيمة: ', cost, ' · الرصيد بعد الشراء: ', after),
           h('div', { style: 'display:flex;gap:10px' },
             B('شراء', 'buy', () => trade(true), { style: 'flex:1;font-size:18px', disabled: state.buys >= tune.maxBuys }),
             B('بيع', 'sell', () => trade(false), { style: 'flex:1;font-size:18px', disabled: state.sells >= tune.maxSells || !state.shares[t][co] })),
@@ -603,6 +667,23 @@ function renderNews() {
   document.getElementById('newsbar')?.remove();
   if (state.phase === 'news' && state.news) ui.append(h('div', { id: 'newsbar', class: 'news' + (state.news.good ? ' good' : '') }, h('span', { class: 'tag' }, 'عاجل'), state.news.text));
 }
+const HELP = [ // the game explained in steps: a title and a line each, beside assets/help-<n>.png
+  ['الإعداد', 'يحدد المقدّم عدد الفرق وأسماءها، والرصيد الابتدائي، وأوقات الإجابة والتداول، وطريقة عرض الأسئلة، ومتى تنتهي المسابقة.'],
+  ['السؤال', 'يُطرح سؤال على الفريق صاحب الدور، وعليه أن يجيب قبل انتهاء الوقت.'],
+  ['الإجابة الصحيحة تربح مالاً', 'الإجابة الصحيحة تضيف مكافأة نقدية إلى رصيد الفريق وتفتح له السوق. الإجابة الخاطئة تنقل الدور إلى الفريق التالي.'],
+  ['التداول', 'يشتري الفريق أسهماً أو يبيعها خلال وقت التداول. كل صفقة تحرّك سعر السهم، والأخبار العاجلة قد ترفع قطاعاً كاملاً أو تهبط به.'],
+  ['الفائز', 'عند نهاية المسابقة تُقيَّم الأسهم بسعر السوق، ويفوز الفريق صاحب أعلى صافي ثروة: الرصيد مع قيمة الأسهم.'],
+];
+function showHelp(i = 0) { // the how-to-play dialog: one photo and one step at a time
+  document.getElementById('help')?.remove();
+  const last = i === HELP.length - 1, close = () => document.getElementById('help')?.remove();
+  ui.append(h('div', { class: 'ov', id: 'help' }, h('div', { class: 'modal', style: 'max-width:780px;justify-items:center' },
+    h('div', { class: 'muted', style: 'font-size:14px' }, 'شرح اللعبة · ', N(`${i + 1} / ${HELP.length}`)),
+    h('img', { src: `assets/help-${i + 1}.png`, alt: HELP[i][0], width: '704', height: '396', style: 'border-radius:8px;border:1px solid var(--line);display:block' }),
+    h('b', { style: 'font-size:22px' }, HELP[i][0]), h('div', { style: 'font-size:16px;line-height:1.7;max-width:680px;min-height:54px' }, HELP[i][1]),
+    h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('السابق', '', () => showHelp(i - 1), { disabled: i === 0 }),
+      B(last ? 'إغلاق' : 'التالي', 'pri', last ? close : () => showHelp(i + 1), { 'data-primary': '1' }), last ? null : B('إغلاق', '', close)))));
+}
 function confirmEnd() {
   if (document.getElementById('confirm')) return;
   ui.append(h('div', { class: 'ov', id: 'confirm' }, h('div', { class: 'modal' }, h('b', { style: 'font-size:20px' }, 'إنهاء المسابقة الآن؟'),
@@ -617,7 +698,8 @@ const scenes = {
         h('span', { html: LOGO(2.6) }), h('div', { style: 'font-size:60px;font-weight:bold' }, TITLE),
         h('div', { class: 'muted', style: 'font-size:20px' }, 'مسابقة معلومات للفرق على شاشة تداول حية: أجب صحيحاً، اربح المال، واستثمره في السوق'),
         h('div', { style: 'display:flex;gap:12px' }, B('مسابقة جديدة', 'pri', () => go('setup'), { 'data-primary': '1', style: 'padding:14px 34px;font-size:20px' }),
-          B('بنك الأسئلة', '', () => go('bank'), { style: 'padding:14px 26px;font-size:18px' })),
+          B('بنك الأسئلة', '', () => go('bank'), { style: 'padding:14px 26px;font-size:18px' }),
+          B('شرح اللعبة', '', () => showHelp(), { style: 'padding:14px 26px;font-size:18px' })),
         themeSeg(() => go('title')),
         h('div', { class: 'panel', style: 'padding:12px 20px;display:flex;gap:26px;font-size:14px' }, ...CONTROLS.map(c => h('span', { class: 'muted' }, c))),
         h('div', { class: 'muted', style: 'font-size:14px' }, N(bank.length), ' سؤالاً في البنك')));
@@ -656,7 +738,7 @@ const scenes = {
   },
   bank: {
     enter() {
-      const f = {}; const inp = (k, ph) => (f[k] = h('input', { placeholder: ph, maxlength: '160' }));
+      const f = {}; const inp = (k, label) => h('label', { class: 'field' }, label, (f[k] = h('input', { maxlength: '160', style: 'width:100%;box-sizing:border-box;direction:rtl;text-align:right;font-size:15px' })));
       const err = h('span', { class: 'down', style: 'font-size:13px;font-weight:bold' });
       const fileIn = h('input', { type: 'file', accept: '.csv,text/csv', style: 'display:none' });
       fileIn.addEventListener('change', () => { const f = fileIn.files[0]; fileIn.value = ''; if (f) importCSV(f); });
@@ -668,18 +750,18 @@ const scenes = {
       };
       ui.append(h('div', { class: 'screen' },
         h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('b', { style: 'font-size:26px' }, 'بنك الأسئلة'), h('span', { class: 'chip' }, N(bank.length), ' سؤال'), h('span', { style: 'flex:1' }),
-          B('استعادة الأسئلة الأصلية', '', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); go('bank'); }), B('رجوع', 'pri', () => go('title'), { 'data-primary': '1' })),
+          B('استعادة الأسئلة الأصلية', '', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); go('bank'); }), B('رجوع', 'ghost', () => go('title'), { 'data-primary': '1' })),
         h('div', { class: 'grid2', style: 'grid-template-columns:minmax(0,1fr) minmax(0,1fr)' },
           h('div', { class: 'panel box' }, h('h3', {}, 'إضافة سؤال'),
             h('div', { class: 'addq' }, inp('cat', 'التصنيف'), inp('q', 'نص السؤال')),
             h('div', { style: 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px' }, inp('a', 'الإجابة الصحيحة'), inp('w1', 'إجابة خاطئة'), inp('w2', 'إجابة خاطئة'), inp('w3', 'إجابة خاطئة')),
-            h('div', { style: 'display:flex;gap:12px;align-items:center' }, B('إضافة إلى البنك', 'buy', add), err)),
+            h('div', { style: 'display:flex;gap:12px;align-items:center' }, B('إضافة إلى البنك', 'pri', add), err)),
           h('div', { class: 'panel box' }, h('h3', {}, 'استيراد من ملف CSV'),
             h('div', { class: 'muted', style: 'font-size:13px;line-height:1.7' }, 'الأعمدة بالترتيب: ',
               h('b', { style: 'color:var(--text)' }, SouqCSV.HEADERS.join('، ')),
               h('br'), 'الخيار 1 هو الإجابة الصحيحة، ويُخلط الترتيب عند العرض. اسم الملف يصبح تصنيف أسئلته.'),
             h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' },
-              B('استيراد أسئلة من ملف', 'buy', () => fileIn.click()), B('تنزيل نموذج', '', downloadTemplate), fileIn))),
+              B('استيراد أسئلة من ملف', 'pri', () => fileIn.click()), B('تنزيل نموذج', '', downloadTemplate), fileIn))),
         bankMsg ? h('div', { id: 'bankmsg', class: 'panel', style: `padding:10px 14px;font-size:14px;font-weight:bold;color:var(--${bankMsg.good ? 'up' : 'down'})` }, bankMsg.text) : null,
         h('div', { class: 'panel banklist' }, ...bank.map((r, i) => h('div', { class: 'bq' }, h('span', { class: 'chip muted', title: r[0], style: 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;box-sizing:border-box' }, r[0]), h('span', {}, r[1]),
           h('span', { class: 'up', style: 'font-weight:bold' }, r[2]), B('حذف', '', () => { if (bank.length > 1) { bank.splice(i, 1); saveBank(); go('bank'); } }, { style: 'padding:5px 10px;font-size:12px' }))))));
@@ -693,9 +775,10 @@ const scenes = {
     enter() {
       refs = {};
       refs.header = h('header'); refs.tape = h('div', { class: 'tape' });
-      refs.market = h('section', { class: 'panel', style: 'overflow:hidden' });
-      refs.card = h('section', { class: 'panel card' }); refs.board = h('section', { class: 'panel' });
-      ui.append(h('div', { id: 'app' }, refs.header, h('div', { class: 'ticker' }, refs.tape), h('main', {}, refs.market, h('div', { class: 'side' }, refs.card, refs.board))));
+      refs.market = h('section', { class: 'panel', id: 'mk' });
+      refs.card = h('section', { class: 'panel card' }); refs.board = h('section', { class: 'panel', id: 'lb' });
+      refs.main = h('main', {}, refs.card, refs.market, refs.board);
+      ui.append(h('div', { id: 'app' }, refs.header, h('div', { class: 'ticker' }, refs.tape), refs.main));
       renderAll();
     },
     update(dt) {
@@ -719,10 +802,10 @@ const scenes = {
     draw() {
       backdrop(false);
       const half = refs.tape.scrollWidth / 2 || 1;
-      refs.tickerX = ((refs.tickerX || 0) + tune.tickerSpeed * STEP) % half; // ticker moves with the frames: decoration only
+      refs.tickerX = ((refs.tickerX || 0) + (matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : tune.tickerSpeed) * STEP) % half; // ticker moves with the frames: decoration only
       refs.tape.style.transform = `translateX(${refs.tickerX - half}px)`;
       const rs = document.getElementById('ringsvg');
-      if (rs) { const total = state.phase === 'trade' ? settings.tradeTime : settings.answerTime; rs.innerHTML = ring(state.timer, total); document.getElementById('ringnum').textContent = Math.ceil(state.timer); }
+      if (rs) { const total = state.phase === 'trade' ? settings.tradeTime : settings.answerTime; rs.innerHTML = ring(state.timer, total, ringSize()); document.getElementById('ringnum').textContent = Math.ceil(state.timer); }
       const cc = document.getElementById('clockchip');
       if (cc) { const left = Math.max(0, settings.minutes * 60 - state.elapsed); cc.textContent = `الوقت المتبقي ${String(Math.floor(left / 60)).padStart(2, '0')}:${String(Math.floor(left % 60)).padStart(2, '0')}`; }
       const ov = document.getElementById('pause');
@@ -734,10 +817,10 @@ const scenes = {
     enter() {
       if (!state.final) { reset(); endGameValues(); }
       const f = state.final, podium = [1, 0, 2].filter(r => f[r]); // second, first, third, right to left
-      const heights = { 0: 170, 1: 125, 2: 95 }, medal = ['#e0a100', '#94a3b8', '#b8733a'];
+      const heights = { 0: 140, 1: 105, 2: 78 }, medal = ['#e0a100', '#94a3b8', '#b8733a'];
       ui.append(h('div', { class: 'screen', style: 'align-items:center;gap:12px' },
         h('div', { style: 'font-size:32px;font-weight:bold' }, 'النتائج النهائية'),
-        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;height:320px' }, ...podium.map(r => { const e = f[r];
+        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;height:360px' }, ...podium.map(r => { const e = f[r];
           return h('div', { style: 'display:flex;flex-direction:column;align-items:center;gap:6px;width:210px' },
             r === 0 ? h('span', { html: TROPHY }) : null, shield(e.i, r === 0 ? 50 : 40), h('b', { style: 'font-size:' + (r === 0 ? 22 : 18) + 'px' }, state.names[e.i]),
             h('span', { class: 'num', style: 'font-weight:bold;font-size:18px' }, fmt(e.worth)),
@@ -798,10 +881,10 @@ function step() {
   if (pressed('KeyM') && !typing()) setMuted(!muted);
   if ((pressed('KeyP') || pressed('Space')) && !typing() && scene === 'play') { state.paused = !state.paused; renderHeader(); }
   if ((pressed('Enter') || pressed('NumpadEnter')) && !typing() && !document.getElementById('confirm')) { // Enter: the screen's main button
-    const p = (document.getElementById('importask') || ui).querySelector('[data-primary]:not([disabled])'); // an open dialog's own button first
+    const p = (document.getElementById('importask') || document.getElementById('help') || ui).querySelector('[data-primary]:not([disabled])'); // an open dialog's own button first
     if (p) p.click();
   }
-  if (pressed('Escape')) { document.getElementById('confirm')?.remove(); document.getElementById('importask')?.remove(); }
+  if (pressed('Escape')) { document.getElementById('confirm')?.remove(); document.getElementById('importask')?.remove(); document.getElementById('help')?.remove(); }
   state.t += STEP;
   scenes[scene].update(STEP); hit.clear();
 }

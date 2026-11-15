@@ -1,0 +1,95 @@
+# Where each file in assets/ and vendor/ came from, one entry per file. The field names are the
+# provenance record's, so the entries carry over when the game grows.
+# - path: assets/hit.wav      # relative to this game's folder
+#   origin: ai                # ai | bought | cc0 | you | outsourced | template | plugin | licensed | code | unknown
+#   tool: "what made or fetched it: the generator, or the script for code"
+#   model: "the model ID, when a model made it or an AI wrote its code"
+#   source: {vendor: "who made or sold it", product: "its name", url: "where from"}   # a download
+#   licence: {id: CC0-1.0}    # a download: the SPDX id where one exists
+#   date: 2026-01-31
+#   ships: true               # false for a file only the build uses
+#   placeholder: true         # until it is replaced; leave the line out otherwise
+
+- path: vendor/cairo-arabic-700.woff2
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/cairo@5.3.0 (files/ subset of the package)"
+  source: {vendor: "The Cairo Project Authors", product: "Cairo (via the Fontsource package @fontsource/cairo 5.3.0)", url: "https://fontsource.org/fonts/cairo"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: vendor/cairo-arabic-900.woff2
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/cairo@5.3.0 (files/ subset of the package)"
+  source: {vendor: "The Cairo Project Authors", product: "Cairo (via the Fontsource package @fontsource/cairo 5.3.0)", url: "https://fontsource.org/fonts/cairo"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: vendor/cairo-latin-700.woff2
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/cairo@5.3.0 (files/ subset of the package)"
+  source: {vendor: "The Cairo Project Authors", product: "Cairo (via the Fontsource package @fontsource/cairo 5.3.0)", url: "https://fontsource.org/fonts/cairo"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: vendor/cairo-latin-900.woff2
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/cairo@5.3.0 (files/ subset of the package)"
+  source: {vendor: "The Cairo Project Authors", product: "Cairo (via the Fontsource package @fontsource/cairo 5.3.0)", url: "https://fontsource.org/fonts/cairo"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: vendor/cairo-OFL-LICENSE.txt
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/cairo@5.3.0 (the package LICENSE file, which carries the copyright notice and the OFL 1.1 text)"
+  source: {vendor: "The Cairo Project Authors", product: "Cairo (via the Fontsource package @fontsource/cairo 5.3.0)", url: "https://fontsource.org/fonts/cairo"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: assets/favicon.svg
+  origin: ai
+  tool: "hand-written SVG (logo-design skill); the same mark is inlined as LOGO in index.html"
+  model: claude-fable-5-2
+  date: 2026-11-15
+  ships: true
+
+- path: assets/favicon.ico
+  origin: ai
+  tool: "logo-design skill render_png.py --ico from assets/favicon.svg (16, 32, 48 px)"
+  model: claude-fable-5-2
+  date: 2026-11-15
+  ships: true
+
+- path: assets/help-1.png
+  origin: code
+  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
+  date: 2026-11-15
+  ships: true
+
+- path: assets/help-2.png
+  origin: code
+  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
+  date: 2026-11-15
+  ships: true
+
+- path: assets/help-3.png
+  origin: code
+  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
+  date: 2026-11-15
+  ships: true
+
+- path: assets/help-4.png
+  origin: code
+  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
+  date: 2026-11-15
+  ships: true
+
+- path: assets/help-5.png
+  origin: code
+  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
+  date: 2026-11-15
+  ships: true

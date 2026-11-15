@@ -10,6 +10,7 @@ I have the rights, build both (your version and mirror version)
 After play: for each game, the host can upload a csv file with the following columns (Question, Choice-1 (Answer), Choice-2, Choice-3, Choice-4)
 After play: the columns headers will be in Arabic
 After play: remove this option (استبدال البنك بملف). instead, when adding questions, ask host wheather to overwrite the existing questions or add to them
+After play: redo both games ui/ux
 
 **Pitch:** A host-run team quiz on a live trading-platform screen: every right answer pays cash and opens a trading window, and breaking news moves whole sectors.
 **Genre:** trivia-quiz × trading game (host-run party game)

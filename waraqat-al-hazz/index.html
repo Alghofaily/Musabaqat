@@ -6,99 +6,131 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="assets/favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <title>ورقة الحظ</title>
 <style>
+  @font-face { font-family: 'Cairo'; font-weight: 700; src: url(vendor/cairo-arabic-700.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Cairo'; font-weight: 900; src: url(vendor/cairo-arabic-900.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Cairo'; font-weight: 700; src: url(vendor/cairo-latin-700.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Cairo'; font-weight: 900; src: url(vendor/cairo-latin-900.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
   .dark { --bg: #071030; --bg2: #13256f; --panel: rgba(12,26,84,.88); --panel2: #0b1a55; --line: #29479b; --text: #f2f5ff; --muted: #a9b8e6;
-    --gold: #f6c343; --gold2: #d99a00; --ink: #3a2600; --blue: #3fa9ff; --good: #2fd47a; --bad: #ff5a5f; --hover: #1a3489; --beam: 255,236,170; --face: #fffaf0; }
-  .light { --bg: #d9ebff; --bg2: #a9cdfb; --panel: rgba(255,255,255,.93); --panel2: #eef5ff; --line: #c6d8f3; --text: #0d1b4c; --muted: #4b5f8e;
-    --gold: #f2b705; --gold2: #c98a00; --ink: #3a2600; --blue: #1f7ae0; --good: #13a35a; --bad: #e0323d; --hover: #e6f0ff; --beam: 255,255,255; --face: #ffffff; }
+    --gold: #f6c343; --gold2: #d99a00; --ink: #3a2600; --blue: #3fa9ff; --good: #2fd47a; --bad: #ff5a5f; --hover: #1a3489; --beam: 255,236,170; --face: #fffaf0; --goldtxt: #f6c343; }
+  .light { --bg: #fff4d9; --bg2: #ffd98e; --panel: rgba(255,252,244,.95); --panel2: #fff6e2; --line: #dfc48a; --text: #2b1b00; --muted: #6b5420;
+    --gold: #f2b705; --gold2: #c98a00; --goldtxt: #8a5700; --ink: #3a2600; --blue: #1f7ae0; --good: #0b7a43; --bad: #c4222c; --hover: #ffedc2; --beam: 255,255,255; --face: #ffffff; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
-  body { font-family: Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; font-variant-numeric: tabular-nums; }
+  body { font-family: 'Cairo', Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; }
   #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; color: var(--text); background: var(--bg); }
   #game { position: absolute; inset: 0; width: 1280px; height: 720px; }
   #ui { position: absolute; inset: 0; direction: rtl; }
   button { font: inherit; cursor: pointer; border: 0; border-radius: 10px; color: inherit; }
-  input, select { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; outline: none; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  input, select { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; outline: none; min-height: 44px; box-sizing: border-box; }
   input:focus, select:focus { border-color: var(--gold); }
   .num { direction: ltr; unicode-bidi: isolate; display: inline-block; }
   .muted { color: var(--muted); } .good { color: var(--good); } .bad { color: var(--bad); }
-  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-  .btn { padding: 10px 20px; font-weight: bold; font-size: 16px; background: var(--panel2); border: 1px solid var(--line); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+  .btn { padding: 10px 20px; min-height: 44px; font-weight: bold; font-size: 16px; background: var(--panel2); border: 1px solid var(--line); }
   .btn:hover { background: var(--hover); }
   .btn.gold { background-color: var(--gold); background-image: linear-gradient(#ffe08a, var(--gold) 55%, var(--gold2)); color: var(--ink); border: 0; box-shadow: 0 4px 0 #9c6a00, 0 8px 16px rgba(0,0,0,.25); }
   .btn.gold:active { transform: translateY(2px); box-shadow: 0 2px 0 #9c6a00; }
   .btn.good { background: var(--good); color: #fff; border: 0; } .btn.bad { background: var(--bad); color: #fff; border: 0; }
+  .dark .btn.good { color: #03150d; } .dark .btn.bad { color: #2a0306; }
+  .btn.ghost { background: transparent; color: var(--muted); border-color: transparent; }
+  .btn.ghost.danger { color: var(--bad); }
+  .btn.ghost:hover { color: var(--text); }
   .btn:disabled { opacity: .35; cursor: default; }
   .seg { display: inline-flex; background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 3px; }
-  .seg button { padding: 7px 14px; background: transparent; font-size: 14px; font-weight: bold; color: var(--muted); }
+  .seg button { padding: 7px 14px; min-height: 38px; background: transparent; font-size: 14px; font-weight: bold; color: var(--muted); }
   .seg button.on { background-color: var(--gold); background-image: linear-gradient(#ffe08a, var(--gold)); color: var(--ink); }
   .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); font-size: 13px; font-weight: bold; }
 
   /* the show */
-  #app { position: absolute; inset: 0; display: grid; grid-template-rows: 56px 1fr 176px; }
+  #app { position: absolute; inset: 0; display: grid; grid-template-rows: 56px 1fr 144px; }
   header { display: flex; align-items: center; gap: 12px; padding: 0 16px; background: rgba(0,0,0,.18); border-bottom: 1px solid var(--line); }
   .light header { background: rgba(255,255,255,.55); }
   header .sp { flex: 1; }
-  .center { display: flex; align-items: center; justify-content: center; padding: 12px; min-height: 0; }
-  .show { width: 980px; max-height: 100%; padding: 16px 24px; display: flex; flex-direction: column; gap: 14px; position: relative; box-sizing: border-box; }
+  header .btn { padding: 8px 14px; font-size: 14px; }
+  .hgroup { display: flex; gap: 6px; align-items: center; padding-inline-start: 12px; margin-inline-start: 6px; border-inline-start: 1px solid var(--line); }
+  .center { display: flex; align-items: center; justify-content: center; padding: 8px 12px; min-height: 0; }
+  .show.stage { width: 1200px; padding: 0; background: none; border-color: transparent; box-shadow: none; align-items: center; }
+  .show { width: 1120px; max-height: 100%; padding: 20px 28px; display: flex; flex-direction: column; gap: 14px; position: relative; box-sizing: border-box; }
   .title { font-size: 26px; font-weight: bold; display: flex; align-items: center; gap: 12px; }
   .levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .lvl { display: grid; place-items: center; gap: 6px; padding: 18px 10px; border-radius: 16px; color: #fff; font-weight: bold; border: 0; box-shadow: 0 6px 0 rgba(0,0,0,.25); }
-  .lvl b { font-size: 46px; line-height: 1; } .lvl span { font-size: 20px; } .lvl small { font-size: 12px; opacity: .9; font-weight: normal; }
+  .lvl { display: grid; place-items: center; gap: 6px; padding: 28px 10px; border-radius: 12px; color: #fff; font-weight: bold; border: 0; box-shadow: 0 6px 0 rgba(0,0,0,.25); }
+  .lvl b { font-size: 72px; line-height: 1; } .lvl > span { font-size: 26px; } .lvl small { font-size: 12px; opacity: .9; font-weight: normal; }
   .lvl:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-2px); }
   .lvl1 { background: linear-gradient(#3fdc8a, #18a65c); } .lvl2 { background: linear-gradient(#5ab8ff, #1f6fd1); } .lvl3 { background: linear-gradient(#ff7a7f, #d1303a); }
-  .q { font-size: 24px; font-weight: bold; line-height: 1.55; }
+  .q { font-size: 34px; font-weight: 900; line-height: 1.5; }
   .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .choice { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--panel2); border: 2px solid var(--line); border-radius: 12px; font-weight: bold; font-size: 17px; text-align: right; min-height: 52px; }
+  .choice { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--panel2); border: 2px solid var(--line); border-radius: 12px; font-weight: bold; font-size: 24px; text-align: right; min-height: 78px; }
   .choice:hover:not(:disabled) { border-color: var(--gold); }
-  .choice .k { flex: none; width: 28px; height: 28px; border-radius: 8px; background-color: var(--gold); background-image: linear-gradient(#ffe08a, var(--gold)); color: var(--ink); display: grid; place-items: center; }
+  .choice .k { flex: none; width: 38px; height: 38px; font-size: 20px; border-radius: 8px; background-color: var(--gold); background-image: linear-gradient(#ffe08a, var(--gold)); color: var(--ink); display: grid; place-items: center; }
   .choice.right { border-color: var(--good); background: rgba(47,212,122,.18); } .choice.wrong { border-color: var(--bad); background: rgba(255,90,95,.16); }
   .choice:disabled { cursor: default; }
   .answer { padding: 10px 14px; border-radius: 12px; border: 2px solid var(--good); background: rgba(47,212,122,.15); font-weight: bold; }
-  .ring { position: relative; width: 80px; height: 80px; flex: none; }
-  .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 24px; }
-  .big { font-size: 46px; font-weight: bold; }
+  .ring { position: relative; width: 96px; height: 96px; flex: none; }
+  .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 34px; }
+  .big { font-size: 56px; font-weight: 900; }
   @keyframes pop { 0% { transform: scale(.5); opacity: 0; } 60% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
   .pop { animation: pop .5s ease-out; display: inline-block; }
 
   /* cards */
-  .board { display: grid; grid-template-columns: repeat(6, 104px); gap: 12px; justify-content: center; }
-  .c3 { width: 104px; height: 140px; perspective: 900px; cursor: pointer; }
-  .c3.big { width: 118px; height: 158px; }
+  .board { display: grid; grid-template-columns: repeat(6, 132px); gap: 12px; justify-content: center; }
+  .c3 { width: 132px; height: 178px; perspective: 900px; cursor: pointer; transition: transform .5s .45s cubic-bezier(.3,1.3,.5,1), opacity .4s; }
+  .c3.big { width: 130px; height: 174px; }
   .c3 .cin { position: relative; width: 100%; height: 100%; transition: transform .7s cubic-bezier(.3,1.4,.5,1); transform-style: preserve-3d; }
   .c3.open .cin { transform: rotateY(180deg); }
   .c3.late .cin { transition-delay: .9s; }
   .c3 .bk, .c3 .fc { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 14px; overflow: hidden; }
   .c3 .bk { background: linear-gradient(135deg, #ffe39a, var(--gold) 45%, var(--gold2)); box-shadow: inset 0 0 0 4px rgba(255,255,255,.55), 0 8px 18px rgba(0,0,0,.3); display: grid; place-items: center; }
   .c3 .fc { transform: rotateY(180deg); background: var(--face); color: #13204f; box-shadow: inset 0 0 0 4px var(--gold), 0 8px 18px rgba(0,0,0,.3); display: grid; grid-template-rows: 1fr auto; justify-items: center; align-items: center; padding: 10px 6px 10px; box-sizing: border-box; }
-  .c3 .fc b { font-size: 13px; text-align: center; line-height: 1.25; }
+  .c3 .fc b { font-size: 15px; text-align: center; line-height: 1.25; }
+  .c3 .fc span { display: flex; } .c3 .fc span svg { width: 92px; height: 92px; } .c3 .bk svg { width: 108px; height: 108px; }
+  .c3 .fc .no { position: absolute; top: 9px; inset-inline-start: 9px; min-width: 22px; height: 22px; border-radius: 11px; background: var(--gold); color: #13204f; font: 900 13px/22px Cairo, Arial; text-align: center; }
   .c3:hover:not(.open) .cin { transform: translateY(-6px); }
-  .c3.dim { opacity: .5; transition: opacity .4s 1.2s; cursor: default; }
+  .c3.dim { opacity: .3; cursor: default; }
+  .c3.mine { transform: scale(1.12); z-index: 4; }
+  .light .c3 .bk { box-shadow: inset 0 0 0 4px rgba(255,255,255,.55), 0 0 0 2px #b27a00, 0 8px 18px rgba(0,0,0,.25); }
   .c3.mine .fc { box-shadow: inset 0 0 0 5px var(--gold), 0 0 0 4px #fff, 0 0 30px rgba(246,195,67,.9); }
   .c3.static { cursor: default; }
-  .effect { display: flex; align-items: center; gap: 16px; min-height: 64px; }
-  .effect .txt { flex: 1; font-size: 17px; line-height: 1.6; }
+  /* long text steps the type down so the choices and the next button always fit above the podiums */
+  .show[data-size=m] .q { font-size: 28px; }
+  .show[data-size=m] .choice { font-size: 20px; min-height: 64px; }
+  .show[data-size=l] .q { font-size: 22px; line-height: 1.4; }
+  .show[data-size=l] .choice { font-size: 17px; min-height: 54px; padding: 8px 12px; }
+  .show[data-size=l] .choice .k, .show[data-size=m] .choice .k { width: 32px; height: 32px; font-size: 17px; }
+  .show[data-size=l] .ring, .show[data-size=m] .ring { width: 76px; height: 76px; }
+  .show[data-size=l] .ring b, .show[data-size=m] .ring b { font-size: 26px; }
+  .show[data-size=l], .show[data-size=m] { gap: 10px; padding-block: 14px; }
+  .effect { display: flex; align-items: center; gap: 22px; min-height: 96px; width: 100%; }
+  .effect .txt { flex: 0 1 auto; font-size: 20px; line-height: 1.5; }
+  .effect .btn { font-size: 20px; min-height: 52px; }
+  .effect .title { font-size: 22px; flex: none; }
   .tchips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-  .tchip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px 7px 8px; border-radius: 999px; background: var(--panel2); border: 2px solid var(--line); font-weight: bold; }
+  .tchip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px 8px 10px; min-height: 44px; font-size: 17px; border-radius: 999px; background: var(--panel2); border: 2px solid var(--line); font-weight: bold; }
   .tchip:hover { border-color: var(--gold); }
 
   /* podiums */
-  .podiums { display: flex; gap: 12px; justify-content: center; align-items: flex-end; padding: 0 16px 12px; }
-  .pod { position: relative; width: 196px; padding: 10px 12px; border-radius: 16px 16px 10px 10px; background: var(--panel); border: 2px solid var(--line); display: grid; gap: 4px; justify-items: center; }
-  .pod.cur { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(246,195,67,.35), 0 -10px 40px rgba(246,195,67,.35); transform: translateY(-8px); }
-  .pod .nm { display: flex; align-items: center; gap: 6px; font-weight: bold; font-size: 15px; }
-  .pod .sc { font-size: 30px; font-weight: bold; color: var(--gold); line-height: 1.1; }
+  .podiums { display: flex; gap: 14px; justify-content: center; align-items: flex-end; padding: 0 16px 10px; }
+  .pod { position: relative; flex: 1 1 0; max-width: 200px; min-width: 0; padding: 8px 12px 10px; border-radius: 12px 12px 6px 6px; background: var(--panel); border: 2px solid var(--line); display: grid; gap: 2px; justify-items: center; transition: transform .3s, opacity .3s; }
+  .pod:not(.cur) { opacity: .88; }
+  .pod.cur { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(246,195,67,.35), 0 -10px 40px rgba(246,195,67,.35); transform: translateY(-10px); z-index: 2; }
+  .pod.cur::before { content: ''; position: absolute; bottom: 100%; left: 50%; width: 280px; height: 230px; margin-left: -140px; clip-path: polygon(38% 100%, 62% 100%, 100% 0, 0 0); background: linear-gradient(to top, rgba(var(--beam),.26), rgba(var(--beam),0)); pointer-events: none; z-index: -1; }
+  .pod.benched { opacity: .5; filter: grayscale(.6); }
+  .pod .nm { display: flex; align-items: center; gap: 6px; font-weight: bold; font-size: 17px; }
+  .pod .sc { font-size: 44px; font-weight: 900; color: var(--goldtxt); line-height: 1.1; }
   .pod .sc.neg { color: var(--bad); }
-  .pod .inv { display: flex; gap: 6px; min-height: 30px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .pod .inv { display: flex; gap: 6px; min-height: 30px; margin-top: 2px; align-items: center; flex-wrap: wrap; justify-content: center; }
   .mini { position: relative; width: 26px; height: 30px; border-radius: 6px; background: var(--face); box-shadow: inset 0 0 0 2px var(--gold); display: grid; place-items: center; padding: 0; }
   .mini.use { cursor: pointer; animation: glow 1.4s ease-in-out infinite; }
   @keyframes glow { 50% { box-shadow: inset 0 0 0 2px var(--gold), 0 0 12px 2px rgba(246,195,67,.9); } }
   .mini i { position: absolute; bottom: -6px; left: -6px; font-style: normal; font-size: 10px; font-weight: bold; background: var(--bad); color: #fff; border-radius: 999px; padding: 0 5px; }
-  .bench { font-size: 11px; font-weight: bold; color: #fff; background: var(--bad); border-radius: 999px; padding: 1px 8px; }
+  .bench { font-size: 13px; font-weight: bold; color: #fff; background: var(--bad); border-radius: 999px; padding: 1px 8px; }
   @keyframes rise { 0% { transform: translate(-50%, 6px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(-50%, -26px); opacity: 0; } }
   .delta { position: absolute; top: -6px; left: 50%; font-weight: bold; font-size: 20px; animation: rise 1.8s ease-out forwards; pointer-events: none; }
   .ov { position: absolute; inset: 0; background: rgba(3,8,30,.7); display: flex; align-items: center; justify-content: center; z-index: 20; }
-  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 22px 26px; min-width: 400px; max-width: 640px; display: grid; gap: 14px; justify-items: center; text-align: center; }
+  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px 26px; min-width: 400px; max-width: 640px; display: grid; gap: 14px; justify-items: center; text-align: center; }
   .notes { font-size: 14px; color: var(--muted); }
 
   /* title, setup, bank, results */
@@ -112,6 +144,7 @@
   .names input { width: 100%; box-sizing: border-box; direction: rtl; text-align: right; font-size: 14px; }
   .banklist { overflow: auto; flex: 1; min-height: 0; }
   .bq { display: grid; grid-template-columns: 80px 100px 1fr 180px 64px; gap: 10px; align-items: center; padding: 7px 12px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; } }
   .addq input, .addq select { direction: rtl; text-align: right; min-width: 0; }
 </style>
 </head>
@@ -246,45 +279,40 @@ function shield(i, size = 22) { // a team's badge: a shield in its colour with i
   return h('span', { style: `display:inline-block;width:${size}px;height:${Math.round(size * 1.15)}px;flex:none`, html:
     `<svg viewBox="0 0 20 23" width="${size}" height="${Math.round(size * 1.15)}"><path d="M10 0 L20 3.5 V11 C20 17 15 21 10 23 C5 21 0 17 0 11 V3.5 Z" fill="${TEAM_COLORS[i]}"/>
      <path d="M10 2 L18 4.8 V11 C18 15.6 14.4 19 10 20.8 Z" fill="rgba(255,255,255,.2)"/>
-     <text x="10" y="15.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff" font-family="Arial">${i + 1}</text></svg>` });
+     <text x="10" y="15.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff" font-family="Cairo, Arial">${i + 1}</text></svg>` });
 }
-function STAR(s, fill) { // a five-pointed star centred at 50,50
-  const pts = []; for (let i = 0; i < 10; i++) { const r = i % 2 ? s * 0.42 : s, a = -Math.PI / 2 + i * Math.PI / 5; pts.push(`${(50 + r * Math.cos(a)).toFixed(1)},${(50 + r * Math.sin(a)).toFixed(1)}`); }
-  return `<polygon points="${pts.join(' ')}" fill="${fill}"/>`;
+// ---- Card art: one flat, bold set on a 100×100 grid (navy #13204f + one or two strong colours each) ----
+const SVG76 = body => `<svg viewBox="0 0 100 100" width="76" height="76">${body}</svg>`;
+function starPts(cx, cy, r, k = 0.42) { // a five-pointed star's points
+  const p = []; for (let i = 0; i < 10; i++) { const rr = i % 2 ? r * k : r, a = -Math.PI / 2 + i * Math.PI / 5; p.push(`${(cx + rr * Math.cos(a)).toFixed(1)},${(cy + rr * Math.sin(a)).toFixed(1)}`); }
+  return p.join(' ');
 }
-const BACK = `<svg viewBox="0 0 100 100" width="76" height="76"><circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="4" stroke-dasharray="7 6"/>
-  ${STAR(32, 'rgba(255,255,255,.95)')}<text x="50" y="60" text-anchor="middle" font-size="26" font-weight="bold" fill="#c98a00" font-family="Arial">?</text></svg>`;
-const LOGO = (s = 1) => `<svg width="${64 * s}" height="${50 * s}" viewBox="0 0 64 50">
-  <g transform="rotate(-16 22 40)"><rect x="8" y="6" width="26" height="36" rx="4" fill="#ffd25a" stroke="#c98a00" stroke-width="2"/></g>
-  <g transform="rotate(14 42 40)"><rect x="30" y="6" width="26" height="36" rx="4" fill="#ffd25a" stroke="#c98a00" stroke-width="2"/></g>
-  <rect x="19" y="2" width="26" height="38" rx="4" fill="#fffaf0" stroke="#f6c343" stroke-width="3"/>
-  <g transform="translate(12 1) scale(.4)">${STAR(30, '#f6c343')}</g></svg>`;
-function coins(n, color) { // a coin stack whose height follows the amount
-  const k = Math.abs(n) >= 1000 ? 4 : Math.abs(n) >= 100 ? 3 : 2; let s = '';
-  for (let i = 0; i < k; i++) s += `<ellipse cx="50" cy="${80 - i * 9}" rx="24" ry="8" fill="#d99a00"/><ellipse cx="50" cy="${76 - i * 9}" rx="24" ry="8" fill="#ffd25a" stroke="#c98a00" stroke-width="2"/>`;
-  return `<svg viewBox="0 0 100 100" width="76" height="76">${s}<text x="50" y="${58 - k * 9}" text-anchor="middle" direction="ltr" unicode-bidi="embed" font-size="24" font-weight="bold" fill="${color}" font-family="Arial">${n > 0 ? '+' : '−'}${Math.abs(n)}</text></svg>`;
+const BACK = n => SVG76(`<circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="4" stroke-dasharray="7 6"/><circle cx="50" cy="50" r="37" fill="rgba(255,255,255,.94)"/>
+  <text x="50" y="${n ? 69 : 68}" text-anchor="middle" direction="ltr" font-size="${n > 9 ? 48 : 56}" font-weight="900" fill="#13204f" font-family="Cairo, Arial">${n || '?'}</text>`);
+const LOGO = (s = 1) => `<svg width="${64 * s}" height="${50 * s}" viewBox="-16 22 280 219">
+  <clipPath id="wq"><path clip-rule="evenodd" transform="rotate(10 150 220)" d="M-200 -200 H500 V500 H-200 Z M94 24 H198 A30 30 0 0 1 228 54 V214 A30 30 0 0 1 198 244 H94 A30 30 0 0 1 64 214 V54 A30 30 0 0 1 94 24 Z"/></clipPath>
+<g clip-path="url(#wq)"><rect x="52" y="44" width="124" height="176" rx="22" fill="none" stroke="var(--gold2)" stroke-width="18" transform="rotate(-16 100 220)"/></g>
+<path fill="var(--gold)" fill-rule="evenodd" transform="rotate(10 150 220)" d="M100 36 H192 A24 24 0 0 1 216 60 V208 A24 24 0 0 1 192 232 H100 A24 24 0 0 1 76 208 V60 A24 24 0 0 1 100 36 Z M146.0,90.0 L157.4,120.4 L189.7,121.8 L164.4,142.0 L173.0,173.2 L146.0,155.3 L119.0,173.2 L127.6,142.0 L102.3,121.8 L134.6,120.4Z"/></svg>`; // the same mark as assets/favicon.svg
+function coins(n, gain) { // one, two or three coins by the size of the amount, the figure underneath
+  const k = Math.abs(n) >= 1000 ? 3 : Math.abs(n) >= 100 ? 2 : 1, [f, e, c] = gain ? ['#ffc933', '#c98a00', '#12924d'] : ['#cdd4e6', '#8792b4', '#d1303a']; let s = '';
+  for (let i = 0; i < k; i++) { const x = 50 + (i - (k - 1) / 2) * 21; s += `<circle cx="${x}" cy="33" r="21" fill="${f}" stroke="${e}" stroke-width="5"/><polygon points="${starPts(x, 34, 11)}" fill="${e}"/>`; }
+  return SVG76(`${s}<text x="50" y="89" text-anchor="middle" direction="ltr" unicode-bidi="embed" font-size="${k > 2 ? 27 : 30}" font-weight="900" fill="${c}" font-family="Cairo, Arial">${gain ? '+' : '−'}${Math.abs(n)}</text>`);
 }
 const ICONS = { // every card face its own drawing
-  plus: n => coins(n, '#12924d'), minus: n => coins(-n, '#d1303a'),
-  nothing: () => `<svg viewBox="0 0 100 100" width="76" height="76"><path d="M22 50 L78 50 L72 86 L28 86 Z" fill="#c2763a" stroke="#7a4a1e" stroke-width="3"/>
-    <path d="M20 50 L34 30 L86 34 L78 50" fill="#e0a060" stroke="#7a4a1e" stroke-width="3"/><path d="M40 68 Q50 62 60 68" stroke="#7a4a1e" stroke-width="3" fill="none"/>
-    <path d="M36 24 Q40 18 36 12 M56 26 Q60 20 56 14" stroke="#9fb0e0" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
-  again: () => `<svg viewBox="0 0 100 100" width="76" height="76"><g fill="none" stroke="#1f6fd1" stroke-width="9" stroke-linecap="round">
-    <path d="M24 46 A28 28 0 0 1 72 30"/><path d="M76 54 A28 28 0 0 1 28 70"/></g>
-    <path d="M60 22 L82 26 L74 46 Z" fill="#1f6fd1"/><path d="M40 78 L18 74 L26 54 Z" fill="#1f6fd1"/></svg>`,
-  dove: () => `<svg viewBox="0 0 100 100" width="76" height="76"><path d="M18 58 Q30 40 52 46 Q60 30 82 26 Q72 40 70 52 Q80 54 88 50 Q80 66 60 70 Q40 76 18 58 Z" fill="#fff" stroke="#6e85c9" stroke-width="3"/>
-    <path d="M52 46 Q44 30 50 16 Q60 30 62 44" fill="#eef3ff" stroke="#6e85c9" stroke-width="3"/><circle cx="74" cy="34" r="2.5" fill="#13204f"/>
-    <path d="M86 30 L94 32 L86 36 Z" fill="#f2a20a"/><path d="M30 66 Q22 78 30 88" stroke="#3f8f3a" stroke-width="3" fill="none"/>
-    <ellipse cx="26" cy="76" rx="5" ry="3" fill="#4caf50"/><ellipse cx="33" cy="84" rx="5" ry="3" fill="#4caf50"/></svg>`,
-  lightning: () => `<svg viewBox="0 0 100 100" width="76" height="76"><path d="M22 40 Q22 22 42 24 Q50 10 66 18 Q84 16 82 34 Q90 44 78 50 L26 50 Q14 48 22 40 Z" fill="#7d8bb3"/>
-    <path d="M52 46 L36 74 L50 74 L42 96 L70 62 L56 62 L66 46 Z" fill="#ffd400" stroke="#c98a00" stroke-width="2"/></svg>`,
-  fire: () => `<svg viewBox="0 0 100 100" width="76" height="76"><path d="M50 92 Q20 88 22 60 Q24 40 40 28 Q38 44 48 48 Q46 24 62 8 Q62 30 74 44 Q84 56 80 70 Q76 90 50 92 Z" fill="#ff6a00"/>
-    <path d="M50 90 Q34 86 36 70 Q38 58 48 50 Q48 62 56 64 Q56 54 62 46 Q72 60 68 74 Q64 88 50 90 Z" fill="#ffc400"/></svg>`,
-  stop: () => `<svg viewBox="0 0 100 100" width="76" height="76"><path d="M34 10 H66 L90 34 V66 L66 90 H34 L10 66 V34 Z" fill="#e0323d" stroke="#fff" stroke-width="4"/>
-    <rect x="26" y="43" width="48" height="14" rx="3" fill="#fff"/></svg>`,
-  nuke: () => `<svg viewBox="0 0 100 100" width="76" height="76"><circle cx="44" cy="60" r="30" fill="#1d2440"/><circle cx="34" cy="50" r="8" fill="rgba(255,255,255,.25)"/>
-    <rect x="56" y="26" width="16" height="12" rx="3" transform="rotate(40 64 32)" fill="#4b5577"/><path d="M70 26 Q78 16 74 8" stroke="#a0662a" stroke-width="3" fill="none"/>
-    <path d="M74 2 L77 8 L84 8 L78 12 L80 19 L74 15 L68 19 L70 12 L64 8 L71 8 Z" fill="#ffb300"/></svg>`,
+  plus: n => coins(n, true), minus: n => coins(n, false),
+  nothing: () => SVG76(`<polygon points="${starPts(50, 53, 40, 0.46)}" fill="none" stroke="#9aa6c8" stroke-width="8" stroke-linejoin="round"/><path d="M38 60 Q50 52 62 60" fill="none" stroke="#9aa6c8" stroke-width="6" stroke-linecap="round"/><circle cx="41" cy="45" r="4" fill="#9aa6c8"/><circle cx="59" cy="45" r="4" fill="#9aa6c8"/>`),
+  again: () => SVG76(`<g fill="#2f86e6"><path d="M25.5 38.6 A27 27 0 0 1 74.5 38.6" fill="none" stroke="#2f86e6" stroke-width="13" stroke-linecap="round"/><path d="M82 55 L89.5 31.5 L60.5 45 Z"/></g>
+    <g fill="#13204f" transform="rotate(180 50 50)"><path d="M25.5 38.6 A27 27 0 0 1 74.5 38.6" fill="none" stroke="#13204f" stroke-width="13" stroke-linecap="round"/><path d="M82 55 L89.5 31.5 L60.5 45 Z"/></g>`),
+  dove: () => SVG76(`<path d="M12 56 C26 60 40 52 50 43 C58 35 66 31 74 33 C80 28 90 31 91 39 L99 43 L90 46 C87 60 74 72 56 74 C44 75 34 71 28 68 L8 80 L17 64 Z" fill="#2f86e6"/>
+    <path d="M42 48 C36 32 42 14 58 5 C63 20 72 32 67 46 C60 55 49 55 42 48 Z" fill="#8cc4ff"/><circle cx="83" cy="38" r="3" fill="#13204f"/>
+    <path d="M93 46 Q92 60 80 66" fill="none" stroke="#12924d" stroke-width="4" stroke-linecap="round"/><ellipse cx="95" cy="56" rx="7" ry="3.6" transform="rotate(-35 95 56)" fill="#12924d"/><ellipse cx="86" cy="70" rx="7" ry="3.6" transform="rotate(20 86 70)" fill="#12924d"/>`),
+  lightning: () => SVG76(`<path d="M60 4 L20 56 H44 L34 96 L82 40 H56 L70 4 Z" fill="#ffc21a" stroke="#13204f" stroke-width="5" stroke-linejoin="round"/>`),
+  fire: () => SVG76(`<path d="M52 4 C54 24 80 36 80 62 A30 30 0 0 1 20 62 C20 46 28 38 33 26 C37 34 40 39 45 41 C43 27 46 14 52 4 Z" fill="#f4511e"/>
+    <path d="M50 46 C54 58 64 62 64 75 A14 14 0 0 1 36 75 C36 64 45 59 50 46 Z" fill="#ffc21a"/>`),
+  stop: () => SVG76(`<path fill-rule="evenodd" d="M50 6 A44 44 0 1 1 49.9 6 Z M24 42 H76 A4 4 0 0 1 80 46 V54 A4 4 0 0 1 76 58 H24 A4 4 0 0 1 20 54 V46 A4 4 0 0 1 24 42 Z" fill="#e0323d"/>`),
+  nuke: () => SVG76(`<path d="M72 28 Q82 21 78 10" fill="none" stroke="#8a5a2a" stroke-width="5" stroke-linecap="round"/><rect x="59" y="26" width="20" height="14" rx="3" transform="rotate(40 69 33)" fill="#13204f"/>
+    <circle cx="44" cy="60" r="32" fill="#13204f" stroke="#ffc21a" stroke-width="4"/><g fill="#ffc21a"><circle cx="44" cy="60" r="4.5"/>${[0, 120, 240].map(a => `<path transform="rotate(${a} 44 60)" d="M33 40.9 A22 22 0 0 1 55 40.9 L48 53.1 A8 8 0 0 0 40 53.1 Z"/>`).join('')}</g>
+    <polygon points="${starPts(80, 10, 9, 0.5)}" fill="#f4511e"/>`),
 };
 const CARDS = { // luckyquiz's thirteen cards: name, how often (config weight) and what they do
   plus10: { name: 'عشرة درجات', w: 'wPlus10', kind: 'points', pts: 10 },
@@ -312,16 +340,16 @@ function cardDesc(type) {
   if (c.kind === 'points') return c.pts > 0 ? `تضيف ${c.pts} درجة لفريقك` : `تخصم ${-c.pts} درجة من فريقك`;
   if (c.kind === 'nothing') return 'لا شيء هذه المرة';
   if (c.kind === 'again') return 'العب دوراً آخر مباشرة';
-  if (c.kind === 'dove') return 'تحميك من الضربة القادمة: البرق أو النار أو القنبلة';
+  if (c.kind === 'dove') return 'تصدّ ضربة واحدة: البرق أو النار أو القنبلة، متى اختار فريقك استخدامها';
   return { lightning: `تخصم ${tune.lightningHit} درجة من فريق تختاره`, fire: `تخصم ${tune.fireHit} درجة من كل الفرق الأخرى`,
     stop: `تمنع فريقاً تختاره من اللعب ${turnsWord(tune.stopTurns)}`, nuke: `تخصم ${tune.nukeHit} درجة من كل الفرق الأخرى` }[type];
 }
-function cardEl(type, cls = '') { // a two-sided card: gold back, drawn face
-  return h('div', { class: 'c3 ' + cls }, h('div', { class: 'cin' }, h('div', { class: 'bk', html: BACK }),
-    h('div', { class: 'fc' }, h('span', { html: type ? cardArt(type) : '' }), h('b', {}, type ? CARDS[type].name : ''))));
+function cardEl(type, cls = '', n) { // a two-sided card: gold back carrying its number n, drawn face
+  return h('div', { class: 'c3 ' + cls }, h('div', { class: 'cin' }, h('div', { class: 'bk', html: BACK(n) }),
+    h('div', { class: 'fc' }, n ? h('i', { class: 'no' }, String(n)) : null, h('span', { html: type ? cardArt(type) : '' }), h('b', {}, type ? CARDS[type].name : ''))));
 }
 const miniArt = type => cardArt(type).replace('width="76" height="76"', 'width="22" height="22"');
-function ring(left, total, size = 80) {
+function ring(left, total, size = 96) {
   const r = size / 2 - 7, c = 2 * Math.PI * r, f = clamp(left / total, 0, 1), col = left <= tune.tickWarn ? 'var(--bad)' : 'var(--gold)';
   return `<svg width="${size}" height="${size}" style="transform:rotate(-90deg);display:block"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="7"/>
     <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${(c * (1 - f)).toFixed(2)}"/></svg>`;
@@ -380,17 +408,27 @@ function dealBoard() { // each card drawn by its weight: luckyquiz's mix
   const types = Object.keys(CARDS), ws = types.map(k => tune[CARDS[k].w]), total = ws.reduce((a, b) => a + b, 0) || 1;
   state.board = Array.from({ length: tune.cardsOnBoard }, () => { let r = rng() * total; for (let i = 0; i < types.length; i++) if ((r -= ws[i]) < 0) return types[i]; return 'nothing'; });
 }
-function strike(type, from, targets) { // an attack lands: a dove blocks one hit; the stop sign can't be blocked
-  const lines = [];
-  for (const t of targets) {
-    if (type === 'stop') { state.skip[t] += tune.stopTurns; lines.push(`${state.names[t]} ممنوع من اللعب ${turnsWord(tune.stopTurns)}`); continue; }
-    if (state.doves[t] > 0) { state.doves[t]--; lines.push(`حمامة السلام حمت ${state.names[t]}`); continue; }
-    const v = tune[CARDS[type].hit]; addPts(t, -v); lines.push(`${state.names[t]}: −${v}`);
-  }
+function strike(type, from, targets, done) { // an attack lands on each target in turn, then done(lines); a team holding a dove
+  const lines = []; let k = 0;                // chooses to spend it or take the hit; the stop sign can't be blocked
   ({ lightning: sfx.thunder, fire: sfx.fire, nuke: sfx.boom, stop: sfx.stop })[type]();
-  if (lines.some(l => l.startsWith('حمامة'))) sfx.dove();
   events.push({ attack: type, from, targets });
-  return lines;
+  const hitTeam = t => { const v = tune[CARDS[type].hit]; addPts(t, -v); lines.push(`${state.names[t]}: −${v}`); };
+  const next = () => {
+    if (k === targets.length) return done(lines);
+    const t = targets[k++];
+    if (type === 'stop') { state.skip[t] += tune.stopTurns; lines.push(`${state.names[t]} ممنوع من اللعب ${turnsWord(tune.stopTurns)}`); return next(); }
+    if (!state.doves[t]) { hitTeam(t); return next(); }
+    const answer = use => {
+      document.getElementById('dove')?.remove();
+      if (use) { state.doves[t]--; sfx.dove(); lines.push(`حمامة السلام حمت ${state.names[t]}`); } else hitTeam(t);
+      renderPodiums(); next();
+    };
+    ui.append(h('div', { class: 'ov', id: 'dove' }, h('div', { class: 'modal' }, cardEl('dove', 'open static mine big'),
+      h('b', { style: 'font-size:20px;display:flex;align-items:center;gap:8px' }, shield(t, 20), `${state.names[t]}: ${CARDS[type].name} تستهدفكم`),
+      h('div', { class: 'muted' }, `ستخصم ${tune[CARDS[type].hit]} درجة. لديكم ${state.doves[t] > 1 ? `${state.doves[t]} من حمامة السلام` : 'حمامة السلام'}: هل تستخدمونها الآن أم تحتفظون بها؟`),
+      h('div', { style: 'display:flex;gap:10px' }, B('استخدام الحمامة', 'gold', () => answer(true), { 'data-primary': '1' }), B('تحمّل الضربة', '', () => answer(false))))));
+  };
+  next();
 }
 const others = i => [...Array(state.n).keys()].filter(t => t !== i);
 function gameOverDue() {
@@ -428,10 +466,11 @@ function pickCard(i) {
 function useNow() {
   const type = state.card;
   if (CARDS[type].target === 'one') { state.cardStage = 'target'; return renderEffect(); }
-  state.lines = strike(type, state.cur, others(state.cur)); state.cardStage = 'done'; renderEffect(); renderPodiums();
+  strike(type, state.cur, others(state.cur), struck);
 }
 function keepCard() { state.kept[state.cur][state.card]++; state.lines = [`احتفظ ${state.names[state.cur]} بورقة ${CARDS[state.card].name}`]; state.cardStage = 'done'; renderEffect(); renderPodiums(); }
-function hitTarget(t) { state.lines = strike(state.card, state.cur, [t]); state.cardStage = 'done'; renderEffect(); renderPodiums(); }
+function hitTarget(t) { strike(state.card, state.cur, [t], struck); }
+function struck(lines) { state.lines = lines; state.cardStage = 'done'; renderEffect(); renderPodiums(); } // the flipped card's attack is over
 function endTurn() { advance(state.phase === 'cards' && state.card === 'again'); }
 function advance(again) { // next team, passing over benched ones; play again keeps the same team
   state.turns++; state.notes = [];
@@ -450,12 +489,12 @@ function advance(again) { // next team, passing over benched ones; play again ke
 function useKept(type) { // a kept card, used from the podium on the team's own turn
   const me = state.cur, c = CARDS[type];
   const close = () => document.getElementById('usecard')?.remove();
-  const done = lines => { state.kept[me][type]--; state.notes = lines; close(); renderAll(); };
+  const fire = targets => { state.kept[me][type]--; close(); strike(type, me, targets, lines => { state.notes = lines; renderAll(); }); }; // spent before any dove is asked about
   close();
   ui.append(h('div', { class: 'ov', id: 'usecard' }, h('div', { class: 'modal' },
     cardEl(type, 'open static mine big'), h('b', { style: 'font-size:20px' }, c.name), h('div', { class: 'muted' }, cardDesc(type)),
-    c.target === 'one' ? h('div', { class: 'tchips' }, ...others(me).map(t => h('button', { class: 'tchip', onclick: () => { sfx.click(); done(strike(type, me, [t])); } }, shield(t, 18), state.names[t])))
-      : B('استخدمها الآن', 'gold', () => done(strike(type, me, others(me))), { 'data-primary': '1' }),
+    c.target === 'one' ? h('div', { class: 'tchips' }, ...others(me).map(t => h('button', { class: 'tchip', onclick: () => { sfx.click(); fire([t]); } }, shield(t, 18), state.names[t])))
+      : B('استخدمها الآن', 'gold', () => fire(others(me)), { 'data-primary': '1' }),
     B('إلغاء', '', close))));
 }
 function endGame() {
@@ -477,28 +516,33 @@ function renderHeader() {
     : settings.end === 'timed' ? h('span', { class: 'chip', id: 'clockchip' }, 'الوقت المتبقي') : h('span', { class: 'chip' }, 'الجولة ', N(state.round), ' · إنهاء يدوي');
   refs.header.replaceChildren(h('span', { html: LOGO(0.8), style: 'display:flex' }), h('b', { style: 'font-size:22px' }, TITLE), end,
     h('span', { class: 'chip muted' }, settings.qmode === 'choices' ? 'أربعة خيارات' : 'المقدّم يحكم'), h('span', { class: 'sp' }), themeSeg(renderAll),
-    B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', '', () => setMuted(!muted), { style: 'padding:7px 12px;font-size:13px' }),
-    B(state.paused ? 'متابعة' : 'إيقاف مؤقت', '', () => { state.paused = !state.paused; renderHeader(); }, { style: 'padding:7px 12px;font-size:13px' }),
-    B('إنهاء المسابقة', 'bad', confirmEnd, { style: 'padding:7px 12px;font-size:13px' }));
+    h('span', { class: 'hgroup' },
+      B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', 'ghost', () => setMuted(!muted)),
+      B(state.paused ? 'متابعة' : 'إيقاف مؤقت', 'ghost', () => { state.paused = !state.paused; renderHeader(); }),
+      B('إنهاء المسابقة', 'ghost danger', confirmEnd)));
 }
 function teamTitle(i, prefix) { return h('div', { class: 'title' }, prefix ? h('span', { class: 'muted', style: 'font-size:18px' }, prefix) : null, shield(i, 30), state.names[i]); }
 function renderShow() {
   const p = state.phase, me = state.cur, box = refs.show;
+  box.className = 'panel show' + (p === 'cards' ? ' stage' : '');
+  box.dataset.size = '';
   refs.board = null; refs.effect = null;
-  const timerBox = () => h('div', { class: 'ring' }, h('span', { id: 'ringsvg', html: ring(state.timer, settings.answerTime) }), h('b', { id: 'ringnum' }, N(Math.ceil(state.timer))));
+  const timerBox = () => h('div', { class: 'ring' }, h('span', { id: 'ringsvg', html: ring(state.timer, settings.answerTime, box.dataset.size ? 76 : 96) }), h('b', { id: 'ringnum' }, N(Math.ceil(state.timer))));
   if (p === 'level') {
     const hasKept = ATTACKS.some(k => state.kept[me][k]);
-    box.replaceChildren(teamTitle(me, 'الدور على'),
+    box.replaceChildren(...[teamTitle(me, 'الدور على'),
       state.notes.length ? h('div', { class: 'notes' }, state.notes.join(' · ')) : null,
       h('div', { class: 'muted' }, 'اختر مستوى السؤال: كلما صعب السؤال زادت الدرجات'),
       h('div', { class: 'levels' }, ...[1, 2, 3].map(l => h('button', { class: 'lvl lvl' + l, disabled: !inLevel(l), 'data-primary': l === 2 && inLevel(2) ? '1' : null, onclick: () => { sfx.click(); chooseLevel(l); } },
         h('span', {}, LEVEL_NAMES[l]), h('b', {}, N(levelPts(l))), h('small', {}, 'درجة · اضغط ', N(l))))),
       hasKept ? h('div', { class: 'notes' }, 'لديك أوراق محفوظة: اضغط عليها في منصتك لاستخدامها قبل السؤال') : null,
-      state.lastCall ? h('div', { class: 'chip bad' }, 'انتهى الوقت: هذا آخر دور') : null);
+      state.lastCall ? h('div', { class: 'chip bad' }, 'انتهى الوقت: هذا آخر دور') : null].filter(Boolean));
     return;
   }
   if (p === 'question' || p === 'reveal') {
     const q = state.q, done = p === 'reveal';
+    const longest = Math.max(...q.choices.map(x => x.length));
+    box.dataset.size = q.text.length > 110 || longest > 45 ? 'l' : q.text.length > 70 || longest > 30 ? 'm' : '';
     const parts = [h('div', { style: 'display:flex;gap:14px;align-items:center' }, done ? null : timerBox(),
       h('div', { style: 'flex:1' }, h('div', { style: 'display:flex;gap:8px' }, h('span', { class: 'chip' }, LEVEL_NAMES[state.level], ' · ', N(levelPts(state.level)), ' درجة'), h('span', { class: 'chip muted' }, q.cat)),
         h('div', { class: 'q', style: 'margin-top:8px' }, q.text)), teamTitle(me))];
@@ -524,18 +568,19 @@ function renderShow() {
   }
   if (p === 'cards') {
     const shown = state.pick >= 0; // a redraw after the flip (theme, mute) keeps the cards face up
-    refs.board = h('div', { class: 'board' }, ...state.board.map((t, i) => { const el = cardEl(t, shown ? (i === state.pick ? 'open mine' : 'open dim') : ''); el.addEventListener('click', () => pickCard(i)); return el; }));
+    refs.board = h('div', { class: 'board' }, ...state.board.map((t, i) => { const el = cardEl(t, shown ? (i === state.pick ? 'open mine' : 'open dim') : '', i + 1); el.addEventListener('click', () => pickCard(i)); return el; }));
     refs.effect = h('div', { class: 'effect' });
-    box.replaceChildren(h('div', { style: 'display:flex;align-items:center;justify-content:space-between' }, teamTitle(me), h('div', { class: 'muted' }, 'اختر ورقة من الأوراق المقلوبة')), refs.board, refs.effect);
+    box.replaceChildren(refs.board, refs.effect);
     renderEffect();
   }
 }
-function renderEffect() {
+function renderEffect() { renderEffectBody(); if (refs.effect) refs.effect.prepend(teamTitle(state.cur)); }
+function renderEffectBody() {
   const e = refs.effect, type = state.card, me = state.cur;
   if (!e) return;
   if (state.cardStage === 'pick') { e.replaceChildren(h('div', { class: 'txt muted' }, 'كل ورقة قد تكون ربحاً أو خسارة أو سلاحاً ضد الفرق الأخرى')); return; }
   const c = CARDS[type];
-  const head = h('div', { class: 'txt' }, h('b', { style: 'font-size:22px;color:var(--gold)' }, c.name), ' · ', cardDesc(type),
+  const head = h('div', { class: 'txt' }, h('b', { style: 'font-size:34px;font-weight:900;color:var(--goldtxt)' }, c.name), ' · ', cardDesc(type),
     state.lines.length ? h('div', { style: 'font-weight:bold' }, state.lines.join(' · ')) : null);
   if (state.cardStage === 'choose') e.replaceChildren(head, B('استخدمها الآن', 'gold', useNow, { 'data-primary': '1', style: 'font-size:17px' }), B('احتفظ بها', '', keepCard, { style: 'font-size:17px' }));
   else if (state.cardStage === 'target') e.replaceChildren(head, h('div', {}, h('div', { class: 'muted', style: 'font-size:13px;margin-bottom:6px' }, 'اختر الفريق:'),
@@ -553,12 +598,48 @@ function renderPodiums() {
       inv.push(h('button', { class: 'mini' + (usable ? ' use' : ''), title: CARDS[k].name + (usable ? ': اضغط للاستخدام' : ''), disabled: !usable,
         onclick: usable ? () => { sfx.click(); useKept(k); } : null, html: miniArt(k) + (state.kept[i][k] > 1 ? `<i>${state.kept[i][k]}</i>` : '') }));
     }
-    return h('div', { class: 'pod' + (i === me ? ' cur' : '') },
+    return h('div', { class: 'pod' + (i === me ? ' cur' : '') + (state.skip[i] ? ' benched' : '') },
       showD ? h('div', { class: 'delta ' + (d.v > 0 ? 'good' : 'bad') }, N(sign(d.v))) : null,
       h('div', { class: 'nm' }, shield(i, 20), nm), h('div', { class: 'sc' + (state.pts[i] < 0 ? ' neg' : '') }, N(fmt(state.pts[i]))),
-      h('div', { class: 'inv' }, ...inv, state.skip[i] ? h('span', { class: 'bench' }, 'ممنوع ', N(state.skip[i])) : null));
+      h('div', { class: 'inv' }, ...inv, state.skip[i] ? h('span', { class: 'bench' }, 'ممنوع ', turnsWord(state.skip[i])) : null));
   }));
   for (let i = 0; i < state.n; i++) if (state.deltas[i] && state.t - state.deltas[i].t >= 1.8) state.deltas[i] = null;
+}
+const HELP = [ // the game explained in steps: a title, a line, and either a photo (assets/help-<n>.png) or the cards the step explains
+  ['اختر المستوى', 'يختار الفريق صاحب الدور مستوى سؤاله: كلما صعب السؤال زادت درجاته.', 1],
+  ['أجب عن السؤال', 'على الفريق أن يجيب قبل انتهاء الوقت. الإجابة الصحيحة تمنحه درجات المستوى، والخاطئة تنقل الدور إلى الفريق التالي.', 2],
+  ['اختر ورقة برقمها', 'بعد الإجابة الصحيحة تُوزَّع الأوراق مقلوبة. يذكر الفريق رقم الورقة التي يريدها فيقلبها المقدّم.', 3],
+  ['ورقة الحظ', 'قد تضيف الورقة درجات أو تخصمها، وقد تكون سلاحاً ضد الفرق الأخرى. الشرائح التالية تشرح كل ورقة.', 4],
+  ['أوراق الدرجات', 'تُضاف أو تُخصم فور قلب الورقة.', ['plus10', 'minus10', 'plus100', 'minus100', 'plus1000', 'minus1000']],
+  ['أوراق الحظ الخاصة', 'لا تمسّ درجات أحد، لكنها تغيّر مجرى اللعب.', ['nothing', 'again', 'dove']],
+  ['أوراق الهجوم', 'تُستخدم فوراً، أو يحتفظ بها الفريق ويستخدمها في دور لاحق له.', ATTACKS],
+  ['الفائز', 'عند نهاية المسابقة يفوز الفريق صاحب أكثر الدرجات.', 5],
+];
+function cardHelp(type) { // what a card does, in full, with the numbers the game is running on
+  const c = CARDS[type];
+  if (c.kind === 'points') return c.pts > 0 ? `تضيف ${c.pts} درجة فوراً إلى رصيد الفريق الذي قلبها.` : `تخصم ${-c.pts} درجة فوراً من الفريق الذي قلبها، وقد ينزل رصيده تحت الصفر.`;
+  return { nothing: 'لا تضيف شيئاً ولا تخصم شيئاً، وينتقل الدور إلى الفريق التالي.',
+    again: 'يلعب الفريق دوراً آخر مباشرة: يختار مستوى جديداً ويجيب عن سؤال آخر.',
+    dove: 'تبقى مع الفريق. عند كل ضربة من البرق أو النار أو القنبلة يختار: يستخدمها فتصدّ الضربة وتزول، أو يتحمّل الضربة ويحتفظ بها. لا تصدّ إشارة المنع.',
+    lightning: `تخصم ${tune.lightningHit} درجة من فريق واحد يختاره صاحب الورقة.`,
+    fire: `تخصم ${tune.fireHit} درجة من كل فريق آخر دفعة واحدة.`,
+    stop: `تمنع فريقاً يختاره صاحب الورقة من اللعب ${turnsWord(tune.stopTurns)}، ولا تصدّها حمامة السلام.`,
+    nuke: `أقوى الأوراق: تخصم ${tune.nukeHit} درجة من كل فريق آخر دفعة واحدة.` }[type];
+}
+function showHelp(i = 0) { // the how-to-play dialog: one step at a time, with its photo or its cards
+  document.getElementById('help')?.remove();
+  const [title, text, show] = HELP[i], last = i === HELP.length - 1, close = () => document.getElementById('help')?.remove();
+  const body = Array.isArray(show)
+    ? h('div', { style: `width:704px;min-height:396px;display:grid;grid-template-columns:${show.length > 3 ? '1fr 1fr' : '1fr'};gap:14px 22px;align-content:center;text-align:start` }, ...show.map(t =>
+        h('div', { style: 'display:flex;gap:14px;align-items:center' },
+          h('div', { style: 'width:79px;height:107px;flex:none;direction:ltr' }, h('div', { style: 'transform:scale(.6);transform-origin:0 0' }, cardEl(t, 'open static'))), // the real card, at 60%
+          h('div', {}, h('b', { style: 'font-size:17px' }, CARDS[t].name), h('div', { style: 'font-size:14.5px;line-height:1.6;margin-top:2px' }, cardHelp(t))))))
+    : h('img', { src: `assets/help-${show}.png`, alt: title, width: '704', height: '396', style: 'border-radius:8px;border:1px solid var(--line);display:block' });
+  ui.append(h('div', { class: 'ov', id: 'help' }, h('div', { class: 'modal', style: 'max-width:780px;justify-items:center;background:var(--panel2)' },
+    h('div', { class: 'muted', style: 'font-size:14px' }, 'شرح اللعبة · ', N(`${i + 1} / ${HELP.length}`)), body,
+    h('b', { style: 'font-size:22px' }, title), h('div', { style: 'font-size:16px;line-height:1.7;max-width:680px;min-height:54px' }, text),
+    h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('السابق', '', () => showHelp(i - 1), { disabled: i === 0 }),
+      B(last ? 'إغلاق' : 'التالي', 'gold', last ? close : () => showHelp(i + 1), { 'data-primary': '1' }), last ? null : B('إغلاق', '', close)))));
 }
 function confirmEnd() {
   if (document.getElementById('confirm')) return;
@@ -615,7 +696,8 @@ const scenes = {
         fan, h('div', { style: 'font-size:64px;font-weight:bold;text-shadow:0 4px 18px rgba(0,0,0,.35)' }, TITLE),
         h('div', { class: 'muted', style: 'font-size:20px' }, 'اختر مستوى سؤالك، أجب صحيحاً، ثم اقلب ورقة قد ترفعك أو تهزّ منافسيك'),
         h('div', { style: 'display:flex;gap:12px' }, B('مسابقة جديدة', 'gold', () => go('setup'), { 'data-primary': '1', style: 'padding:14px 36px;font-size:20px' }),
-          B('بنك الأسئلة', '', () => go('bank'), { style: 'padding:14px 26px;font-size:18px' })),
+          B('بنك الأسئلة', '', () => go('bank'), { style: 'padding:14px 26px;font-size:18px' }),
+          B('شرح اللعبة', '', () => showHelp(), { style: 'padding:14px 26px;font-size:18px' })),
         themeSeg(() => go('title')),
         h('div', { class: 'panel', style: 'padding:10px 20px;display:flex;gap:24px;font-size:14px' }, ...CONTROLS.map(c => h('span', { class: 'muted' }, c))),
         h('div', { class: 'muted', style: 'font-size:14px' }, N(bank.length), ' سؤالاً في البنك: ', [1, 2, 3].map(l => `${LEVEL_NAMES[l]} ${inLevel(l)}`).join(' · '))));
@@ -652,8 +734,8 @@ const scenes = {
   },
   bank: {
     enter() {
-      const f = {}; const inp = (k, ph) => (f[k] = h('input', { placeholder: ph, maxlength: '200' }));
-      const lvlSel = h('select', {}, ...[1, 2, 3].map(l => h('option', { value: String(l) }, `${l}: ${LEVEL_NAMES[l]}`)));
+      const f = {}; const inp = (k, label) => h('label', { class: 'field' }, label, (f[k] = h('input', { maxlength: '200', style: 'width:100%;box-sizing:border-box;direction:rtl;text-align:right;font-size:15px' })));
+      const lvlSel = h('select', { style: 'width:100%;font-size:15px' }, ...[1, 2, 3].map(l => h('option', { value: String(l) }, `${l}: ${LEVEL_NAMES[l]}`)));
       const err = h('span', { class: 'bad', style: 'font-size:13px;font-weight:bold' });
       const fileIn = h('input', { type: 'file', accept: '.csv,text/csv', style: 'display:none' });
       fileIn.addEventListener('change', () => { const file = fileIn.files[0]; fileIn.value = ''; if (file) importCSV(file); });
@@ -666,16 +748,16 @@ const scenes = {
       ui.append(h('div', { class: 'screen' },
         h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('b', { style: 'font-size:26px' }, 'بنك الأسئلة'), h('span', { class: 'chip' }, N(bank.length), ' سؤال'),
           h('span', { class: 'chip muted' }, [1, 2, 3].map(l => `${LEVEL_NAMES[l]} ${inLevel(l)}`).join(' · ')), h('span', { style: 'flex:1' }),
-          B('استعادة الأسئلة الأصلية', '', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); state.decks = { 1: [], 2: [], 3: [] }; go('bank'); }), B('رجوع', 'gold', () => go('title'), { 'data-primary': '1' })),
+          B('استعادة الأسئلة الأصلية', '', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); state.decks = { 1: [], 2: [], 3: [] }; go('bank'); }), B('رجوع', 'ghost', () => go('title'), { 'data-primary': '1' })),
         h('div', { class: 'grid2' },
           h('div', { class: 'panel box' }, h('h3', {}, 'إضافة سؤال'),
-            h('div', { class: 'addq', style: 'display:grid;grid-template-columns:110px 130px minmax(0,1fr);gap:8px' }, lvlSel, inp('cat', 'التصنيف'), inp('q', 'نص السؤال')),
+            h('div', { class: 'addq', style: 'display:grid;grid-template-columns:120px 130px minmax(0,1fr);gap:8px' }, h('label', { class: 'field' }, 'المستوى', lvlSel), inp('cat', 'التصنيف'), inp('q', 'نص السؤال')),
             h('div', { class: 'addq', style: 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px' }, inp('a', 'الإجابة الصحيحة'), inp('w1', 'إجابة خاطئة'), inp('w2', 'إجابة خاطئة'), inp('w3', 'إجابة خاطئة')),
-            h('div', { style: 'display:flex;gap:12px;align-items:center' }, B('إضافة إلى البنك', 'good', add), err)),
+            h('div', { style: 'display:flex;gap:12px;align-items:center' }, B('إضافة إلى البنك', 'gold', add), err)),
           h('div', { class: 'panel box' }, h('h3', {}, 'استيراد من ملف CSV'),
             h('div', { class: 'muted', style: 'font-size:13px;line-height:1.7' }, 'الأعمدة بالترتيب: ', h('b', { style: 'color:var(--text)' }, WaraqaCSV.HEADERS.join('، ')), h('br'),
               'الخيار 1 هو الإجابة الصحيحة. المستوى 1 أو 2 أو 3 في كل سطر، وإن كان فارغاً في أي سطر لا يُستورد الملف. اسم الملف يصبح تصنيف أسئلته.'),
-            h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' }, B('استيراد أسئلة من ملف', 'good', () => fileIn.click()), B('تنزيل نموذج', '', downloadTemplate), fileIn))),
+            h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' }, B('استيراد أسئلة من ملف', 'gold', () => fileIn.click()), B('تنزيل نموذج', '', downloadTemplate), fileIn))),
         bankMsg ? h('div', { class: 'panel', style: `padding:10px 14px;font-size:14px;font-weight:bold;color:var(--${bankMsg.good ? 'good' : 'bad'})` }, bankMsg.text) : null,
         h('div', { class: 'panel banklist' }, ...bank.map((r, i) => h('div', { class: 'bq' },
           h('span', { class: 'chip', style: 'justify-content:center' }, LEVEL_NAMES[r[6]]),
@@ -716,7 +798,7 @@ const scenes = {
     draw() {
       backdrop();
       const rs = document.getElementById('ringsvg');
-      if (rs) { rs.innerHTML = ring(state.timer, settings.answerTime); document.getElementById('ringnum').textContent = Math.ceil(state.timer); }
+      if (rs) { rs.innerHTML = ring(state.timer, settings.answerTime, document.querySelector('.show')?.dataset.size ? 76 : 96); document.getElementById('ringnum').textContent = Math.ceil(state.timer); }
       const cc = document.getElementById('clockchip');
       if (cc) { const left = Math.max(0, settings.minutes * 60 - state.elapsed); cc.textContent = `الوقت المتبقي ${String(Math.floor(left / 60)).padStart(2, '0')}:${String(Math.floor(left % 60)).padStart(2, '0')}`; }
       const ov = document.getElementById('pause');
@@ -728,16 +810,16 @@ const scenes = {
     enter() {
       if (!state.final) state.final = [...Array(state.n).keys()].map(i => ({ i, pts: state.pts[i] }));
       const f = state.final, podium = [1, 0, 2].filter(r => f[r]);
-      const heights = { 0: 170, 1: 125, 2: 95 }, medal = ['#f6c343', '#b8c2d6', '#cd8a4a'];
+      const heights = { 0: 150, 1: 112, 2: 84 }, medal = ['#f6c343', '#b8c2d6', '#cd8a4a'];
       ui.append(h('div', { class: 'screen', style: 'align-items:center;gap:12px' },
-        h('div', { style: 'font-size:34px;font-weight:bold' }, 'النتائج النهائية'),
-        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;height:330px' }, ...podium.map(r => { const e = f[r];
+        h('div', { style: 'font-size:30px;font-weight:900' }, 'النتائج النهائية'),
+        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;height:380px' }, ...podium.map(r => { const e = f[r];
           return h('div', { style: 'display:flex;flex-direction:column;align-items:center;gap:6px;width:210px' },
             r === 0 ? h('span', { html: TROPHY }) : null, shield(e.i, r === 0 ? 50 : 40), h('b', { style: 'font-size:' + (r === 0 ? 22 : 18) + 'px' }, state.names[e.i]),
-            h('span', { class: 'num', style: 'font-weight:bold;font-size:20px;color:var(--gold)' }, fmt(e.pts)),
+            h('span', { class: 'num', style: 'font-weight:bold;font-size:20px;color:var(--goldtxt)' }, fmt(e.pts)),
             h('div', { style: `width:100%;height:${heights[r]}px;border-radius:12px 12px 0 0;background:linear-gradient(${medal[r]}, ${medal[r]}99);display:grid;place-items:center;font-size:56px;font-weight:bold;color:#fff;text-shadow:0 2px 4px #0006` }, N(r + 1))); })),
-        h('div', { class: 'panel', style: 'width:620px;padding:6px 0' }, ...f.map((e, r) => h('div', { style: 'display:flex;align-items:center;gap:12px;padding:6px 16px;font-weight:bold' },
-          h('span', { class: 'muted', style: 'width:24px' }, N(r + 1)), shield(e.i, 18), h('span', { style: 'flex:1' }, state.names[e.i]), h('span', { class: 'num', style: 'color:var(--gold)' }, fmt(e.pts))))),
+        h('div', { class: 'panel', style: 'width:620px;padding:6px 0' }, ...f.map((e, r) => h('div', { style: 'display:flex;align-items:center;gap:12px;padding:4px 16px;font-weight:bold' },
+          h('span', { class: 'muted', style: 'width:24px' }, N(r + 1)), shield(e.i, 18), h('span', { style: 'flex:1' }, state.names[e.i]), h('span', { class: 'num', style: 'color:var(--goldtxt)' }, fmt(e.pts))))),
         h('div', { style: 'display:flex;gap:12px' }, B('مسابقة جديدة بنفس الإعدادات', 'gold', () => { reset(); go('play'); }, { 'data-primary': '1' }), B('الشاشة الرئيسية', '', () => go('title')))));
       confetti = Array.from({ length: CHEAP ? 0 : 130 }, () => ({ x: vrng() * W, y: -vrng() * H, v: 60 + vrng() * 90, s: 5 + vrng() * 6, c: vrng() < 0.6 ? '#f6c343' : TEAM_COLORS[(vrng() * state.n) | 0], a: vrng() * 6, w: 1 + vrng() * 3 }));
     },
@@ -787,7 +869,7 @@ function step() {
     const p = (document.querySelector('.ov:not(#pause)') || ui).querySelector('[data-primary]:not([disabled])');
     if (p) p.click();
   }
-  if (pressed('Escape')) ['confirm', 'importask', 'usecard'].forEach(id => document.getElementById(id)?.remove());
+  if (pressed('Escape')) ['confirm', 'importask', 'usecard', 'help'].forEach(id => document.getElementById(id)?.remove());
   state.t += STEP;
   scenes[scene].update(STEP); hit.clear();
 }

@@ -10,6 +10,7 @@ Rights: Original, same genre (Recommended)
 5. Look: A bright TV game-show set (usual): deep blue stage, golden cards, spotlight beams, flat vector style.
 6. Pace and difficulty: the answer time is 30 seconds by default for every level (usual).
 7. A wrong answer: you pick
+After play: redo both games ui/ux
 
 **Pitch:** A TV-style team quiz: pick how hard your question is, answer it, then flip a face-down card that can make you, break you, or let you strike a rival.
 **Genre:** trivia-quiz (host-run team game show)

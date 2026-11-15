@@ -9,3 +9,87 @@
 #   date: 2026-01-31
 #   ships: true               # false for a file only the build uses
 #   placeholder: true         # until it is replaced; leave the line out otherwise
+
+- path: vendor/plex-arabic-500.woff2
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans-arabic@5.3.0 (files/ subset of the package)"
+  source: {vendor: "IBM Corp.", product: "IBM Plex Sans Arabic (via the Fontsource package @fontsource/ibm-plex-sans-arabic 5.3.0)", url: "https://fontsource.org/fonts/ibm-plex-sans-arabic"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: vendor/plex-arabic-700.woff2
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans-arabic@5.3.0 (files/ subset of the package)"
+  source: {vendor: "IBM Corp.", product: "IBM Plex Sans Arabic (via the Fontsource package @fontsource/ibm-plex-sans-arabic 5.3.0)", url: "https://fontsource.org/fonts/ibm-plex-sans-arabic"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: vendor/plex-latin-500.woff2
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans-arabic@5.3.0 (files/ subset of the package)"
+  source: {vendor: "IBM Corp.", product: "IBM Plex Sans Arabic (via the Fontsource package @fontsource/ibm-plex-sans-arabic 5.3.0)", url: "https://fontsource.org/fonts/ibm-plex-sans-arabic"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: vendor/plex-latin-700.woff2
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans-arabic@5.3.0 (files/ subset of the package)"
+  source: {vendor: "IBM Corp.", product: "IBM Plex Sans Arabic (via the Fontsource package @fontsource/ibm-plex-sans-arabic 5.3.0)", url: "https://fontsource.org/fonts/ibm-plex-sans-arabic"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: vendor/plex-OFL-LICENSE.txt
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans-arabic@5.3.0 (the package LICENSE file, which carries the copyright notice and the OFL 1.1 text)"
+  source: {vendor: "IBM Corp.", product: "IBM Plex Sans Arabic (via the Fontsource package @fontsource/ibm-plex-sans-arabic 5.3.0)", url: "https://fontsource.org/fonts/ibm-plex-sans-arabic"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: assets/favicon.svg
+  origin: ai
+  tool: "hand-written SVG (logo-design skill); the same mark is inlined as LOGO in index.html"
+  model: claude-fable-5-2
+  date: 2026-11-15
+  ships: true
+
+- path: assets/favicon.ico
+  origin: ai
+  tool: "logo-design skill render_png.py --ico from assets/favicon.svg (16, 32, 48 px)"
+  model: claude-fable-5-2
+  date: 2026-11-15
+  ships: true
+
+- path: assets/help-1.png
+  origin: code
+  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
+  date: 2026-11-15
+  ships: true
+
+- path: assets/help-2.png
+  origin: code
+  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
+  date: 2026-11-15
+  ships: true
+
+- path: assets/help-3.png
+  origin: code
+  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
+  date: 2026-11-15
+  ships: true
+
+- path: assets/help-4.png
+  origin: code
+  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
+  date: 2026-11-15
+  ships: true
+
+- path: assets/help-5.png
+  origin: code
+  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
+  date: 2026-11-15
+  ships: true
