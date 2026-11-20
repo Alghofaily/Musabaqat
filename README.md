@@ -4,9 +4,9 @@
 
 ## العب الآن دون تنزيل
 
-- [سوق المعرفة](https://alghofaily.github.io/Musabaqat/souq-al-marifa/)
-- [ورقة الحظ](https://alghofaily.github.io/Musabaqat/waraqat-al-hazz/)
-- [حصون المعرفة](https://alghofaily.github.io/Musabaqat/husun-al-marifa/)
+- [<img src="souq-al-marifa/assets/favicon.svg" width="24" height="24" align="absmiddle" alt=""> سوق المعرفة](https://alghofaily.github.io/Musabaqat/souq-al-marifa/)
+- [<img src="waraqat-al-hazz/assets/favicon.svg" width="24" height="24" align="absmiddle" alt=""> ورقة الحظ](https://alghofaily.github.io/Musabaqat/waraqat-al-hazz/)
+- [<img src="husun-al-marifa/assets/favicon.svg" width="24" height="24" align="absmiddle" alt=""> حصون المعرفة](https://alghofaily.github.io/Musabaqat/husun-al-marifa/)
 
 ## الألعاب
 
