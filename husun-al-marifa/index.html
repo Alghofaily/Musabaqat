@@ -1,0 +1,1047 @@
+<!doctype html>
+<!-- PROTOTYPE - NOT FOR PRODUCTION -->
+<!-- Question: is a quiz that decides who takes land more tense than plain points? -->
+<!-- Date: 2026-11-19 -->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<title>حصون المعرفة</title>
+<style>
+  @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-arabic-500.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-arabic-700.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-latin-500.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-latin-700.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  .dark { --bg: #0e1624; --sea: #0a111d; --wave: rgba(201,162,74,.10); --panel: #162133; --panel2: #111a29; --line: #26344d; --text: #e8e6df; --muted: #96a2b6;
+    --brass: #c9a24a; --brass-ink: #1b1406; --hover: #1c2940; --land: #24324a; --ok: #3fb27f; --bad: #ef5a5f; --okbg: rgba(63,178,127,.15); --badbg: rgba(239,90,95,.14); --stone: #d8cdb2; --stone2: #a89c80; --shade: rgba(4,8,16,.55); }
+  .light { --bg: #f4ecd8; --sea: #e3d6b6; --wave: rgba(120,90,30,.16); --panel: #fbf6ea; --panel2: #f1e7cf; --line: #d8c8a0; --text: #2a2a2a; --muted: #6b6250;
+    --brass: #8a6a1f; --brass-ink: #fffaf0; --hover: #efe3c6; --land: #eadcb9; --ok: #1f7a4f; --bad: #b4232a; --okbg: rgba(31,122,79,.12); --badbg: rgba(180,35,42,.10); --stone: #b9ab8a; --stone2: #8c7f61; --shade: rgba(60,45,15,.35); }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+  body { font-family: 'Plex', Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; font-weight: 500; font-variant-numeric: tabular-nums; }
+  #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: var(--bg); color: var(--text); }
+  #game { position: absolute; inset: 0; width: 1280px; height: 720px; }
+  #ui { position: absolute; inset: 0; direction: rtl; }
+  button { font: inherit; cursor: pointer; border: 0; border-radius: 6px; color: inherit; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+  input { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; outline: none; min-height: 40px; box-sizing: border-box; }
+  input:focus { border-color: var(--brass); }
+  .num { direction: ltr; unicode-bidi: isolate; display: inline-block; }
+  .ok { color: var(--ok); } .bad { color: var(--bad); } .muted { color: var(--muted); } .brass { color: var(--brass); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+  .ph { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: 700; font-size: 15px; }
+  .btn { padding: 10px 18px; min-height: 44px; font-weight: 700; font-size: 16px; background: var(--panel2); border: 1px solid var(--line); }
+  .btn:hover:not(:disabled) { background: var(--hover); }
+  .btn.pri { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
+  .btn.pri:hover:not(:disabled) { filter: brightness(1.1); background: var(--brass); }
+  .btn.good { background: var(--ok); color: #fff; border-color: transparent; }
+  .btn.warn { background: var(--bad); color: #fff; border-color: transparent; }
+  .btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+  .btn.ghost:hover { color: var(--text); }
+  .btn.ghost.danger { color: var(--bad); }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .seg { display: inline-flex; background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 3px; gap: 3px; flex-wrap: wrap; }
+  .seg button { padding: 7px 14px; min-height: 38px; background: transparent; font-size: 14px; font-weight: 700; color: var(--muted); }
+  .seg button.on { background: var(--brass); color: var(--brass-ink); }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 4px; background: var(--panel2); border: 1px solid var(--line); font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .chip.bad { border-color: var(--bad); }
+  @keyframes pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+  .pop { animation: pop .5s ease-out; display: inline-block; }
+  @keyframes rise { from { transform: translateY(14px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .ov { position: absolute; inset: 0; background: var(--shade); display: flex; align-items: center; justify-content: center; z-index: 20; }
+  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 22px 26px; min-width: 380px; display: grid; gap: 14px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+
+  /* the war room */
+  header { position: absolute; left: 0; right: 0; top: 0; height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 12px; background: var(--panel); border-bottom: 1px solid var(--line); box-sizing: border-box; }
+  header .sp { flex: 1; }
+  header .btn { min-height: 40px; padding: 6px 12px; font-size: 14px; }
+  .hgroup { display: flex; gap: 2px; align-items: center; padding-inline-start: 8px; border-inline-start: 1px solid var(--line); }
+  #mapbox { position: absolute; left: 8px; top: 64px; width: 842px; height: 648px; cursor: pointer; }
+  #side { position: absolute; right: 8px; top: 64px; width: 414px; height: 648px; display: flex; flex-direction: column; gap: 8px; }
+  #side > .panel { display: flex; flex-direction: column; }
+  .turn { padding: 12px 14px; display: grid; gap: 10px; }
+  .turn .who { display: flex; align-items: center; gap: 12px; }
+  .turn .who b { font-size: 26px; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .stat { background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; display: grid; gap: 2px; }
+  .stat small { color: var(--muted); font-size: 12px; } .stat b { font-size: 19px; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .steps span { text-align: center; padding: 6px 0; border-radius: 4px; font-size: 13px; font-weight: 700; color: var(--muted); background: var(--panel2); border: 1px solid var(--line); }
+  .steps span.on { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
+  .steps span.done { color: var(--text); }
+  .act { flex: 1; min-height: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+  .act .hint { font-size: 16px; line-height: 1.6; }
+  .act .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .act .bottom { margin-top: auto; display: flex; gap: 8px; }
+  .act .bottom .btn { flex: 1; }
+  .vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+  .vs .side { display: grid; justify-items: center; gap: 4px; text-align: center; font-size: 14px; }
+  .vs .side b { font-size: 16px; }
+  .vs .side .n { font-size: 30px; font-weight: 700; }
+  .vs .x { font-size: 22px; font-weight: 700; color: var(--brass); }
+  .msg { min-height: 20px; font-size: 14px; font-weight: 700; }
+  .stepper { display: inline-flex; align-items: center; gap: 6px; }
+  .stepper button { width: 44px; height: 44px; font-size: 22px; font-weight: 700; background: var(--panel2); border: 1px solid var(--line); }
+  .stepper b { min-width: 46px; text-align: center; font-size: 24px; }
+  table.lb { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.lb th { color: var(--muted); font-weight: 500; font-size: 12px; text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--line); }
+  table.lb td { padding: 0 8px; height: 31px; border-bottom: 1px solid var(--line); }
+  table.lb tr:last-child td { border-bottom: 0; }
+  table.lb tr.cur { background: var(--hover); box-shadow: inset -3px 0 0 var(--brass); }
+  table.lb tr.out td { color: var(--muted); text-decoration: line-through; }
+  .tn { display: flex; gap: 7px; align-items: center; font-weight: 700; white-space: nowrap; overflow: hidden; max-width: 150px; }
+
+  /* the question, over the map */
+  #qpanel { position: absolute; left: 8px; top: 64px; width: 842px; height: 648px; display: flex; flex-direction: column; z-index: 5; animation: rise .3s ease-out; box-sizing: border-box; }
+  #qpanel .body { flex: 1; padding: 18px 24px; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+  .q { font-size: 34px; font-weight: 700; line-height: 1.45; }
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex: 1; max-height: 360px; grid-auto-rows: 1fr; }
+  .choice { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; font-weight: 700; font-size: 24px; text-align: right; min-height: 76px; }
+  .choice:hover:not(:disabled) { border-color: var(--brass); }
+  .choice .k { flex: none; width: 36px; height: 36px; border-radius: 6px; background: var(--line); display: grid; place-items: center; font-size: 17px; }
+  .choice.right { background: var(--okbg); border-color: var(--ok); } .choice.wrong { background: var(--badbg); border-color: var(--bad); }
+  .choice:disabled { cursor: default; }
+  #qpanel[data-size=m] .q { font-size: 27px; } #qpanel[data-size=m] .choice { font-size: 20px; min-height: 62px; }
+  #qpanel[data-size=l] .q { font-size: 22px; line-height: 1.4; } #qpanel[data-size=l] .choice { font-size: 17px; min-height: 52px; padding: 8px 12px; }
+  .answer { padding: 12px 16px; border-radius: 8px; background: var(--okbg); border: 1px solid var(--ok); font-weight: 700; font-size: 24px; }
+  .ring { position: relative; flex: none; }
+  .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 30px; }
+  .duelrow { display: grid; grid-template-columns: 210px 1fr; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 8px; background: var(--panel2); border: 1px solid var(--line); }
+  .duelrow .who { display: flex; gap: 8px; align-items: center; font-weight: 700; font-size: 17px; }
+  .duelrow .who small { display: block; color: var(--muted); font-size: 12px; font-weight: 500; }
+  .picks { display: flex; gap: 8px; justify-content: flex-start; }
+  .picks button { min-width: 64px; min-height: 48px; font-size: 20px; font-weight: 700; background: var(--panel); border: 1px solid var(--line); }
+  .picks button.on { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
+  .picks button.right { background: var(--ok); color: #fff; } .picks button.wrong { background: var(--bad); color: #fff; }
+  .verdict { font-size: 34px; font-weight: 700; }
+  .reward { font-size: 54px; font-weight: 700; color: var(--brass); line-height: 1; }
+
+  /* title, setup, bank, results */
+  .screen { position: absolute; inset: 0; padding: 20px 40px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: grid; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 700; }
+  .field input { width: 120px; direction: ltr; text-align: center; font-size: 16px; font-weight: 700; }
+  .box { padding: 14px 16px; display: grid; gap: 12px; align-content: start; }
+  .box h3 { margin: 0; font-size: 16px; }
+  .names { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .names input { width: 100%; direction: rtl; text-align: right; font-size: 14px; }
+  .banklist { overflow: auto; flex: 1; min-height: 0; }
+  .bq { display: grid; grid-template-columns: 110px 1fr 190px 70px; gap: 10px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .addq { display: grid; grid-template-columns: 130px minmax(0,1fr); gap: 8px; }
+  .addq input { direction: rtl; text-align: right; }
+</style>
+</head>
+<body class="dark">
+<div id="stage"><canvas id="game"></canvas><div id="ui"></div></div>
+<script src="config.js"></script>
+<script src="questions.js"></script>
+<script src="csv.js"></script>
+<script src="rules.js"></script>
+<script>
+'use strict';
+// حصون المعرفة: a host-run team quiz on a hex war map. Each turn a team answers for money, trades at
+// the market, attacks a neighbour and moves. A battle is fought question by question, the teams
+// answering in turn, with M3arik's hits (3 per cannon + 3, halved by a fort). A fallen capital
+// knocks its team out. The map is drawn on the canvas; the panels are DOM over it.
+
+// ---- Built to be checked ----------------------------------------------------------------
+const params = new URLSearchParams(location.search);
+const tune = new Proxy({}, { get: (_, k) => CONFIG[k].value }); // live: tune.speed is CONFIG.speed.value
+const STEP = 1 / 60;
+const W = 1280, H = 720;
+const PIXEL = false;
+const FONT = "Plex, Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif";
+const TITLE = 'حصون المعرفة';
+const CONTROLS = ['الفأرة أو اللمس: كل شيء', '1-4: اختيار الإجابة', 'Enter: الزر الرئيسي', 'P: إيقاف مؤقت · M: كتم الصوت'];
+const clock = window.GAME_CLOCK || { now: () => performance.now() / 1000 };
+const CHEAP = params.get('render') === 'cheap';
+let seed;
+function rng() { // mulberry32; every gameplay random call reads this, never Math.random
+  seed = (seed + 0x6D2B79F5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), seed | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+let vseed = 11; // decoration's own stream (confetti), never the game's chance
+function vrng() { vseed = (vseed + 0x6D2B79F5) | 0; let t = Math.imul(vseed ^ (vseed >>> 15), vseed | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+const events = [];
+const R = HusunRules;
+
+// ---- Screen ---------------------------------------------------------------------------
+const stage = document.getElementById('stage');
+const canvas = document.getElementById('game');
+const ui = document.getElementById('ui');
+const ctx = canvas.getContext('2d');
+function fit() {
+  const s = Math.min(innerWidth / W, innerHeight / H), r = s * (devicePixelRatio || 1);
+  canvas.width = Math.round(W * r); canvas.height = Math.round(H * r); ctx.setTransform(r, 0, 0, r, 0, 0);
+  stage.style.transform = `translate(${Math.round((innerWidth - W * s) / 2)}px, ${Math.round((innerHeight - H * s) / 2)}px) scale(${s})`;
+}
+addEventListener('resize', fit); fit();
+
+// ---- Input ------------------------------------------------------------------------------
+const down = new Set(), hit = new Set();
+const pressed = code => hit.has(code);
+const typing = () => document.activeElement && ['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName);
+addEventListener('keydown', e => {
+  startAudio();
+  if (!e.repeat) { down.add(e.code); hit.add(e.code); }
+  if (e.code === 'Space' && !typing()) e.preventDefault();
+});
+addEventListener('keyup', e => down.delete(e.code));
+addEventListener('pointerdown', () => startAudio());
+addEventListener('blur', () => down.clear());
+
+// ---- Audio --------------------------------------------------------------------------------
+let audio = null, muted = false;
+function startAudio() {
+  if (!audio) {
+    const ac = window.GAME_AUDIO || new (window.AudioContext || window.webkitAudioContext)();
+    const out = ac.createGain(); out.gain.value = muted ? 0 : tune.volume; out.connect(ac.destination); audio = { ac, out };
+  }
+  if (audio.ac.state === 'suspended') audio.ac.resume();
+}
+function setMuted(m) { muted = m; if (audio) audio.out.gain.value = m ? 0 : tune.volume; if (scene === 'play') renderHeader(); }
+addEventListener('tune', () => setMuted(muted));
+function tone(freq, dur, type = 'sine', vol = 0.25, delay = 0) {
+  if (!audio || muted) return;
+  const t = audio.ac.currentTime + delay, o = audio.ac.createOscillator(), g = audio.ac.createGain();
+  o.type = type; o.frequency.value = freq; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(g).connect(audio.out); o.start(t); o.stop(t + dur);
+}
+const sfx = {
+  click: () => tone(880, 0.05, 'triangle', 0.12),
+  right: () => [660, 880, 1320].forEach((f, i) => tone(f, 0.16, 'triangle', 0.22, i * 0.08)),
+  wrong: () => { tone(200, 0.3, 'sawtooth', 0.16); tone(150, 0.4, 'sawtooth', 0.14, 0.1); },
+  coin: () => [1500, 2000].forEach((f, i) => tone(f, 0.07, 'square', 0.08, i * 0.05)),
+  tick: () => tone(1200, 0.035, 'square', 0.1),
+  drums: () => [0, 0.14, 0.28, 0.5].forEach((d, i) => tone(i === 3 ? 70 : 95, 0.18, 'triangle', 0.45, d)),
+  capture: () => [392, 523, 659, 784].forEach((f, i) => tone(f, i === 3 ? 0.4 : 0.14, 'square', 0.12, i * 0.11)),
+  fall: () => { [784, 659, 523, 392, 262].forEach((f, i) => tone(f, 0.2, 'sawtooth', 0.12, i * 0.13)); tone(55, 0.9, 'triangle', 0.5, 0.65); },
+  hold: () => { tone(330, 0.12, 'triangle', 0.2); tone(330, 0.25, 'triangle', 0.2, 0.16); },
+  bad: () => tone(240, 0.12, 'square', 0.12),
+  win: () => [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.22, 'triangle', 0.22, i * 0.12)),
+};
+
+// ---- Helpers ---------------------------------------------------------------------------
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const toNum = s => parseInt(String(s).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d-]/g, ''), 10);
+const css = name => getComputedStyle(document.body).getPropertyValue(name).trim();
+function h(tag, props = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'style') e.style.cssText = v;
+    else if (k === 'html') e.innerHTML = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat()) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(c));
+  return e;
+}
+const B = (label, cls, fn, extra = {}) => h('button', { class: 'btn ' + cls, onclick: () => { sfx.click(); fn(); }, ...extra }, label);
+const N = v => h('span', { class: 'num' }, v);
+
+// ---- Drawn figures: one set of paths for the canvas (Path2D) and the panels (SVG) -----------
+const TEAMS = [ // each team its colour and its own emblem on the banner
+  { c: '#e5484d', emblem: 'M10 2 L12.4 7.6 L18.5 8.2 L13.9 12.1 L15.3 18 L10 14.9 L4.7 18 L6.1 12.1 L1.5 8.2 L7.6 7.6 Z' },        // star
+  { c: '#3e83f8', emblem: 'M13 3 A7.5 7.5 0 1 0 13 17 A8 8 0 0 1 13 3 Z' },                                                  // crescent
+  { c: '#2fa36b', emblem: 'M10 1.5 L17.5 10 L10 18.5 L2.5 10 Z' },                                                                  // diamond
+  { c: '#e09b1f', emblem: 'M10 2.5 L18 17 H2 Z' },                                                                                  // triangle
+  { c: '#9257d1', emblem: 'M7.8 2 H12.2 V7.8 H18 V12.2 H12.2 V18 H7.8 V12.2 H2 V7.8 H7.8 Z' },                                     // cross
+  { c: '#12a39a', emblem: 'M2 4 L10 10 L18 4 V9 L10 15.5 L2 9 Z M2 11 L10 17 L18 11 V14 L10 20 L2 14 Z' },                         // chevrons
+];
+const FORT = 'M2 38 V16 H4 V12.5 H6.5 V16 H8.5 V12.5 H11 V16 H13 V22 H15 V10 H16.8 V6.5 H19 V10 H21 V6.5 H23.2 V10 H25 V22 H27 V16 H29 V12.5 H31.5 V16 H33.5 V12.5 H36 V16 H38 V38 Z';
+const FORT_GATE = 'M16.5 38 V31.5 A3.5 3.5 0 0 1 23.5 31.5 V38 Z';
+const FORT_WIN = 'M6.5 21 h2 v4.5 h-2 z M31.5 21 h2 v4.5 h-2 z M19 14 h2 v4.5 h-2 z';
+const BANNER_POLE = 'M8 3 h2.6 v35 h-2.6 z';
+const BANNER_TOP = 'M9.3 0 L12 3 H6.6 Z';
+const BANNER_CLOTH = 'M10.6 4.5 H35 L29.5 12.5 L35 20.5 H10.6 Z';
+const SHIELD = 'M10 0 L20 3.5 V11 C20 17 15 21 10 23 C5 21 0 17 0 11 V3.5 Z';
+const P2 = {}; const path = d => (P2[d] ??= new Path2D(d));
+
+function fortressSVG(t, size = 40) { // a capital: stone walls, a gate, the team's flag on the keep
+  const flag = t >= 0 ? `<path d="M20 7 V0.5" stroke="var(--brass)" stroke-width="1.2"/><path d="M20 0.8 L27 2.8 L20 4.8 Z" fill="${TEAMS[t].c}"/>` : '';
+  return `<svg viewBox="0 -1 40 40" width="${size}" height="${size}" style="display:block;flex:none">${flag}<path d="${FORT}" fill="var(--stone)" stroke="var(--brass)" stroke-width="1.2"/>
+    <path d="${FORT_WIN}" fill="#2a2418"/><path d="${FORT_GATE}" fill="#2a2418"/></svg>`;
+}
+function bannerSVG(t, size = 34) { // a team's banner: a swallow-tail cloth with the team's emblem
+  return `<svg viewBox="0 0 40 40" width="${size}" height="${size}" style="display:block;flex:none"><path d="${BANNER_POLE}" fill="var(--brass)"/><path d="${BANNER_TOP}" fill="var(--brass)"/>
+    <path d="${BANNER_CLOTH}" fill="${TEAMS[t].c}"/><path d="${TEAMS[t].emblem}" fill="#fff" transform="translate(15.5 6.5) scale(0.6)"/></svg>`;
+}
+const banner = (t, size) => h('span', { style: 'display:inline-block;flex:none', html: bannerSVG(t, size) });
+function shieldSVG(t, n, size = 22) { // a hex's battalions: a shield edged in the owner's colour
+  const c = t >= 0 ? TEAMS[t].c : 'var(--muted)';
+  return `<svg viewBox="-1 -1 22 25" width="${size}" height="${Math.round(size * 1.15)}" style="display:block;flex:none"><path d="${SHIELD}" fill="var(--panel)" stroke="${c}" stroke-width="2"/>
+    <text x="10" y="15.5" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--text)" font-family="Plex, Arial">${n}</text></svg>`;
+}
+const LOGO = (s = 1) => `<svg width="${44 * s}" height="${44 * s}" viewBox="0 0 48 48" style="display:block"><polygon points="24,2 43,13 43,35 24,46 5,35 5,13" fill="none" stroke="var(--brass)" stroke-width="3.2" stroke-linejoin="round"/>
+  <g transform="translate(11.5 12.5) scale(0.625)"><path d="${FORT}" fill="var(--brass)"/><path d="${FORT_GATE}" fill="var(--bg)"/></g></svg>`; // the same mark as assets/favicon.svg
+const TROPHY = `<svg width="70" height="70" viewBox="0 0 70 70"><path d="M20 8 H50 V24 C50 36 43 42 35 42 C27 42 20 36 20 24 Z" fill="var(--brass)"/>
+  <path d="M20 12 H10 C10 24 16 28 22 28 M50 12 H60 C60 24 54 28 48 28" fill="none" stroke="var(--brass)" stroke-width="4"/>
+  <rect x="31" y="42" width="8" height="10" fill="var(--stone2)"/><rect x="22" y="52" width="26" height="8" rx="2" fill="var(--stone2)"/></svg>`;
+function ring(left, total, size = 96) { // the answer clock: brass, then red in the last seconds
+  const r = size / 2 - 6, c = 2 * Math.PI * r, f = clamp(left / total, 0, 1);
+  const col = left <= tune.tickWarn ? 'var(--bad)' : 'var(--brass)';
+  return `<svg width="${size}" height="${size}" style="transform:rotate(-90deg);display:block"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="7"/>
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${(c * (1 - f)).toFixed(2)}"/></svg>`;
+}
+
+// ---- Settings, bank and theme (kept in the browser) -------------------------------------------
+const store = { get: (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } } };
+function loadBank() { // a saved bank is used only when every row has the right shape
+  const b = store.get('husun.bank', null);
+  return Array.isArray(b) && b.length && b.every(r => Array.isArray(r) && r.length === 6 && r.every(x => typeof x === 'string' && x)) ? b : DEFAULT_BANK.map(r => r.slice());
+}
+let bank = loadBank();
+const saveBank = () => store.set('husun.bank', bank);
+let bankMsg = null;
+const WHY = { missing: 'خانة فارغة', duplicate: 'خيارات مكررة', long: 'نص أطول من ' + HusunCSV.MAX_CELL + ' حرف', limit: 'تجاوز ' + HusunCSV.MAX_ROWS + ' سؤال' };
+const whyList = sk => sk.slice(0, 5).map(x => `السطر ${x.line} (${WHY[x.why]})`).join('، ') + (sk.length > 5 ? ` و${sk.length - 5} غيرها` : '');
+async function importCSV(file) { // the host's file: السؤال، الخيار 1 (الإجابة)، الخيار 2، الخيار 3، الخيار 4
+  const say = (text, good) => { bankMsg = { text, good }; go('bank'); };
+  if (!/\.(csv|txt)$/i.test(file.name)) return say('اختر ملفاً بصيغة CSV', false);
+  if (file.size > 2e6) return say('الملف أكبر من 2 ميغابايت', false);
+  const buf = await file.arrayBuffer();
+  let text; // Excel's "CSV UTF-8" is UTF-8; its plain "CSV" saves Arabic as Windows-1256
+  try { text = new TextDecoder('utf-8', { fatal: true }).decode(buf); } catch { text = new TextDecoder('windows-1256').decode(buf); }
+  const cat = file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim().slice(0, 30) || 'مستورد';
+  const { questions, skipped } = HusunCSV.questionsFromCSV(text, cat);
+  if (!questions.length) return say('لم أجد أسئلة صالحة في الملف' + (skipped.length ? ': ' + whyList(skipped) : '. تأكد من الأعمدة الخمسة.'), false);
+  const apply = replace => {
+    bank = replace ? questions : questions.concat(bank);
+    const saved = saveBank();
+    say(`${replace ? 'استُبدلت الأسئلة بـ' : 'أُضيف'} ${questions.length} سؤالاً من "${file.name}"` + (skipped.length ? ` · تُجوهل ${skipped.length}: ${whyList(skipped)}` : '')
+      + (saved ? '' : ' · تنبيه: تعذر الحفظ في المتصفح، ستبقى الأسئلة حتى إغلاق الصفحة فقط'), saved);
+  };
+  const close = () => document.getElementById('importask')?.remove();
+  close();
+  ui.append(h('div', { class: 'ov', id: 'importask' }, h('div', { class: 'modal', style: 'max-width:560px' },
+    h('b', { style: 'font-size:20px' }, `في الملف ${questions.length} سؤالاً`),
+    skipped.length ? h('div', { class: 'bad', style: 'font-size:13px' }, `سيُتجاهل ${skipped.length}: ${whyList(skipped)}`) : null,
+    h('div', { class: 'muted' }, `في البنك الآن ${bank.length} سؤالاً. ماذا تريد أن تفعل بها؟`),
+    h('div', { style: 'display:flex;gap:10px;justify-content:center;flex-wrap:wrap' },
+      B('إضافتها إلى الأسئلة الحالية', 'good', () => { close(); apply(false); }, { 'data-primary': '1' }),
+      B('استبدال الأسئلة الحالية', 'warn', () => { close(); apply(true); }),
+      B('إلغاء', '', close)))));
+}
+function downloadTemplate() {
+  const a = h('a', { href: URL.createObjectURL(new Blob([HusunCSV.TEMPLATE], { type: 'text/csv;charset=utf-8' })), download: 'questions-template.csv' });
+  document.body.append(a); a.click(); a.remove();
+}
+function defaults() {
+  return { teams: tune.teams, names: Array.from({ length: 6 }, (_, i) => `الفريق ${i + 1}`), answerTime: tune.answerTime,
+    qmode: 'choices', end: 'capital', rounds: tune.rounds, minutes: tune.minutes };
+}
+function loadSettings() { // saved settings, each value checked against its limits
+  const s = Object.assign(defaults(), store.get('husun.settings', {}));
+  const lim = { teams: CONFIG.teams, answerTime: CONFIG.answerTime, rounds: CONFIG.rounds, minutes: CONFIG.minutes };
+  for (const [k, c] of Object.entries(lim)) s[k] = clamp(Number(s[k]) || c.value, c.min, c.max);
+  if (!['choices', 'judge'].includes(s.qmode)) s.qmode = 'choices';
+  if (!['capital', 'timed', 'rounds'].includes(s.end)) s.end = 'capital';
+  s.names = Array.from({ length: 6 }, (_, i) => (Array.isArray(s.names) && typeof s.names[i] === 'string' && s.names[i].trim()) || `الفريق ${i + 1}`);
+  return s;
+}
+let settings = loadSettings();
+let theme = store.get('husun.theme', 'dark') === 'light' ? 'light' : 'dark';
+function setTheme(t) { theme = t; document.body.className = t; store.set('husun.theme', t); }
+setTheme(theme);
+
+// ---- Game state and rules ----------------------------------------------------------------------
+let scene, state;
+const PHASE_STEP = { ready: 0, question: 0, reveal: 0, shop: 1, attack: 2, duel: 2, duelReveal: 2, move: 3, over: 3 };
+function reset() {
+  seed = Number(params.get('seed')) || CONFIG.seed || (Date.now() | 0); // seed 0: a new map every game
+  const n = settings.teams, cols = tune.mapCols, rows = tune.mapRows;
+  const hexes = R.makeMap(cols, rows, tune.mapLakes, rng);
+  const g = R.placeTeams(hexes, n, tune.startHexes, tune.startCapitalBattalions, tune.startOtherBattalions, rng);
+  state = {
+    t: 0, score: 0, gained: '', paused: false,
+    n, names: settings.names.slice(0, n), g, cols, rows, money: Array(n).fill(tune.startMoney), fellAt: Array(n).fill(-1), prices: R.rollPrices(rng, PP()),
+    cur: 0, turns: 0, round: 1, elapsed: 0, lastCall: false,
+    phase: 'ready', timer: 0, ticked: -1, q: null, deck: [],
+    picked: null, result: null, reward: 0, reveal: false,     // the team's own question
+    buys: [], sel: -1, target: -1, moveN: 1, movesLeft: 0, msg: '', msgGood: false, // market, attack and move
+    duel: null,                                                // { from, to, a, d, neutral, b: battle | null, last, outcome }
+    flood: null, fx: [], hover: -1, final: null, log: [],
+  };
+}
+function drawQuestion() { // no question repeats until the whole bank has been asked
+  if (!state.deck.length) { state.deck = bank.map((_, i) => i); for (let i = state.deck.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [state.deck[i], state.deck[j]] = [state.deck[j], state.deck[i]]; } }
+  const row = bank[state.deck.pop() % bank.length];
+  const order = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+  return { cat: row[0], text: row[1], choices: order.map(k => row[2 + k]), right: order.indexOf(0) };
+}
+const RP = () => ({ hitBase: tune.hitBase, hitPerCannon: tune.hitPerCannon, attackMin: tune.attackMin, defenderWrongLoss: tune.defenderWrongLoss });
+const PP = () => ({ priceRoll: tune.priceRoll, troopBase: tune.troopBase, cannonBase: tune.cannonBase, fortBase: tune.fortBase,
+  troopSpread: tune.troopSpread, cannonSpread: tune.cannonSpread, fortSpread: tune.fortSpread });
+const income = t => R.hexCount(state.g, t) * tune.payoutPerHex;               // battalions the next payout brings
+const payoutIn = () => tune.payoutEvery - ((state.round - 1) % tune.payoutEvery); // rounds until it comes
+const scoreOf = t => R.score(state.g, t, state.money[t], state.prices, tune.hexWorth);
+const isNeutral = hx => state.g.owner[hx] === -1;
+function setPhase(p) { state.phase = p; state.msg = ''; events.push({ phase: p }); renderAll(); }
+function startQuestion() { state.q = drawQuestion(); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.result = null; state.reveal = false; }
+
+// 1. The team's own question: a right answer pays.
+function askTurnQuestion() { startQuestion(); setPhase('question'); }
+function answerTurn(right, picked = null) {
+  if (state.phase !== 'question') return;
+  state.picked = picked; state.result = right ? 'right' : 'wrong'; state.reveal = true;
+  if (right) { state.reward = tune.turnReward; state.money[state.cur] += state.reward; sfx.right(); sfx.coin(); } else sfx.wrong();
+  events.push({ answer: state.result }); setPhase('reveal');
+}
+// 2. The market (M3arik): on a hex of its own the team buys or sells battalions, cannons and a fort,
+// at this round's prices. Selling pays the lower sell price; undo gives back exactly what was paid.
+const GOODS = { troop: 'كتيبة', cannon: 'مدفع', fort: 'حصن' };
+const goodOf = (kind, hx) => kind === 'troop' ? state.g.bat[hx] : kind === 'cannon' ? state.g.cannons[hx] : +state.g.fort[hx];
+function setGood(kind, hx, v) { const g = state.g; if (kind === 'troop') g.bat[hx] = v; else if (kind === 'cannon') g.cannons[hx] = v; else g.fort[hx] = v > 0; }
+function openShop() { state.buys = []; state.sel = state.g.capital[state.cur]; setPhase('shop'); }
+function trade(kind, n) { // n > 0 buys n, n < 0 sells -n, on the chosen hex
+  const t = state.cur, hx = state.sel, pr = state.prices[kind], have = goodOf(kind, hx);
+  if (hx < 0 || state.g.owner[hx] !== t) return;
+  const no = text => { state.msg = text; state.msgGood = false; sfx.bad(); renderSide(); };
+  if (n > 0 && kind === 'fort' && have) return no('في هذه الأرض حصن');
+  if (n > 0 && state.money[t] < pr.buy * n) return no('المال لا يكفي');
+  if (n < 0 && have < -n) return no('لا يوجد ما تبيعه هنا');
+  const cash = n > 0 ? -pr.buy * n : pr.sell * -n;
+  state.money[t] += cash; setGood(kind, hx, have + n); state.buys.push({ hx, kind, n, cash });
+  addFx(hx, (n > 0 ? '+' : '−') + (kind === 'fort' ? GOODS.fort : Math.abs(n)), n > 0 ? TEAMS[t].c : css('--bad'));
+  sfx.coin(); state.msg = ''; renderSide();
+}
+function undoBuy() {
+  const b = state.buys.pop(); if (!b) return;
+  state.money[state.cur] -= b.cash; setGood(b.kind, b.hx, goodOf(b.kind, b.hx) - b.n); renderSide();
+}
+// 3. The attack: pick the hex to attack from, then a neighbour. Neutral land is taken with one right
+// answer; a team's land is fought for question by question.
+function openAttack() { state.sel = -1; state.target = -1; setPhase('attack'); }
+const canAttackFrom = hx => state.g.owner[hx] === state.cur && state.g.hexes[hx].nb.some(n => state.g.owner[n] !== state.cur && !R.attackBlock(state.g, state.cur, hx, n, RP()));
+const answerer = d => d.neutral || d.b.turn === 'a' ? d.a : d.d;
+function startBattle() {
+  const { sel: from, target: to } = state, g = state.g;
+  if (from < 0 || to < 0 || R.attackBlock(g, state.cur, from, to, RP())) return;
+  const neutral = isNeutral(to);
+  state.duel = { from, to, a: state.cur, d: g.owner[to], neutral, b: neutral ? null : R.newBattle(g, from, to), last: null, outcome: null };
+  sfx.drums(); events.push({ battle: neutral ? 'neutral' : 'team' });
+  if (!neutral && g.bat[to] < 1) { state.duel.outcome = state.duel.b.over = 'win'; return finishBattle(); } // an empty hex falls with no fight, as in the original
+  startQuestion(); setPhase('duel');
+}
+function answerBattle(right, picked = null, time = false) { // one team's answer lands a hit
+  const d = state.duel;
+  if (state.phase !== 'duel') return;
+  state.picked = picked; state.result = time ? 'time' : right ? 'right' : 'wrong'; state.reveal = true;
+  if (d.neutral) { d.last = { right }; d.outcome = right ? 'win' : 'fail'; }
+  else { const side = d.b.turn, r = R.battleAnswer(state.g, d.b, d.from, d.to, right, RP()); d.last = { side, right, ...r }; d.outcome = d.b.over; }
+  (right ? sfx.right : sfx.wrong)();
+  events.push({ battle: d.outcome || 'hit' }); setPhase('duelReveal');
+}
+function nextBattleQuestion() { startQuestion(); sfx.drums(); setPhase('duel'); }
+function withdraw() { const d = state.duel; if (!d || d.neutral || d.b.over) return; d.outcome = d.b.over = 'withdraw'; finishBattle(); }
+function finishBattle() { // back to the map: the outcome lands on the hexes
+  const d = state.duel, g = state.g, prev = g.owner[d.to], before = [g.bat[d.from], g.bat[d.to]];
+  const res = R.applyBattle(g, d.from, d.to, d.outcome === 'win' ? 'win' : d.outcome || 'fail', d.b);
+  if (res.taken) { state.flood = { hx: d.to, team: d.a, prev, t0: state.t }; sfx.capture(); }
+  else if (!d.neutral) sfx.hold();
+  if (d.b) {
+    if (before[0] > g.bat[d.from]) addFx(d.from, '-' + (before[0] - g.bat[d.from]), css('--bad'));
+    if (!res.taken && before[1] > g.bat[d.to]) addFx(d.to, '-' + (before[1] - g.bat[d.to]), css('--bad'));
+  }
+  if (res.fell >= 0) { state.fellAt[res.fell] = state.turns; sfx.fall(); state.log.push({ fell: res.fell, by: d.a }); events.push({ fell: res.fell }); }
+  state.duel = null; state.sel = -1; state.target = -1;
+  if (R.aliveTeams(g).length <= 1) return setPhase('over');
+  openMove();
+}
+// 4. One move: battalions from one hex to another of the team's, through its own land.
+function openMove() { state.sel = -1; state.target = -1; state.movesLeft = tune.movesPerTurn; setPhase('move'); }
+function doMove() {
+  const g = state.g, { sel, target } = state;
+  if (sel < 0 || target < 0 || state.movesLeft <= 0) return;
+  const n = clamp(state.moveN, 1, g.bat[sel] - 1);
+  g.bat[sel] -= n; g.bat[target] += n; state.movesLeft--;
+  addFx(target, '+' + n, TEAMS[state.cur].c); sfx.click();
+  state.sel = -1; state.target = -1;
+  if (state.movesLeft <= 0) return endTurn();
+  renderAll();
+}
+function endTurn() {
+  const alive = R.aliveTeams(state.g);
+  if (alive.length <= 1) return endGame();
+  state.turns++;
+  let next = state.cur;
+  do next = (next + 1) % state.n; while (!state.g.alive[next]);
+  if (next <= state.cur) { // a full round: every payoutEvery rounds each capital gets battalions for the land held; new prices
+    if (state.round % tune.payoutEvery === 0) for (const t of alive) { addFx(state.g.capital[t], '+' + income(t), TEAMS[t].c); }
+    if (state.round % tune.payoutEvery === 0) R.payout(state.g, tune.payoutPerHex);
+    state.round++;
+    state.prices = R.rollPrices(rng, PP());
+  }
+  state.cur = next;
+  if (state.lastCall || (settings.end === 'rounds' && state.round > settings.rounds)) return endGame();
+  state.sel = -1; state.target = -1; state.flood = null;
+  setPhase('ready');
+}
+function endGame() { // alive teams by score; the fallen after them, the last to fall first
+  const ts = [...Array(state.n).keys()];
+  state.final = ts.map(t => ({ t, alive: state.g.alive[t], hexes: R.hexCount(state.g, t), bat: R.battalions(state.g, t), money: state.money[t], score: scoreOf(t), fellAt: state.fellAt[t] }))
+    .sort((a, b) => (b.alive - a.alive) || (a.alive ? b.score - a.score : b.fellAt - a.fellAt));
+  state.score = state.final[0].score; state.gained = state.names[state.final[0].t];
+  sfx.win(); go('results');
+}
+
+// ---- The map: geometry, clicks and drawing -------------------------------------------------------
+const MAP = { x: 8, y: 64, w: 842, h: 648 };
+function layout() {
+  const s3 = Math.sqrt(3), cols = state.cols, rows = state.rows;
+  const r = Math.min((MAP.w - 30) / (s3 * (cols + 0.5)), (MAP.h - 30) / (1.5 * (rows - 1) + 2));
+  const gw = s3 * r * (cols + 0.5), gh = r * (1.5 * (rows - 1) + 2);
+  const x0 = MAP.x + (MAP.w - gw) / 2 + s3 * r / 2, y0 = MAP.y + (MAP.h - gh) / 2 + r;
+  return { r, at: (col, row) => [x0 + s3 * r * (col + 0.5 * (row & 1)), y0 + 1.5 * r * row] };
+}
+function hexAt(px, py) {
+  const L = layout();
+  let best = -1, bd = Infinity;
+  for (const hx of state.g.hexes) { const [x, y] = L.at(hx.col, hx.row), d = Math.hypot(px - x, py - y); if (d < bd) { bd = d; best = hx.id; } }
+  return bd < L.r * 0.92 ? best : -1;
+}
+function mapPoint(e) { const b = e.currentTarget.getBoundingClientRect(), s = b.width / MAP.w; return [MAP.x + (e.clientX - b.left) / s, MAP.y + (e.clientY - b.top) / s]; }
+function onHexClick(hx) {
+  if (state.paused || hx < 0) return;
+  const g = state.g, t = state.cur, p = state.phase;
+  if (p === 'shop') { if (g.owner[hx] === t) { state.sel = hx; state.msg = ''; sfx.click(); } else { state.msg = 'اختر أرضاً لفريقك'; state.msgGood = false; sfx.bad(); } return renderSide(); }
+  if (p === 'attack') {
+    if (g.owner[hx] === t) { state.sel = canAttackFrom(hx) ? hx : -1; state.target = -1; state.msg = state.sel < 0 ? `لا هجوم من هنا: أرض الخصم تحتاج ${tune.attackMin} كتائب على الأقل وأكثر من ضربة واحدة من مدافعه` : ''; state.msgGood = false; (state.sel < 0 ? sfx.bad : sfx.click)(); return renderSide(); }
+    if (state.sel >= 0 && g.hexes[state.sel].nb.includes(hx)) { state.target = hx; state.msg = ''; sfx.click(); return renderSide(); }
+    state.msg = state.sel < 0 ? 'ابدأ باختيار أرض لفريقك' : 'اختر أرضاً مجاورة للأرض المختارة'; state.msgGood = false; sfx.bad(); return renderSide();
+  }
+  if (p === 'move' && state.movesLeft > 0) {
+    if (state.sel >= 0 && hx !== state.sel && R.reachable(g, state.sel).has(hx)) { state.target = hx; state.moveN = g.bat[state.sel] - 1; sfx.click(); return renderSide(); }
+    if (g.owner[hx] === t && g.bat[hx] >= 2) { state.sel = hx; state.target = -1; state.msg = ''; sfx.click(); return renderSide(); }
+    state.msg = g.owner[hx] === t ? 'تحتاج كتيبتين على الأقل لتنقل منها' : 'النقل داخل أرضك فقط'; state.msgGood = false; sfx.bad(); renderSide();
+  }
+}
+function addFx(hx, text, color) { state.fx.push({ hx, text, color, t0: state.t }); }
+
+function hexPath(x, y, r) { const p = new Path2D(); for (let i = 0; i < 6; i++) { const a = Math.PI / 180 * (60 * i - 30); p[i ? 'lineTo' : 'moveTo'](x + r * Math.cos(a), y + r * Math.sin(a)); } p.closePath(); return p; }
+function drawPath(d, x, y, s, fill, stroke, lw) { ctx.save(); ctx.translate(x, y); ctx.scale(s, s); if (fill) { ctx.fillStyle = fill; ctx.fill(path(d)); } if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw / s; ctx.stroke(path(d)); } ctx.restore(); }
+function drawFortress(x, y, size, t) { // centred on x, y
+  const s = size / 40, ox = x - 20 * s, oy = y - 20 * s, brass = css('--brass');
+  if (t >= 0) { ctx.strokeStyle = brass; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(ox + 20 * s, oy + 7 * s); ctx.lineTo(ox + 20 * s, oy - 2 * s); ctx.stroke();
+    drawPath('M20 -1.7 L28 0.6 L20 2.9 Z', ox, oy, s, TEAMS[t].c); }
+  drawPath(FORT, ox, oy, s, css('--stone'), brass, 1.4);
+  drawPath(FORT_WIN, ox, oy, s, '#2a2418'); drawPath(FORT_GATE, ox, oy, s, '#2a2418');
+}
+function drawBanner(x, y, size, t, drop = 1) { // the pole's foot at x, y; drop < 1 while it is being planted
+  const s = size / 40, ox = x - 9.3 * s, oy = y - 38 * s - (1 - drop) * 30;
+  ctx.globalAlpha = Math.min(1, drop * 1.5);
+  drawPath(BANNER_POLE, ox, oy, s, css('--brass')); drawPath(BANNER_TOP, ox, oy, s, css('--brass'));
+  drawPath(BANNER_CLOTH, ox, oy, s, TEAMS[t].c);
+  ctx.save(); ctx.translate(ox + 15.5 * s, oy + 6.5 * s); ctx.scale(0.6 * s, 0.6 * s); ctx.fillStyle = '#fff'; ctx.fill(path(TEAMS[t].emblem)); ctx.restore();
+  ctx.globalAlpha = 1;
+}
+function drawShield(x, y, size, t, n) {
+  const s = size / 20;
+  drawPath(SHIELD, x - 10 * s, y - 11.5 * s, s, css('--panel'), t >= 0 ? TEAMS[t].c : css('--muted'), 2.2);
+  ctx.fillStyle = css('--text'); ctx.font = `bold ${Math.round(12 * s)}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(String(n), x, y + 0.5 * s);
+}
+function drawCannon(x, y, size, n) { // a hex's cannons: a barrel on a wheel and the count
+  const s = size / 20;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(-0.45); ctx.fillStyle = css('--stone2'); ctx.strokeStyle = css('--brass'); ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.roundRect(-9 * s, -3 * s, 16 * s, 6 * s, 2 * s); ctx.fill(); ctx.stroke(); ctx.restore();
+  ctx.fillStyle = css('--brass'); ctx.beginPath(); ctx.arc(x - 1 * s, y + 3 * s, 3.4 * s, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = css('--text'); ctx.strokeStyle = css('--sea'); ctx.lineWidth = 3; ctx.font = `bold ${Math.round(11 * s)}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.strokeText(String(n), x + 10 * s, y + 4 * s); ctx.fillText(String(n), x + 10 * s, y + 4 * s);
+}
+function teamFill(t) { return t >= 0 ? TEAMS[t].c : css('--land'); }
+function marks() { // which hexes the current step lets the host click, and how
+  const g = state.g, t = state.cur, m = {};
+  if (state.paused) return m;
+  if (state.phase === 'shop') { g.hexes.forEach(hx => { if (g.owner[hx.id] === t) m[hx.id] = 'pick'; }); if (state.sel >= 0) m[state.sel] = 'from'; }
+  if (state.phase === 'attack') {
+    if (state.sel < 0) g.hexes.forEach(hx => { if (canAttackFrom(hx.id)) m[hx.id] = 'pick'; });
+    else {
+      m[state.sel] = 'from';
+      for (const n of g.hexes[state.sel].nb) if (g.owner[n] !== t) m[n] = R.attackBlock(g, t, state.sel, n, RP()) ? 'blocked' : 'target';
+      if (state.target >= 0) m[state.target] = 'aim';
+    }
+  }
+  if (state.phase === 'move' && state.movesLeft > 0) {
+    if (state.sel < 0) g.hexes.forEach(hx => { if (g.owner[hx.id] === t && g.bat[hx.id] >= 2 && R.reachable(g, hx.id).size) m[hx.id] = 'pick'; });
+    else { m[state.sel] = 'from'; for (const n of R.reachable(g, state.sel)) m[n] = 'target'; if (state.target >= 0) m[state.target] = 'aim'; }
+  }
+  return m;
+}
+function drawMap() {
+  const L = layout(), g = state.g, r = L.r, brass = css('--brass'), pulse = 0.5 + 0.5 * Math.sin(state.t * 5);
+  ctx.fillStyle = css('--sea'); ctx.beginPath(); ctx.roundRect(MAP.x, MAP.y, MAP.w, MAP.h, 8); ctx.fill();
+  ctx.strokeStyle = css('--line'); ctx.lineWidth = 1; ctx.stroke();
+  ctx.strokeStyle = css('--wave'); ctx.lineWidth = 1.5; // the sea's faint waves
+  for (let y = MAP.y + 26; y < MAP.y + MAP.h; y += 34) for (let x = MAP.x + 20 + ((y / 34) % 2) * 30; x < MAP.x + MAP.w - 30; x += 60) {
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + 7, y - 5, x + 14, y); ctx.quadraticCurveTo(x + 21, y + 5, x + 28, y); ctx.stroke(); }
+  const m = marks(), shadow = css('--shade'), anyMark = Object.keys(m).length > 0;
+  for (const hx of g.hexes) { const [x, y] = L.at(hx.col, hx.row); ctx.fillStyle = shadow; ctx.fill(hexPath(x + 2, y + 4, r - 1)); } // the table's shadow under the land
+  for (const hx of g.hexes) {
+    const [x, y] = L.at(hx.col, hx.row), p = hexPath(x, y, r - 1.5), o = g.owner[hx.id], f = state.flood;
+    ctx.fillStyle = css('--land'); ctx.fill(p);
+    if (f && f.hx === hx.id) { // the signature: a taken hex floods with the winner's colour
+      const k = clamp((state.t - f.t0) / tune.floodTime, 0, 1);
+      if (f.prev >= 0) { ctx.globalAlpha = 0.82; ctx.fillStyle = teamFill(f.prev); ctx.fill(p); ctx.globalAlpha = 1; }
+      ctx.save(); ctx.clip(p); ctx.globalAlpha = 0.82; ctx.fillStyle = teamFill(o); ctx.beginPath(); ctx.arc(x, y + r * 0.4, r * 1.3 * k, 0, Math.PI * 2); ctx.fill(); ctx.restore(); ctx.globalAlpha = 1;
+    } else if (o >= 0) { ctx.globalAlpha = 0.82; ctx.fillStyle = teamFill(o); ctx.fill(p); ctx.globalAlpha = 1; }
+    const mk = m[hx.id];
+    if ((anyMark && !mk) || mk === 'blocked') { ctx.fillStyle = shadow; ctx.fill(p); }
+    if (hx.id === state.hover && mk && mk !== 'blocked') { ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.fill(p); }
+    ctx.lineWidth = 1.6; ctx.strokeStyle = brass; ctx.globalAlpha = 0.7; ctx.stroke(p); ctx.globalAlpha = 1;
+    if (mk === 'pick') { ctx.lineWidth = 2 + 2 * pulse; ctx.strokeStyle = brass; ctx.stroke(hexPath(x, y, r - 4)); }
+    if (mk === 'from') { ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke(hexPath(x, y, r - 4)); }
+    if (mk === 'target') { ctx.setLineDash([7, 5]); ctx.lineDashOffset = -state.t * 20; ctx.lineWidth = 3; ctx.strokeStyle = state.phase === 'move' ? '#fff' : css('--bad'); ctx.stroke(hexPath(x, y, r - 5)); ctx.setLineDash([]); }
+    if (mk === 'aim') { ctx.lineWidth = 5; ctx.strokeStyle = state.phase === 'move' ? '#fff' : css('--bad'); ctx.stroke(hexPath(x, y, r - 4)); }
+  }
+  if (state.sel >= 0 && state.target >= 0) { // an arrow from the chosen hex to its target
+    const a = g.hexes[state.sel], b = g.hexes[state.target], [x1, y1] = L.at(a.col, a.row), [x2, y2] = L.at(b.col, b.row);
+    const ang = Math.atan2(y2 - y1, x2 - x1), ex = x2 - Math.cos(ang) * r * 0.45, ey = y2 - Math.sin(ang) * r * 0.45;
+    ctx.strokeStyle = ctx.fillStyle = state.phase === 'move' ? '#fff' : css('--bad'); ctx.lineWidth = 6; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x1 + Math.cos(ang) * r * 0.35, y1 + Math.sin(ang) * r * 0.35); ctx.lineTo(ex - Math.cos(ang) * 10, ey - Math.sin(ang) * 10); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ex + Math.cos(ang) * 6, ey + Math.sin(ang) * 6); ctx.lineTo(ex - Math.cos(ang - 0.6) * 16, ey - Math.sin(ang - 0.6) * 16); ctx.lineTo(ex - Math.cos(ang + 0.6) * 16, ey - Math.sin(ang + 0.6) * 16); ctx.closePath(); ctx.fill();
+  }
+  for (const hx of g.hexes) { // figures on top: fortress or banner, and the battalion shield
+    const [x, y] = L.at(hx.col, hx.row), o = g.owner[hx.id], cap = R.isCapital(g, hx.id), f = state.flood;
+    if (cap) drawFortress(x, y - r * 0.18, r * 0.82, o);
+    else if (o >= 0) drawBanner(x + r * 0.05, y + r * 0.08, r * 0.62, o, f && f.hx === hx.id ? clamp((state.t - f.t0) / tune.floodTime, 0, 1) : 1);
+    if (o >= 0) drawShield(x + (cap ? r * 0.42 : r * 0.36), y + r * 0.42, r * 0.42, o, g.bat[hx.id]);
+    if (g.fort[hx.id] && !cap) drawFortress(x - r * 0.48, y - r * 0.4, r * 0.4, -1);  // a bought fort: a small keep
+    if (g.fort[hx.id] && cap) { ctx.lineWidth = 3; ctx.strokeStyle = css('--brass'); ctx.stroke(hexPath(x, y, r - 6)); } // on a capital: a second wall
+    if (g.cannons[hx.id]) drawCannon(x - r * 0.42, y + r * 0.46, r * 0.36, g.cannons[hx.id]);
+  }
+  for (const e of state.fx) { // +1 and -1 rising from a hex
+    const k = (state.t - e.t0) / 1.1; if (k > 1) continue;
+    const hx = g.hexes[e.hx], [x, y] = L.at(hx.col, hx.row);
+    ctx.globalAlpha = 1 - k; ctx.fillStyle = e.color; ctx.strokeStyle = css('--sea'); ctx.lineWidth = 4;
+    ctx.font = `bold 26px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.strokeText(e.text, x, y - r * 0.5 - k * 30); ctx.fillText(e.text, x, y - r * 0.5 - k * 30); ctx.globalAlpha = 1;
+  }
+  state.fx = state.fx.filter(e => state.t - e.t0 < 1.1);
+}
+
+// ---- Scenes --------------------------------------------------------------------------------
+function go(name) { scene = name; if (state) state.paused = false; ui.replaceChildren(); (scenes[name].enter || (() => {}))(); events.push({ scene: name }); }
+let refs = {};
+function renderAll() { if (scene !== 'play') return; renderHeader(); renderSide(); renderQuestion(); }
+function themeSeg(after) {
+  return h('div', { class: 'seg' }, h('button', { class: theme === 'dark' ? 'on' : '', onclick: () => { setTheme('dark'); after(); } }, 'داكن'),
+    h('button', { class: theme === 'light' ? 'on' : '', onclick: () => { setTheme('light'); after(); } }, 'فاتح'));
+}
+function renderHeader() {
+  const end = settings.end === 'rounds' ? h('span', { class: 'chip' }, 'الجولة ', N(`${Math.min(state.round, settings.rounds)} / ${settings.rounds}`))
+    : settings.end === 'timed' ? h('span', { class: 'chip', id: 'clockchip' }, 'الوقت المتبقي')
+    : h('span', { class: 'chip' }, 'الجولة ', N(state.round), ' · حتى آخر عاصمة');
+  refs.header.replaceChildren(...[h('span', { html: LOGO(0.85) }), h('b', { style: 'font-size:20px' }, TITLE), end,
+    h('span', { class: 'chip muted' }, settings.qmode === 'choices' ? 'أربعة خيارات' : 'المقدّم يحكم'),
+    state.lastCall ? h('span', { class: 'chip bad' }, 'انتهى الوقت · آخر دور') : null,
+    h('span', { class: 'sp' }), themeSeg(renderAll),
+    h('span', { class: 'hgroup' },
+      B('شرح اللعبة', 'ghost', () => showHelp()),
+      B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', 'ghost', () => setMuted(!muted)),
+      B(state.paused ? 'متابعة' : 'إيقاف مؤقت', 'ghost', () => { state.paused = !state.paused; renderHeader(); }),
+      B('إنهاء الحرب', 'ghost danger', confirmEnd))].filter(Boolean));
+}
+function stat(label, v, cls = '') { return h('div', { class: 'stat' }, h('small', {}, label), h('b', { class: cls }, N(v))); }
+function vsBox(d) { // the forecast or the live battle: who fights with what, and how hard each side hits
+  const g = state.g, from = d.from, to = d.to, neutral = g.owner[to] < 0, cap = R.isCapital(g, to), P = RP();
+  const nA = d.b ? d.b.a : g.bat[from], nD = d.b ? d.b.d : g.bat[to];
+  const gear = hx => [g.cannons[hx] ? `${g.cannons[hx]} مدفع` : '', g.fort[hx] ? 'حصن' : ''].filter(Boolean).join(' · ') || 'بلا مدافع';
+  const sideA = h('div', { class: 'side' }, banner(state.duel ? d.a : state.cur, 34), h('b', {}, state.names[state.duel ? d.a : state.cur]), h('span', { class: 'n' }, N(nA)),
+    h('span', { class: 'muted' }, 'كتيبة مهاجمة'), neutral ? null : h('span', { class: 'muted', style: 'font-size:12px' }, gear(from), ' · ضربته ', N(R.hit(g.cannons[from], g.fort[to], P))));
+  const sideD = neutral ? h('div', { class: 'side' }, h('span', { html: shieldSVG(-1, 0, 28) }), h('b', {}, 'أرض محايدة'), h('span', { class: 'n' }, N(0)), h('span', { class: 'muted' }, 'إجابة صحيحة تأخذها'))
+    : h('div', { class: 'side' }, cap ? h('span', { html: fortressSVG(g.owner[to], 38) }) : banner(g.owner[to], 34), h('b', {}, state.names[g.owner[to]]),
+      h('span', { class: 'n' }, N(nD)), h('span', { class: 'muted' }, cap ? 'كتيبة في العاصمة' : 'كتيبة مدافعة'),
+      h('span', { class: 'muted', style: 'font-size:12px' }, gear(to), ' · ضربته ', N(R.hit(g.cannons[to], g.fort[from], P))));
+  return h('div', { class: 'vs' }, sideA, h('span', { class: 'x' }, 'ضد'), sideD);
+}
+function renderSide() {
+  if (scene !== 'play') return;
+  const t = state.cur, g = state.g, p = state.phase, step = PHASE_STEP[p];
+  const turn = h('div', { class: 'panel turn' },
+    h('div', { class: 'who' }, banner(t, 46), h('div', {}, h('div', { class: 'muted', style: 'font-size:13px' }, 'الدور على'), h('b', {}, state.names[t]))),
+    h('div', { class: 'stats' }, stat('المال', fmt(state.money[t]), 'brass'), stat(payoutIn() === 1 ? 'دفعة الجولة' : `دفعة بعد ${payoutIn()}`, '+' + fmt(income(t))), stat('الأراضي', R.hexCount(g, t)), stat('الكتائب', R.battalions(g, t))),
+    h('div', { class: 'steps' }, ...['السؤال', 'السوق', 'الهجوم', 'التحريك'].map((s, i) => h('span', { class: i === step ? 'on' : i < step ? 'done' : '' }, s))));
+  const a = [], bottom = [];
+  const msg = h('div', { class: 'msg ' + (state.msgGood ? 'ok' : 'bad') }, state.msg);
+  if (p === 'ready') {
+    a.push(h('div', { class: 'hint' }, 'سؤال الدور: الإجابة الصحيحة تضيف ', h('b', { class: 'brass' }, N(fmt(tune.turnReward))), ' إلى مال الفريق.'));
+    bottom.push(B('اطرح سؤال الدور', 'pri', askTurnQuestion, { 'data-primary': '1' }));
+  } else if (p === 'question' || p === 'reveal') {
+    a.push(h('div', { class: 'hint muted' }, 'السؤال معروض على الخريطة. أجب قبل انتهاء الوقت.'));
+  } else if (p === 'shop') {
+    const pr = state.prices, hx = state.sel, small = 'padding:5px 10px;font-size:13px;min-height:32px';
+    a.push(h('div', { class: 'hint' }, 'اختر أرضاً لك على الخريطة، ثم اشترِ أو بِع فيها. الأسعار تتغير كل جولة.'));
+    if (hx >= 0) a.push(
+      ...['troop', 'cannon', 'fort'].map(k => h('div', { class: 'row', style: 'gap:6px' },
+        h('b', { style: 'min-width:54px' }, { troop: 'كتائب', cannon: 'مدافع', fort: 'حصن' }[k]), h('span', { class: 'chip' }, N(k === 'fort' ? (g.fort[hx] ? 'نعم' : 'لا') : goodOf(k, hx))),
+        B('شراء', 'good', () => trade(k, 1), { style: small }), k === 'troop' ? B('+10', 'good', () => trade(k, 10), { style: small }) : null,
+        B('بيع', '', () => trade(k, -1), { style: small }),
+        h('span', { class: 'muted', style: 'font-size:12px' }, 'شراء ', N(pr[k].buy), ' · بيع ', N(pr[k].sell)))));
+    a.push(msg);
+    bottom.push(B('إلى الهجوم', 'pri', openAttack, { 'data-primary': '1' }));
+    if (state.buys.length) bottom.push(B('تراجع', '', undoBuy));
+  } else if (p === 'attack') {
+    const any = g.hexes.some(hx => canAttackFrom(hx.id));
+    const ok = state.sel >= 0 && state.target >= 0 && !R.attackBlock(g, t, state.sel, state.target, RP());
+    if (!any) a.push(h('div', { class: 'hint' }, `لا هجوم ممكن الآن: أرض الخصم تحتاج ${tune.attackMin} كتائب على الأقل في أرض مجاورة. انتظر الدفعة أو اشترِ كتائب.`));
+    else if (state.sel < 0) a.push(h('div', { class: 'hint' }, `اختر أرضاً لفريقك تهاجم منها. الأرض المحايدة تكفيها الحدود، وأرض الخصم تحتاج ${tune.attackMin} كتائب على الأقل.`));
+    else if (state.target < 0) a.push(h('div', { class: 'hint' }, 'اختر أرضاً مجاورة لتهاجمها. الأرض المحايدة تُؤخذ بإجابة صحيحة، وأرض الخصم تُحسم بأسئلة متتالية.'));
+    else {
+      a.push(vsBox({ from: state.sel, to: state.target }));
+      if (!ok) a.push(h('div', { class: 'hint bad' }, `لا يكفي: تحتاج ${tune.attackMin} كتائب على الأقل، وأكثر من ضربة واحدة من مدافع الخصم (`, N(R.hit(g.cannons[state.target], g.fort[state.sel], RP())), ').'));
+      else a.push(h('div', { class: 'hint muted', style: 'font-size:14px' }, isNeutral(state.target) ? 'إجابة صحيحة تأخذ الأرض.'
+        : 'تقاتل كل كتائب أرضك. يجيب الفريقان بالتناوب، المهاجم أولاً، وكل إجابة تُسقط ضربة. للمهاجم أن ينسحب بين الأسئلة.'));
+      bottom.push(B('هاجم!', 'warn', startBattle, { 'data-primary': ok ? '1' : null, disabled: !ok }));
+    }
+    a.push(msg);
+    if (state.sel >= 0) bottom.push(B('اختيار آخر', '', () => { state.sel = -1; state.target = -1; renderSide(); }));
+    bottom.push(B('تخطي الهجوم', '', openMove, { 'data-primary': ok ? null : '1' }));
+  } else if (p === 'duel' || p === 'duelReveal') {
+    a.push(vsBox(state.duel));
+    if (!state.duel.neutral && !state.duel.b.over) a.push(h('div', { class: 'chip' }, 'يجيب الآن: ', state.names[answerer(state.duel)]));
+  } else if (p === 'move') {
+    if (state.movesLeft <= 0) a.push(h('div', { class: 'hint' }, 'انتهى التحريك لهذا الدور.'));
+    else if (state.sel < 0) a.push(h('div', { class: 'hint' }, 'انقل كتائب من أرض إلى أرض أخرى لفريقك متصلة بها، لتقوية الحدود أو العاصمة. أو أنهِ الدور.'));
+    else if (state.target < 0) a.push(h('div', { class: 'hint' }, 'اختر الأرض التي تنقل إليها.'));
+    else {
+      const max = g.bat[state.sel] - 1; state.moveN = clamp(state.moveN, 1, max);
+      a.push(h('div', { class: 'row' }, h('span', { class: 'hint' }, 'عدد الكتائب'), h('span', { class: 'stepper' },
+        h('button', { onclick: () => { state.moveN = clamp(state.moveN - 1, 1, max); renderSide(); } }, '−'), h('b', {}, N(state.moveN)),
+        h('button', { onclick: () => { state.moveN = clamp(state.moveN + 1, 1, max); renderSide(); } }, '+'))),
+        h('div', { class: 'row' }, B('انقل', 'good', doMove, { 'data-primary': '1' }), B('اختيار آخر', '', () => { state.sel = -1; state.target = -1; renderSide(); })));
+    }
+    a.push(msg);
+    bottom.push(B('إنهاء الدور', 'pri', endTurn, { 'data-primary': state.target >= 0 ? null : '1' }));
+  } else if (p === 'over') {
+    const w = R.aliveTeams(g)[0];
+    a.push(h('div', { style: 'display:flex;gap:12px;align-items:center' }, banner(w, 54), h('div', { class: 'verdict pop' }, 'انتصر ', state.names[w], '!')),
+      h('div', { class: 'hint muted' }, 'سقطت كل العواصم الأخرى.'));
+    bottom.push(B('النتائج', 'pri', endGame, { 'data-primary': '1' }));
+  }
+  const fallen = state.log.length ? state.log[state.log.length - 1] : null;
+  const act = h('div', { class: 'panel act' }, ...a, fallen && (p === 'move' || p === 'over') && state.fellAt[fallen.fell] === state.turns
+    ? h('div', { class: 'chip bad', style: 'font-size:15px;padding:8px 12px' }, h('span', { html: fortressSVG(-1, 22) }), `سقطت عاصمة ${state.names[fallen.fell]} وخرج من الحرب`) : null,
+    h('div', { class: 'bottom' }, ...bottom));
+  const order = [...Array(state.n).keys()].sort((x, y) => (g.alive[y] - g.alive[x]) || scoreOf(y) - scoreOf(x));
+  const board = h('div', { class: 'panel' }, h('table', { class: 'lb' }, h('tr', {}, ...['الفريق', 'أراضٍ', 'كتائب', 'مال', 'نقاط'].map(s => h('th', {}, s))),
+    ...order.map(i => h('tr', { class: (i === t ? 'cur' : '') + (g.alive[i] ? '' : ' out') },
+      h('td', {}, h('span', { class: 'tn' }, banner(i, 20), state.names[i])), h('td', {}, N(R.hexCount(g, i))), h('td', {}, N(R.battalions(g, i))),
+      h('td', {}, N(fmt(state.money[i]))), h('td', { style: 'font-weight:bold' }, g.alive[i] ? N(fmt(scoreOf(i))) : 'خرج')))));
+  refs.side.replaceChildren(turn, act, board);
+}
+function renderQuestion() {
+  document.getElementById('qpanel')?.remove();
+  const p = state.phase;
+  if (!['question', 'reveal', 'duel', 'duelReveal'].includes(p)) return;
+  const q = state.q, duel = p === 'duel' || p === 'duelReveal', d = state.duel, done = p === 'reveal' || p === 'duelReveal';
+  const longest = Math.max(...q.choices.map(x => x.length));
+  const size = q.text.length > 110 || longest > 45 ? 'l' : q.text.length > 70 || longest > 30 ? 'm' : '';
+  const who = duel ? (done && d.last ? (d.neutral || d.last.side === 'a' ? d.a : d.d) : answerer(d)) : state.cur;
+  const title = !duel ? `سؤال ${state.names[state.cur]}` : d.neutral ? `${state.names[d.a]} يتقدم إلى أرض محايدة` : `معركة: يجيب ${state.names[who]}`;
+  const head = h('div', { class: 'ph' }, h('span', { style: 'display:flex;gap:10px;align-items:center;font-size:18px' }, banner(who, 30), title),
+    duel && !d.neutral ? h('span', { class: 'chip' }, state.names[d.a], ' ', N(d.b.a), ' · ', state.names[d.d], ' ', N(d.b.d)) : h('span', { class: 'chip muted' }, q.cat));
+  const timer = done ? null : h('div', { class: 'ring', style: 'width:96px;height:96px' }, h('span', { id: 'ringsvg', html: ring(state.timer, settings.answerTime) }), h('b', { id: 'ringnum' }, N(Math.ceil(state.timer))));
+  const parts = [h('div', { style: 'display:flex;gap:16px;align-items:center' }, timer, h('div', { class: 'q', style: 'flex:1' }, q.text))];
+  const canPick = !done && settings.qmode === 'choices';
+  const answer = (right, k = null) => duel ? answerBattle(right, k) : answerTurn(right, k);
+  if (settings.qmode === 'choices') {
+    parts.push(h('div', { class: 'choices' }, ...q.choices.map((txt, k) => {
+      const cls = done && k === q.right ? ' right' : done && k === state.picked ? ' wrong' : '';
+      return h('button', { class: 'choice' + cls, disabled: !canPick, onclick: canPick ? () => answer(k === q.right, k) : null }, h('span', { class: 'k' }, k + 1), txt);
+    })));
+  } else if (state.reveal || done) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right]));
+  else parts.push(B('إظهار الإجابة للمقدّم', '', () => { state.reveal = true; renderQuestion(); }, { style: 'align-self:flex-start;font-size:14px;padding:6px 14px;min-height:36px' }));
+  if (settings.qmode === 'judge' && !done) parts.push(h('div', { style: 'display:flex;gap:10px' },
+    B('إجابة صحيحة', 'good', () => answer(true), { 'data-primary': '1', style: 'flex:1;font-size:20px' }),
+    B('إجابة خاطئة', 'warn', () => answer(false), { style: 'flex:1;font-size:20px' })));
+  if (done) {
+    let verdict, note, next = [];
+    const missed = state.result === 'time' ? 'انتهى الوقت' : 'إجابة خاطئة';
+    if (!duel) {
+      const right = state.result === 'right';
+      verdict = right ? h('div', { class: 'reward pop' }, N('+' + fmt(state.reward))) : h('div', { class: 'verdict bad pop' }, missed);
+      note = right ? 'أُضيف المال. حان وقت السوق.' : 'لا مال هذه المرة، لكن الدور مستمر: تسوّق وهاجم.'; next = [B('إلى السوق', 'pri', openShop, { 'data-primary': '1' })];
+    } else if (d.neutral) {
+      const won = d.outcome === 'win';
+      verdict = h('div', { class: 'verdict pop ' + (won ? 'ok' : 'bad') }, won ? 'أُخذت الأرض!' : missed);
+      note = won ? 'الأرض لك وهي خالية: انقل إليها كتائب في خطوة التحريك.' : 'تبقى الأرض محايدة.';
+      next = [B('إلى الخريطة', 'pri', finishBattle, { 'data-primary': '1' })];
+    } else {
+      const L = d.last, loserTeam = L.loser === 'a' ? d.a : d.d;
+      verdict = h('div', { class: 'verdict pop ' + (L.right ? 'ok' : 'bad') }, L.right ? 'إجابة صحيحة' : missed);
+      const end = { win: R.isCapital(state.g, d.to) ? ' · سقطت العاصمة!' : ' · سقطت الأرض!', fail: ' · توقف الهجوم: لا يتحمل المهاجم ضربة أخرى' }[d.outcome] || '';
+      note = `${state.names[loserTeam]} يخسر ${L.loss} كتيبة${end}`;
+      next = d.outcome ? [B('إلى الخريطة', 'pri', finishBattle, { 'data-primary': '1' })]
+        : [B('السؤال التالي', 'pri', nextBattleQuestion, { 'data-primary': '1' }), B('انسحاب', '', withdraw)];
+    }
+    parts.push(h('div', { style: 'display:flex;align-items:center;gap:16px;margin-top:auto' }, verdict, h('div', { class: 'muted', style: 'flex:1;font-size:16px' }, note), ...next));
+  }
+  ui.append(h('section', { id: 'qpanel', class: 'panel', 'data-size': size }, head, h('div', { class: 'body' }, ...parts)));
+}
+function timeUp() { // nobody answered in time: an unanswered team counts as wrong
+  if (state.phase === 'question') { state.result = 'time'; state.reveal = true; sfx.wrong(); return setPhase('reveal'); }
+  if (state.phase === 'duel') answerBattle(false, null, true);
+}
+const HELP_FIG = { // the help's drawings, from the game's own figures
+  setup: () => `<div style="display:flex;gap:18px;align-items:center;justify-content:center">${[0, 1, 2, 3].map(t => fortressSVG(t, 64)).join('')}</div>`,
+  question: () => `<div style="display:flex;gap:16px;align-items:center;justify-content:center">${ring(18, 30, 96)}<span class="reward">+${fmt(tune.turnReward)}</span></div>`,
+  shop: () => `<div style="display:flex;gap:14px;align-items:center;justify-content:center">${shieldSVG(0, 2, 48)}<b class="brass" style="font-size:40px">←</b>${shieldSVG(0, 3, 48)}</div>`,
+  battle: () => `<div style="display:flex;gap:16px;align-items:center;justify-content:center">${bannerSVG(0, 80)}<b class="brass" style="font-size:34px">ضد</b>${bannerSVG(1, 80)}</div>`,
+  capital: () => `<div style="display:flex;gap:16px;align-items:center;justify-content:center">${fortressSVG(1, 80)}<b class="bad" style="font-size:40px">←</b>${fortressSVG(0, 80)}</div>`,
+  end: () => `<div style="display:flex;justify-content:center">${TROPHY}</div>`,
+};
+const HELP = [
+  ['setup', 'الإعداد', 'يختار المقدّم عدد الفرق وأسماءها، وطريقة عرض الأسئلة، ومتى تنتهي الحرب. لكل فريق عاصمة وأراضٍ حولها على خريطة جديدة كل مرة.'],
+  ['question', 'سؤال الدور', `يبدأ كل دور بسؤال للفريق. الإجابة الصحيحة تضيف ${fmt(tune.turnReward)} إلى ماله. وكل ${tune.payoutEvery} جولات تصل إلى كل عاصمة ${tune.payoutPerHex} كتيبة عن كل أرض يملكها فريقها.`],
+  ['shop', 'السوق', 'في السوق يشتري الفريق أو يبيع كتائب ومدافع وحصوناً في أي أرض له. الأسعار تتغير كل جولة، والبيع أرخص من الشراء. المدفع يقوّي ضربة الأرض في المعركة، والحصن يقسم الضربات عليها إلى النصف.'],
+  ['battle', 'الهجوم', `الأرض المحايدة المجاورة تُؤخذ بإجابة صحيحة. أرض الخصم تحتاج ${tune.attackMin} كتائب على الأقل، وتُحسم بأسئلة متتالية يجيب عنها الفريقان بالتناوب: كل إجابة صحيحة تُسقط من الخصم 3 + 3 لكل مدفع، وخطأ المدافع يكلفه 3. للمهاجم أن ينسحب بين الأسئلة.`],
+  ['capital', 'سقوط العاصمة', 'الأرض المأخوذة تبدأ خالية وتبقى الكتائب الناجية في أرض الهجوم، فانقلها في خطوة التحريك. إذا سقطت العاصمة خرج فريقها من الحرب وعادت أراضيه محايدة.'],
+  ['end', 'نهاية الحرب', 'تنتهي الحرب بسقوط كل العواصم إلا واحدة، أو بانتهاء الوقت أو الجولات. عندها يفوز صاحب أعلى نقاط: الأراضي، والمال، وقيمة الكتائب والمدافع والحصون بسعر البيع.'],
+];
+function showHelp(i = 0) {
+  document.getElementById('help')?.remove();
+  if (scene === 'play') { state.paused = true; renderHeader(); }
+  const last = i === HELP.length - 1, close = () => { document.getElementById('help')?.remove(); if (scene === 'play') { state.paused = false; renderHeader(); } };
+  ui.append(h('div', { class: 'ov', id: 'help' }, h('div', { class: 'modal', style: 'width:640px;justify-items:center' },
+    h('div', { class: 'muted', style: 'font-size:14px' }, 'شرح اللعبة · ', N(`${i + 1} / ${HELP.length}`)),
+    h('div', { style: 'height:120px;display:grid;place-items:center', html: HELP_FIG[HELP[i][0]]() }),
+    h('b', { style: 'font-size:24px' }, HELP[i][1]), h('div', { style: 'font-size:17px;line-height:1.75;min-height:90px' }, HELP[i][2]),
+    h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('السابق', '', () => showHelp(i - 1), { disabled: i === 0 }),
+      B(last ? 'إغلاق' : 'التالي', 'pri', last ? close : () => showHelp(i + 1), { 'data-primary': '1' }), last ? null : B('إغلاق', '', close)))));
+}
+function confirmEnd() {
+  if (document.getElementById('confirm')) return;
+  ui.append(h('div', { class: 'ov', id: 'confirm' }, h('div', { class: 'modal' }, h('b', { style: 'font-size:20px' }, 'إنهاء الحرب الآن؟'),
+    h('div', { class: 'muted' }, 'تُحسب النقاط الآن: الأراضي والكتائب والمال، ويُعلن الترتيب.'),
+    h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('نعم، أنهِ الحرب', 'warn', endGame), B('متابعة اللعب', '', () => document.getElementById('confirm').remove())))));
+}
+
+const scenes = {
+  title: {
+    enter() {
+      ui.append(h('div', { class: 'screen', style: 'align-items:center;justify-content:center;gap:22px;text-align:center' },
+        h('span', { html: LOGO(2.6) }), h('div', { style: 'font-size:60px;font-weight:bold' }, TITLE),
+        h('div', { class: 'muted', style: 'font-size:20px' }, 'حرب المعرفة بين الفرق: أجب صحيحاً، جهّز كتائبك، وانتزع أراضي خصومك حتى تسقط عواصمهم'),
+        h('div', { style: 'display:flex;gap:12px' }, B('حرب جديدة', 'pri', () => go('setup'), { 'data-primary': '1', style: 'padding:14px 34px;font-size:20px' }),
+          B('بنك الأسئلة', '', () => go('bank'), { style: 'padding:14px 26px;font-size:18px' }),
+          B('شرح اللعبة', '', () => showHelp(), { style: 'padding:14px 26px;font-size:18px' })),
+        themeSeg(() => go('title')),
+        h('div', { class: 'panel', style: 'padding:12px 20px;display:flex;gap:26px;font-size:14px' }, ...CONTROLS.map(c => h('span', { class: 'muted' }, c))),
+        h('div', { class: 'muted', style: 'font-size:14px' }, N(bank.length), ' سؤالاً في البنك')));
+    },
+    update() {}, draw() { backdrop(true); },
+  },
+  setup: {
+    enter() {
+      const s = settings;
+      const numF = (label, key, cfg, suffix = '') => h('label', { class: 'field' }, label, h('span', { style: 'display:flex;gap:6px;align-items:center' },
+        h('input', { value: String(s[key]), inputmode: 'numeric', onchange: e => { s[key] = clamp(toNum(e.target.value) || cfg.value, cfg.min, cfg.max); e.target.value = s[key]; } }),
+        h('span', { class: 'muted' }, suffix)), h('span', { style: 'font-weight:normal;font-size:11px' }, 'من ', N(fmt(cfg.min)), ' إلى ', N(fmt(cfg.max))));
+      const seg = (key, opts) => h('div', { class: 'seg' }, ...opts.map(([v, l]) => h('button', { class: s[key] === v ? 'on' : '', onclick: () => { sfx.click(); s[key] = v; go('setup'); } }, l)));
+      const names = h('div', { class: 'names' }, ...[...Array(s.teams).keys()].map(i => h('span', { style: 'display:flex;gap:6px;align-items:center' }, banner(i, 28),
+        h('input', { value: s.names[i], maxlength: '18', oninput: e => { s.names[i] = e.target.value.trim() || `الفريق ${i + 1}`; } }))));
+      ui.append(h('div', { class: 'screen' },
+        h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('span', { html: LOGO(1) }), h('b', { style: 'font-size:26px' }, 'إعداد الحرب'), h('span', { style: 'flex:1' }),
+          B('رجوع', '', () => go('title')), B('ابدأ الحرب', 'pri', () => { store.set('husun.settings', s); reset(); go('play'); }, { 'data-primary': '1', style: 'padding:12px 30px;font-size:18px' })),
+        h('div', { class: 'grid2', style: 'flex:1;min-height:0' },
+          h('div', { style: 'display:grid;gap:14px;align-content:start' },
+            h('div', { class: 'panel box' }, h('h3', {}, 'الفرق'), h('div', { style: 'display:flex;gap:10px;align-items:center' }, 'عدد الفرق',
+              seg('teams', [2, 3, 4, 5, 6].map(n => [n, String(n)]))), names),
+            h('div', { class: 'panel box' }, h('h3', {}, 'الوقت'), numF('وقت الإجابة على كل سؤال', 'answerTime', CONFIG.answerTime, 'ثانية')),
+            h('div', { class: 'panel box' }, h('h3', {}, 'المظهر'), themeSeg(() => go('setup')))),
+          h('div', { style: 'display:grid;gap:14px;align-content:start' },
+            h('div', { class: 'panel box' }, h('h3', {}, 'عرض الأسئلة'), seg('qmode', [['choices', 'أربعة خيارات على الشاشة'], ['judge', 'السؤال فقط والمقدّم يحكم']]),
+              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode === 'choices' ? 'تختار الفرق رقم الإجابة، وفي المعركة يسجّل المقدّم رقم كل فريق.' : 'يظهر السؤال، ويحكم المقدّم على كل إجابة بصحيحة أو خاطئة، ثم تظهر الإجابة الصحيحة.')),
+            h('div', { class: 'panel box' }, h('h3', {}, 'نهاية الحرب'), seg('end', [['capital', 'حتى آخر عاصمة'], ['timed', 'بعد مدة'], ['rounds', 'بعد عدد جولات']]),
+              s.end === 'timed' ? numF('مدة الحرب', 'minutes', CONFIG.minutes, 'دقيقة') : s.end === 'rounds' ? numF('عدد الجولات', 'rounds', CONFIG.rounds, 'جولة')
+                : h('div', { class: 'muted', style: 'font-size:12px' }, 'تستمر الحرب حتى تبقى عاصمة واحدة. يستطيع المقدّم إنهاءها متى شاء، فتُحسب النقاط.')),
+            h('div', { class: 'panel box' }, h('h3', {}, 'البداية'), h('div', { class: 'muted', style: 'font-size:13px;line-height:1.7' },
+              `خريطة جديدة كل مرة من ${tune.mapCols * tune.mapRows - tune.mapLakes} أرضاً. لكل فريق عاصمة فيها ${tune.startCapitalBattalions} كتيبة${tune.startHexes > 1 ? ` و${tune.startHexes - 1} أراضٍ حولها` : ''}، و${fmt(tune.startMoney)} من المال.`))))));
+    },
+    update() {}, draw() { backdrop(false); },
+  },
+  bank: {
+    enter() {
+      const f = {}; const inp = (k, label) => h('label', { class: 'field' }, label, (f[k] = h('input', { maxlength: '160', style: 'width:100%;box-sizing:border-box;direction:rtl;text-align:right;font-size:15px' })));
+      const err = h('span', { class: 'bad', style: 'font-size:13px;font-weight:bold' });
+      const fileIn = h('input', { type: 'file', accept: '.csv,text/csv', style: 'display:none' });
+      fileIn.addEventListener('change', () => { const file = fileIn.files[0]; fileIn.value = ''; if (file) importCSV(file); });
+      const add = () => {
+        const row = ['cat', 'q', 'a', 'w1', 'w2', 'w3'].map(k => f[k].value.trim());
+        if (row.some(v => !v)) { err.textContent = 'املأ كل الحقول'; sfx.bad(); return; }
+        if (new Set(row.slice(2)).size < 4) { err.textContent = 'الخيارات الأربعة يجب أن تكون مختلفة'; sfx.bad(); return; }
+        bank.unshift(row); saveBank(); go('bank');
+      };
+      ui.append(h('div', { class: 'screen' },
+        h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('b', { style: 'font-size:26px' }, 'بنك الأسئلة'), h('span', { class: 'chip' }, N(bank.length), ' سؤال'), h('span', { style: 'flex:1' }),
+          B('استعادة الأسئلة الأصلية', '', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); go('bank'); }), B('رجوع', 'ghost', () => go('title'), { 'data-primary': '1' })),
+        h('div', { class: 'grid2', style: 'grid-template-columns:minmax(0,1fr) minmax(0,1fr)' },
+          h('div', { class: 'panel box' }, h('h3', {}, 'إضافة سؤال'),
+            h('div', { class: 'addq' }, inp('cat', 'التصنيف'), inp('q', 'نص السؤال')),
+            h('div', { style: 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px' }, inp('a', 'الإجابة الصحيحة'), inp('w1', 'إجابة خاطئة'), inp('w2', 'إجابة خاطئة'), inp('w3', 'إجابة خاطئة')),
+            h('div', { style: 'display:flex;gap:12px;align-items:center' }, B('إضافة إلى البنك', 'pri', add), err)),
+          h('div', { class: 'panel box' }, h('h3', {}, 'استيراد من ملف CSV'),
+            h('div', { class: 'muted', style: 'font-size:13px;line-height:1.7' }, 'الأعمدة بالترتيب: ',
+              h('b', { style: 'color:var(--text)' }, HusunCSV.HEADERS.join('، ')),
+              h('br'), 'الخيار 1 هو الإجابة الصحيحة، ويُخلط الترتيب عند العرض. اسم الملف يصبح تصنيف أسئلته.'),
+            h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' },
+              B('استيراد أسئلة من ملف', 'pri', () => fileIn.click()), B('تنزيل نموذج', '', downloadTemplate), fileIn))),
+        bankMsg ? h('div', { id: 'bankmsg', class: 'panel', style: `padding:10px 14px;font-size:14px;font-weight:bold;color:var(--${bankMsg.good ? 'ok' : 'bad'})` }, bankMsg.text) : null,
+        h('div', { class: 'panel banklist' }, ...bank.map((r, i) => h('div', { class: 'bq' }, h('span', { class: 'chip muted', title: r[0], style: 'overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;box-sizing:border-box' }, r[0]), h('span', {}, r[1]),
+          h('span', { class: 'ok', style: 'font-weight:bold' }, r[2]), B('حذف', '', () => { if (bank.length > 1) { bank.splice(i, 1); saveBank(); go('bank'); } }, { style: 'padding:5px 10px;font-size:12px;min-height:34px' }))))));
+      f.cat.setAttribute('list', 'cats'); bankMsg = null;
+      ui.append(h('datalist', { id: 'cats' }, ...[...new Set(bank.map(r => r[0]))].map(c => h('option', { value: c }))));
+    },
+    update() {}, draw() { backdrop(false); },
+  },
+  play: {
+    enter() {
+      refs = {};
+      refs.header = h('header'); refs.side = h('aside', { id: 'side' });
+      const mapbox = h('div', { id: 'mapbox', role: 'application', 'aria-label': 'خريطة الحرب' });
+      mapbox.addEventListener('pointerdown', e => onHexClick(hexAt(...mapPoint(e))));
+      mapbox.addEventListener('pointermove', e => { state.hover = hexAt(...mapPoint(e)); });
+      mapbox.addEventListener('pointerleave', () => { state.hover = -1; });
+      ui.append(refs.header, mapbox, refs.side);
+      renderAll();
+    },
+    update(dt) {
+      if (state.paused) return;
+      if (settings.end === 'timed') {
+        state.elapsed += dt;
+        if (!state.lastCall && state.elapsed >= settings.minutes * 60) { state.lastCall = true; if (state.phase === 'ready') return endGame(); renderHeader(); }
+      }
+      if (state.phase === 'question' || state.phase === 'duel') {
+        state.timer -= dt;
+        const s = Math.ceil(state.timer);
+        if (s <= tune.tickWarn && s > 0 && s !== state.ticked) { state.ticked = s; sfx.tick(); }
+        if (state.timer <= 0) { state.timer = 0; return timeUp(); }
+        if (settings.qmode === 'choices' && !typing()) for (let k = 1; k <= 4; k++) if (pressed('Digit' + k) || pressed('Numpad' + k)) {
+          if (state.phase === 'question') answerTurn(k - 1 === state.q.right, k - 1); else answerBattle(k - 1 === state.q.right, k - 1);
+          break;
+        }
+      }
+    },
+    draw() {
+      backdrop(false); drawMap();
+      const rs = document.getElementById('ringsvg');
+      if (rs) { rs.innerHTML = ring(state.timer, settings.answerTime); document.getElementById('ringnum').textContent = Math.ceil(state.timer); }
+      const cc = document.getElementById('clockchip');
+      if (cc) { const left = Math.max(0, settings.minutes * 60 - state.elapsed); cc.textContent = `الوقت المتبقي ${String(Math.floor(left / 60)).padStart(2, '0')}:${String(Math.floor(left % 60)).padStart(2, '0')}`; }
+      const ov = document.getElementById('pause');
+      if (state.paused && !ov && !document.getElementById('help')) ui.append(h('div', { id: 'pause', class: 'ov', onclick: () => { state.paused = false; renderHeader(); } }, h('div', { class: 'modal' }, h('b', { style: 'font-size:26px' }, 'إيقاف مؤقت'), h('span', { class: 'muted' }, 'اضغط للمتابعة (P)'))));
+      if ((!state.paused || document.getElementById('help')) && ov) ov.remove();
+    },
+  },
+  results: {
+    enter() {
+      if (!state.final) endGameValues();
+      const f = state.final, podium = [1, 0, 2].filter(r => f[r]); // second, first, third, right to left
+      const heights = { 0: 140, 1: 105, 2: 78 }, medal = ['#d9a520', '#9aa5b5', '#b8733a'];
+      ui.append(h('div', { class: 'screen', style: 'align-items:center;gap:12px' },
+        h('div', { style: 'font-size:32px;font-weight:bold' }, 'نهاية الحرب'),
+        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;height:360px' }, ...podium.map(r => { const e = f[r];
+          return h('div', { style: 'display:flex;flex-direction:column;align-items:center;gap:6px;width:210px' },
+            r === 0 ? h('span', { html: TROPHY }) : null, banner(e.t, r === 0 ? 64 : 48), h('b', { style: 'font-size:' + (r === 0 ? 24 : 18) + 'px' }, state.names[e.t]),
+            h('span', { class: 'num', style: 'font-weight:bold;font-size:18px' }, e.alive ? fmt(e.score) + ' نقطة' : 'خرج'),
+            h('div', { style: `width:100%;height:${heights[r]}px;border-radius:10px 10px 0 0;background:linear-gradient(${medal[r]}, ${medal[r]}aa);display:grid;place-items:center;font-size:54px;font-weight:bold;color:#fff;text-shadow:0 2px 4px #0006` }, N(r + 1))); })),
+        h('div', { class: 'panel', style: 'width:820px' }, h('table', { class: 'lb' },
+          h('tr', {}, ...['المركز', 'الفريق', 'الأراضي', 'الكتائب', 'المال', 'النقاط', 'الحالة'].map(s => h('th', {}, s))),
+          ...f.map((e, r) => h('tr', {}, h('td', {}, N(r + 1)), h('td', {}, h('span', { class: 'tn' }, banner(e.t, 20), state.names[e.t])),
+            h('td', {}, N(e.hexes)), h('td', {}, N(e.bat)), h('td', {}, N(fmt(e.money))), h('td', { style: 'font-weight:bold' }, e.alive ? N(fmt(e.score)) : '—'),
+            h('td', { class: e.alive ? 'ok' : 'bad' }, e.alive ? 'صامد' : 'سقطت عاصمته'))))),
+        h('div', { class: 'muted', style: 'font-size:13px' }, `النقاط: كل أرض ${tune.hexWorth} ضعف سعر الكتيبة، والمال، وقيمة الكتائب والمدافع والحصون بسعر البيع. من سقطت عاصمته يأتي بعد الصامدين.`),
+        h('div', { style: 'display:flex;gap:12px' }, B('حرب جديدة بنفس الإعدادات', 'pri', () => { reset(); go('play'); }, { 'data-primary': '1' }), B('الشاشة الرئيسية', '', () => go('title')))));
+      confetti = Array.from({ length: CHEAP ? 0 : 120 }, () => ({ x: vrng() * W, y: -vrng() * H, v: 60 + vrng() * 90, s: 5 + vrng() * 5, c: TEAMS[(vrng() * state.n) | 0].c, a: vrng() * 6, w: 1 + vrng() * 3 }));
+    },
+    update(dt) { for (const p of confetti) { p.y += p.v * dt; p.a += p.w * dt; if (p.y > H + 10) p.y = -10; } },
+    draw() {
+      backdrop(false);
+      for (const p of confetti) { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore(); }
+    },
+  },
+  figures: { // every drawn figure side by side, each named; the map's own drawing on the canvas
+    enter() {
+      const cell = (el, name) => h('div', { class: 'panel', style: 'display:grid;place-items:center;gap:8px;padding:12px;min-height:110px' }, el, h('b', {}, name));
+      ui.append(h('div', { class: 'screen', style: 'display:grid;grid-template-columns:repeat(6,1fr);gap:10px;align-content:start;height:330px' },
+        cell(h('span', { html: LOGO(1.6) }), 'الشعار'), cell(h('span', { html: fortressSVG(0, 64) }), 'العاصمة'), cell(h('span', { html: TROPHY }), 'الكأس'),
+        cell(h('span', { html: ring(18, 30, 80) }), 'عداد الوقت'), cell(h('span', { html: shieldSVG(0, 3, 40) }), 'درع الكتائب'), cell(h('span', { html: shieldSVG(-1, 0, 40) }), 'درع محايد'),
+        ...TEAMS.map((_, i) => cell(banner(i, 64), 'راية الفريق ' + (i + 1)))));
+    },
+    update() {},
+    draw() { // the map figures as they appear on the hexes, below the panels
+      backdrop(false);
+      const r = 62, y = 560, xs = [140, 330, 520, 710, 900, 1090];
+      const label = (s, x) => { ctx.fillStyle = css('--text'); ctx.font = `bold 16px ${FONT}`; ctx.textAlign = 'center'; ctx.fillText(s, x, y + r + 22); };
+      const tile = (x, o) => { const p = hexPath(x, y, r); ctx.fillStyle = css('--land'); ctx.fill(p); if (o >= 0) { ctx.globalAlpha = 0.82; ctx.fillStyle = TEAMS[o].c; ctx.fill(p); ctx.globalAlpha = 1; } ctx.strokeStyle = css('--brass'); ctx.lineWidth = 1.6; ctx.stroke(p); };
+      tile(xs[0], -1); label('أرض محايدة', xs[0]);
+      tile(xs[1], 1); drawBanner(xs[1] + r * 0.05, y + r * 0.08, r * 0.62, 1); drawShield(xs[1] + r * 0.36, y + r * 0.42, r * 0.42, 1, 2); label('أرض فريق', xs[1]);
+      tile(xs[2], 0); drawFortress(xs[2], y - r * 0.18, r * 0.82, 0); drawShield(xs[2] + r * 0.42, y + r * 0.42, r * 0.42, 0, 4); label('عاصمة', xs[2]);
+      tile(xs[3], 2); ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke(hexPath(xs[3], y, r - 4)); drawShield(xs[3] + r * 0.36, y + r * 0.42, r * 0.42, 2, 5); label('أرض الهجوم', xs[3]);
+      tile(xs[4], 3); ctx.setLineDash([7, 5]); ctx.lineWidth = 3; ctx.strokeStyle = css('--bad'); ctx.stroke(hexPath(xs[4], y, r - 5)); ctx.setLineDash([]); drawShield(xs[4] + r * 0.36, y + r * 0.42, r * 0.42, 3, 1); label('هدف ممكن', xs[4]);
+      tile(xs[5], 4); drawBanner(xs[5] + r * 0.05, y + r * 0.08, r * 0.62, 4, 0.5); label('راية تُغرس', xs[5]);
+    },
+  },
+};
+function endGameValues() { state.final = [...Array(state.n).keys()].map(t => ({ t, alive: true, hexes: R.hexCount(state.g, t), bat: R.battalions(state.g, t), money: state.money[t], score: scoreOf(t), fellAt: -1 })); }
+let confetti = [];
+
+// ---- Background: the war table, and on the title a slow drift of hex outlines ----------------
+function backdrop(title) {
+  ctx.fillStyle = css('--bg') || '#0e1624'; ctx.fillRect(0, 0, W, H);
+  if (!title) return;
+  const r = 46, s3 = Math.sqrt(3), off = (state.t * 6) % (s3 * r);
+  ctx.strokeStyle = css('--wave'); ctx.lineWidth = 1.5;
+  for (let row = -1; row < 12; row++) for (let col = -1; col < 18; col++) ctx.stroke(hexPath(col * s3 * r + (row & 1) * s3 * r / 2 - off, row * 1.5 * r, r - 2));
+}
+
+// ---- Loop: fixed step, frame time clamped ---------------------------------------------
+function step() {
+  if (pressed('KeyM') && !typing()) setMuted(!muted);
+  if (pressed('KeyP') && !typing() && scene === 'play') { state.paused = !state.paused; renderHeader(); }
+  if ((pressed('Enter') || pressed('NumpadEnter')) && !typing() && !document.getElementById('confirm')) { // Enter: the screen's main button
+    const p = (document.getElementById('importask') || document.getElementById('help') || ui).querySelector('[data-primary]:not([disabled])');
+    if (p) p.click();
+  }
+  if (pressed('Escape')) { document.getElementById('confirm')?.remove(); document.getElementById('importask')?.remove(); if (document.getElementById('help')) { document.getElementById('help').remove(); if (scene === 'play') state.paused = false; } }
+  state.t += STEP;
+  scenes[scene].update(STEP); hit.clear();
+}
+let last, acc = 0, ALPHA = 1;
+function tick() {
+  const now = clock.now();
+  acc += Math.min(now - last, 0.25); last = now;
+  while (acc >= STEP) { step(); acc -= STEP; }
+  ALPHA = acc / STEP; drawFrame();
+}
+function drawFrame() { scenes[scene].draw(); }
+function frame() { tick(); requestAnimationFrame(frame); }
+function timer() { if (document.visibilityState === 'visible' && clock.now() - last > 0.1) tick(); }
+
+// ---- What a check can read and drive (?manual=1 stops the loop; players never see it) ----
+window.game = {
+  get scene() { return scene; },
+  get state() { return state; },
+  press(code) { hit.add(code); },
+  hold(code, on) { on ? down.add(code) : down.delete(code); },
+  get events() { return events; },
+  step(n = 1, draw = true, alpha = 1) { for (let i = 0; i < n; i++) step(); if (draw) { ALPHA = alpha; drawFrame(); } },
+};
+
+reset();
+go(params.get('scene') || 'title');
+last = clock.now();
+if (params.get('manual') === '1') drawFrame();
+else { requestAnimationFrame(frame); setInterval(timer, 50); }
+</script>
+</body>
+</html>
