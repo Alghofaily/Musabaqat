@@ -1,0 +1,28 @@
+{
+  "brand": "حصون المعرفة",
+  "tagline": "Husun al-Ma'rifa: a team quiz war on a hex map",
+  "brief": "A host-run team quiz game in Arabic: right answers pay for battalions, every attack is a question, and losing your capital knocks you out. Played on a dark war-room table in navy and brass.",
+  "adjectives": ["strategic", "learned", "tense", "communal"],
+  "criteria": "Says both halves of the name (fortress + knowledge), avoids quiz clichés (question marks, light bulbs), holds at 16 px, works in one colour on navy and parchment.",
+  "mockups": ["app-icon", "favicon-tab", "website", "badge", "tshirt", "social"],
+  "nav": ["العب", "بنك الأسئلة", "طريقة اللعب"],
+  "brand_color": "#c9a24a",
+  "tile_color": "#0e1624",
+  "final": true,
+  "greyscale": false,
+  "designer": "Musabaqat",
+  "concepts": [{
+    "name": "Book Wall",
+    "symbol": "masters/symbol-color-light.svg",
+    "symbol_on_tile": "masters/symbol-color-dark.svg",
+    "symbol_on_dark": "masters/symbol-color-dark.svg",
+    "lockup": "masters/lockup-horizontal-color-light.svg",
+    "lock_dark": "masters/lockup-horizontal-color-dark.svg",
+    "stacked": "masters/lockup-stacked-color-light.svg",
+    "stack_dark": "masters/lockup-stacked-color-dark.svg",
+    "idea": "An open book whose page tops are battlements: knowledge is the wall.",
+    "rationale": ["Draws the name itself: حصون (fortress) + المعرفة (knowledge)", "Two-tone pages keep the open book legible down to 16 px", "Brass on navy is the game's own war-room palette", "Kufic wordmark (Reem Kufi) echoes the square battlements"]
+  }],
+  "recommendation": "Book Wall: one picture that states the name, distinct from quiz-game clichés, and at home on the game's navy-and-brass screen.",
+  "next_steps": ["Drop the web icons into the game's index.html", "Use the horizontal lockup on the setup screen header", "Run a trademark search before any public release"]
+}
