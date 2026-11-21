@@ -13,10 +13,11 @@
   @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-arabic-700.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
   @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-latin-500.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
   @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-latin-700.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Kufi'; font-weight: 400 700; font-display: swap; src: url(vendor/reem-kufi.woff2) format('woff2'); }
   .dark { --logo-a: #c9a24a; --logo-b: #f4ecd8; --logo-ink: #f4ecd8; --bg: #0e1624; --sea: #0a111d; --wave: rgba(201,162,74,.10); --panel: #162133; --panel2: #111a29; --line: #26344d; --text: #e8e6df; --muted: #96a2b6;
-    --brass: #c9a24a; --brass-ink: #1b1406; --hover: #1c2940; --land: #24324a; --ok: #3fb27f; --bad: #ef5a5f; --okbg: rgba(63,178,127,.15); --badbg: rgba(239,90,95,.14); --stone: #d8cdb2; --stone2: #a89c80; --shade: rgba(4,8,16,.55); }
+    --brass: #c9a24a; --brass-ink: #1b1406; --hover: #1c2940; --land: #24324a; --ok: #3fb27f; --bad: #ef5a5f; --okbg: rgba(63,178,127,.15); --badbg: rgba(239,90,95,.14); --okfill: #1e7f55; --badfill: #c23a3f; --stone: #d8cdb2; --stone2: #a89c80; --shade: rgba(4,8,16,.55); }
   .light { --logo-a: #0e1624; --logo-b: #8a6a22; --logo-ink: #0e1624; --bg: #f4ecd8; --sea: #e3d6b6; --wave: rgba(120,90,30,.16); --panel: #fbf6ea; --panel2: #f1e7cf; --line: #d8c8a0; --text: #2a2a2a; --muted: #6b6250;
-    --brass: #8a6a1f; --brass-ink: #fffaf0; --hover: #efe3c6; --land: #eadcb9; --ok: #1f7a4f; --bad: #b4232a; --okbg: rgba(31,122,79,.12); --badbg: rgba(180,35,42,.10); --stone: #b9ab8a; --stone2: #8c7f61; --shade: rgba(60,45,15,.35); }
+    --brass: #8a6a1f; --brass-ink: #fffaf0; --hover: #efe3c6; --land: #eadcb9; --ok: #1f7a4f; --bad: #b4232a; --okbg: rgba(31,122,79,.12); --badbg: rgba(180,35,42,.10); --okfill: #1f7a4f; --badfill: #b4232a; --stone: #b9ab8a; --stone2: #8c7f61; --shade: rgba(60,45,15,.35); }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
   body { font-family: 'Plex', Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; font-weight: 500; font-variant-numeric: tabular-nums; }
   #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: var(--bg); color: var(--text); }
@@ -34,8 +35,8 @@
   .btn:hover:not(:disabled) { background: var(--hover); }
   .btn.pri { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
   .btn.pri:hover:not(:disabled) { filter: brightness(1.1); background: var(--brass); }
-  .btn.good { background: var(--ok); color: #fff; border-color: transparent; }
-  .btn.warn { background: var(--bad); color: #fff; border-color: transparent; }
+  .btn.good { background: var(--okfill); color: #fff; border-color: transparent; }
+  .btn.warn { background: var(--badfill); color: #fff; border-color: transparent; }
   .btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
   .btn.ghost:hover { color: var(--text); }
   .btn.ghost.danger { color: var(--bad); }
@@ -50,7 +51,8 @@
   @keyframes rise { from { transform: translateY(14px); opacity: 0; } to { transform: none; opacity: 1; } }
   .ov { position: absolute; inset: 0; background: var(--shade); display: flex; align-items: center; justify-content: center; z-index: 20; }
   .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 22px 26px; min-width: 380px; display: grid; gap: 14px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
-  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; } }
+  ::selection { background: var(--brass); color: var(--brass-ink); }
 
   /* the war room */
   header { position: absolute; left: 0; right: 0; top: 0; height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 12px; background: var(--panel); border-bottom: 1px solid var(--line); box-sizing: border-box; }
@@ -71,10 +73,11 @@
   .steps span.on { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
   .steps span.done { color: var(--text); }
   .act { flex: 1; min-height: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+  .act .scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
   .act .hint { font-size: 16px; line-height: 1.6; }
   .act .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .act .bottom { margin-top: auto; display: flex; gap: 8px; }
-  .act .bottom .btn { flex: 1; }
+  .act .bottom { flex: none; display: flex; gap: 8px; }
+  .act .bottom .btn { flex: 1 1 auto; white-space: nowrap; padding-inline: 10px; }
   .vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
   .vs .side { display: grid; justify-items: center; gap: 4px; text-align: center; font-size: 14px; }
   .vs .side b { font-size: 16px; }
@@ -84,27 +87,40 @@
   .stepper { display: inline-flex; align-items: center; gap: 6px; }
   .stepper button { width: 44px; height: 44px; font-size: 22px; font-weight: 700; background: var(--panel2); border: 1px solid var(--line); }
   .stepper b { min-width: 46px; text-align: center; font-size: 24px; }
-  table.lb { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.lb { width: 100%; border-collapse: collapse; font-size: 18px; }
   table.lb th { color: var(--muted); font-weight: 500; font-size: 12px; text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--line); }
-  table.lb td { padding: 0 8px; height: 31px; border-bottom: 1px solid var(--line); }
+  table.lb td { padding: 0 8px; height: 36px; border-bottom: 1px solid var(--line); }
+  table.lb td .tn { font-size: 16px; }
   table.lb tr:last-child td { border-bottom: 0; }
   table.lb tr.cur { background: var(--hover); box-shadow: inset -3px 0 0 var(--brass); }
   table.lb tr.out td { color: var(--muted); text-decoration: line-through; }
   .tn { display: flex; gap: 7px; align-items: center; font-weight: 700; white-space: nowrap; overflow: hidden; max-width: 150px; }
+  #side > .panel.mini { flex: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 6px; }
+  .mini > div { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 8px; border-radius: 6px; background: var(--panel2); font-size: 18px; font-weight: 700; }
+  .mini > div.cur { outline: 2px solid var(--brass); outline-offset: -2px; }
+  .mini > div.out { color: var(--muted); text-decoration: line-through; }
 
   /* the question, over the map */
-  #qpanel { position: absolute; left: 8px; top: 64px; width: 842px; height: 648px; display: flex; flex-direction: column; z-index: 5; animation: rise .3s ease-out; box-sizing: border-box; }
-  #qpanel .body { flex: 1; padding: 18px 24px; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
-  .q { font-size: 34px; font-weight: 700; line-height: 1.45; }
-  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex: 1; max-height: 360px; grid-auto-rows: 1fr; }
-  .choice { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; font-weight: 700; font-size: 24px; text-align: right; min-height: 76px; }
+  #qpanel { position: absolute; left: 8px; top: 320px; width: 842px; height: 392px; display: flex; flex-direction: column; z-index: 5; animation: rise .3s cubic-bezier(0.16, 1, 0.3, 1); box-sizing: border-box; box-shadow: 0 -10px 28px rgba(0,0,0,.35); }
+  #qpanel .ph { padding: 7px 14px; }
+  #qpanel .body { flex: 1; padding: 12px 20px 14px; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+  .q { font-size: 27px; font-weight: 700; line-height: 1.4; text-wrap: balance; }
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; max-height: 150px; grid-auto-rows: 1fr; }
+  .choice { display: flex; align-items: center; gap: 12px; padding: 8px 14px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; font-weight: 700; font-size: 21px; text-align: right; min-height: 56px; }
+  .choice .mark { margin-inline-start: auto; flex: none; }
+  .choice.right .mark { color: var(--ok); } .choice.wrong .mark { color: var(--bad); }
   .choice:hover:not(:disabled) { border-color: var(--brass); }
   .choice .k { flex: none; width: 36px; height: 36px; border-radius: 6px; background: var(--line); display: grid; place-items: center; font-size: 17px; }
   .choice.right { background: var(--okbg); border-color: var(--ok); } .choice.wrong { background: var(--badbg); border-color: var(--bad); }
   .choice:disabled { cursor: default; }
-  #qpanel[data-size=m] .q { font-size: 27px; } #qpanel[data-size=m] .choice { font-size: 20px; min-height: 62px; }
-  #qpanel[data-size=l] .q { font-size: 22px; line-height: 1.4; } #qpanel[data-size=l] .choice { font-size: 17px; min-height: 52px; padding: 8px 12px; }
-  .answer { padding: 12px 16px; border-radius: 8px; background: var(--okbg); border: 1px solid var(--ok); font-weight: 700; font-size: 24px; }
+  #qpanel[data-size=m] .q { font-size: 23px; } #qpanel[data-size=m] .choice { font-size: 18px; min-height: 50px; }
+  #qpanel[data-size=l] .q { font-size: 19px; line-height: 1.4; } #qpanel[data-size=l] .choice { font-size: 16px; min-height: 44px; padding: 6px 12px; }
+  .answer { padding: 10px 16px; border-radius: 8px; background: var(--okbg); border: 1px solid var(--ok); font-weight: 700; font-size: 22px; }
+  .answer[hidden] { display: none; }
+  .peek { align-self: flex-start; font-size: 14px; padding: 6px 14px; min-height: 36px; touch-action: none; user-select: none; }
+  .loss { font-size: 76px; font-weight: 700; color: var(--bad); line-height: .9; }
+  .lossnote { display: grid; gap: 2px; font-size: 16px; color: var(--muted); }
+  .lossnote b { color: var(--text); font-size: 18px; white-space: nowrap; }
   .ring { position: relative; flex: none; }
   .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 30px; }
   .duelrow { display: grid; grid-template-columns: 210px 1fr; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 8px; background: var(--panel2); border: 1px solid var(--line); }
@@ -113,9 +129,29 @@
   .picks { display: flex; gap: 8px; justify-content: flex-start; }
   .picks button { min-width: 64px; min-height: 48px; font-size: 20px; font-weight: 700; background: var(--panel); border: 1px solid var(--line); }
   .picks button.on { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
-  .picks button.right { background: var(--ok); color: #fff; } .picks button.wrong { background: var(--bad); color: #fff; }
-  .verdict { font-size: 34px; font-weight: 700; }
+  .picks button.right { background: var(--okfill); color: #fff; } .picks button.wrong { background: var(--badfill); color: #fff; }
+  .verdict { font-size: 32px; font-weight: 700; }
   .reward { font-size: 54px; font-weight: 700; color: var(--brass); line-height: 1; }
+
+  /* a capital falls: one full-stage beat */
+  #fallbeat { z-index: 30; flex-direction: column; gap: 14px; background: rgba(4,8,16,.82); cursor: pointer; }
+  .light #fallbeat { background: rgba(60,45,15,.7); }
+  #fallbeat .scene { position: relative; width: 260px; height: 220px; }
+  #fallbeat .fort { position: absolute; left: 40px; top: 30px; animation: crumble 1.1s cubic-bezier(0.5, 0, 0.75, 0) .15s both; }
+  #fallbeat .old { position: absolute; left: 160px; top: 0; transform-origin: 30% 95%; animation: topple .55s cubic-bezier(0.5, 0, 0.75, 0) .1s both; }
+  #fallbeat .new { position: absolute; left: 96px; top: 40px; animation: plant .5s cubic-bezier(0.16, 1, 0.3, 1) .95s both; }
+  #fallbeat .head { font-family: 'Kufi', 'Plex', sans-serif; font-size: 64px; font-weight: 700; color: #f4ecd8; line-height: 1.2; }
+  #fallbeat .sub { font-size: 22px; color: #e8e6df; }
+  @keyframes crumble { 0% { transform: none; clip-path: inset(0 0 0 0); } 12% { transform: translateX(-5px); } 24% { transform: translateX(5px); } 34% { transform: translateX(-3px); clip-path: inset(0 0 0 0); } 100% { transform: translateY(90px); clip-path: inset(0 0 72% 0); opacity: .55; } }
+  @keyframes topple { to { transform: rotate(-80deg); opacity: 0; } }
+  @keyframes plant { from { transform: translateY(-80px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .winhead { font-family: 'Kufi', 'Plex', sans-serif; font-size: 68px; font-weight: 700; line-height: 1.15; display: flex; align-items: center; gap: 18px; animation: rise .5s cubic-bezier(0.16, 1, 0.3, 1) 2.1s both; text-wrap: balance; }
+  .place { animation: rise .5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .tie { font-size: 13px; font-weight: 700; color: var(--brass); border: 1px solid var(--brass); border-radius: 4px; padding: 1px 6px; margin-inline-start: 6px; }
+  .toast { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 25; display: flex; align-items: center; gap: 14px; padding: 8px 10px 8px 18px; background: var(--panel); border: 1px solid var(--brass); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,.35); font-weight: 700; animation: rise .25s cubic-bezier(0.16, 1, 0.3, 1); }
+  #phone { display: none; position: fixed; left: 10px; right: 10px; top: 10px; z-index: 50; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; direction: rtl; font: 500 15px 'Plex', Tahoma, sans-serif; background: #162133; color: #e8e6df; border: 1px solid #c9a24a; }
+  #phone button { margin-inline-start: auto; min-height: 40px; padding: 6px 12px; background: #c9a24a; color: #1b1406; font-weight: 700; }
+  @media (max-width: 699px) and (orientation: portrait) { #phone:not([hidden]) { display: flex; } }
 
   /* title, setup, bank, results */
   .screen { position: absolute; inset: 0; padding: 20px 40px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box; }
@@ -134,6 +170,7 @@
 </head>
 <body class="dark">
 <div id="stage"><canvas id="game"></canvas><div id="ui"></div></div>
+<div id="phone" role="note">صُممت هذه اللعبة للابتوب وشاشة العرض<button onclick="this.parentElement.hidden = true">حسناً</button></div>
 <script src="config.js"></script>
 <script src="questions.js"></script>
 <script src="csv.js"></script>
@@ -176,7 +213,7 @@ const ui = document.getElementById('ui');
 const ctx = canvas.getContext('2d');
 function fit() {
   const s = Math.min(innerWidth / W, innerHeight / H), r = s * (devicePixelRatio || 1);
-  canvas.width = Math.round(W * r); canvas.height = Math.round(H * r); ctx.setTransform(r, 0, 0, r, 0, 0);
+  canvas.width = Math.round(W * r); canvas.height = Math.round(H * r); ctx.setTransform(r, 0, 0, r, 0, 0); ctx.direction = 'ltr';
   stage.style.transform = `translate(${Math.round((innerWidth - W * s) / 2)}px, ${Math.round((innerHeight - H * s) / 2)}px) scale(${s})`;
 }
 addEventListener('resize', fit); fit();
@@ -187,7 +224,9 @@ const pressed = code => hit.has(code);
 const typing = () => document.activeElement && ['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName);
 addEventListener('keydown', e => {
   startAudio();
-  if (!e.repeat) { down.add(e.code); hit.add(e.code); }
+  // Enter on a focused button: the browser already clicks it, so the main-button shortcut must not fire too.
+  const nativeEnter = (e.code === 'Enter' || e.code === 'NumpadEnter') && e.target instanceof Element && e.target.closest('button');
+  if (!e.repeat && !nativeEnter) { down.add(e.code); hit.add(e.code); }
   if (e.code === 'Space' && !typing()) e.preventDefault();
 });
 addEventListener('keyup', e => down.delete(e.code));
@@ -245,15 +284,21 @@ function h(tag, props = {}, ...kids) {
 }
 const B = (label, cls, fn, extra = {}) => h('button', { class: 'btn ' + cls, onclick: () => { sfx.click(); fn(); }, ...extra }, label);
 const N = v => h('span', { class: 'num' }, v);
+// Arabic counted noun for battalions: 1 كتيبة واحدة, 2 كتيبتين, 3-10 كتائب, 11-99 كتيبة (and by the last two digits above 100).
+function bats(n) {
+  if (n === 1) return 'كتيبة واحدة'; if (n === 2) return 'كتيبتين';
+  const k = n % 100; return `${fmt(n)} ${n >= 3 && k >= 3 && k <= 10 ? 'كتائب' : 'كتيبة'}`;
+}
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)');
 
 // ---- Drawn figures: one set of paths for the canvas (Path2D) and the panels (SVG) -----------
 const TEAMS = [ // each team its colour and its own emblem on the banner
-  { c: '#e5484d', emblem: 'M10 2 L12.4 7.6 L18.5 8.2 L13.9 12.1 L15.3 18 L10 14.9 L4.7 18 L6.1 12.1 L1.5 8.2 L7.6 7.6 Z' },        // star
-  { c: '#3e83f8', emblem: 'M13 3 A7.5 7.5 0 1 0 13 17 A8 8 0 0 1 13 3 Z' },                                                  // crescent
-  { c: '#2fa36b', emblem: 'M10 1.5 L17.5 10 L10 18.5 L2.5 10 Z' },                                                                  // diamond
-  { c: '#e09b1f', emblem: 'M10 2.5 L18 17 H2 Z' },                                                                                  // triangle
-  { c: '#9257d1', emblem: 'M7.8 2 H12.2 V7.8 H18 V12.2 H12.2 V18 H7.8 V12.2 H2 V7.8 H7.8 Z' },                                     // cross
-  { c: '#12a39a', emblem: 'M2 4 L10 10 L18 4 V9 L10 15.5 L2 9 Z M2 11 L10 17 L18 11 V14 L10 20 L2 14 Z' },                         // chevrons
+  { c: '#e5484d', ink: '#fff', emblem: 'M10 2 L12.4 7.6 L18.5 8.2 L13.9 12.1 L15.3 18 L10 14.9 L4.7 18 L6.1 12.1 L1.5 8.2 L7.6 7.6 Z' },        // star
+  { c: '#2f6bf0', ink: '#fff', emblem: 'M13 3 A7.5 7.5 0 1 0 13 17 A8 8 0 0 1 13 3 Z' },                                                  // crescent
+  { c: '#4de8c8', ink: '#0e1624', emblem: 'M10 1.5 L17.5 10 L10 18.5 L2.5 10 Z' },                                                                  // diamond
+  { c: '#1fb2f0', ink: '#0e1624', emblem: 'M10 2.5 L18 17 H2 Z' },                                                                                  // triangle
+  { c: '#c42a9c', ink: '#fff', emblem: 'M7.8 2 H12.2 V7.8 H18 V12.2 H12.2 V18 H7.8 V12.2 H2 V7.8 H7.8 Z' },                                     // cross
+  { c: '#f0d63a', ink: '#0e1624', emblem: 'M2 4 L10 10 L18 4 V9 L10 15.5 L2 9 Z M2 11 L10 17 L18 11 V14 L10 20 L2 14 Z' },                         // chevrons
 ];
 const FORT = 'M2 38 V16 H4 V12.5 H6.5 V16 H8.5 V12.5 H11 V16 H13 V22 H15 V10 H16.8 V6.5 H19 V10 H21 V6.5 H23.2 V10 H25 V22 H27 V16 H29 V12.5 H31.5 V16 H33.5 V12.5 H36 V16 H38 V38 Z';
 const FORT_GATE = 'M16.5 38 V31.5 A3.5 3.5 0 0 1 23.5 31.5 V38 Z';
@@ -271,7 +316,7 @@ function fortressSVG(t, size = 40) { // a capital: stone walls, a gate, the team
 }
 function bannerSVG(t, size = 34) { // a team's banner: a swallow-tail cloth with the team's emblem
   return `<svg viewBox="0 0 40 40" width="${size}" height="${size}" style="display:block;flex:none"><path d="${BANNER_POLE}" fill="var(--brass)"/><path d="${BANNER_TOP}" fill="var(--brass)"/>
-    <path d="${BANNER_CLOTH}" fill="${TEAMS[t].c}"/><path d="${TEAMS[t].emblem}" fill="#fff" transform="translate(15.5 6.5) scale(0.6)"/></svg>`;
+    <path d="${BANNER_CLOTH}" fill="${TEAMS[t].c}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/><path d="${TEAMS[t].emblem}" fill="${TEAMS[t].ink}" transform="translate(15.5 6.5) scale(0.6)"/></svg>`;
 }
 const banner = (t, size) => h('span', { style: 'display:inline-block;flex:none', html: bannerSVG(t, size) });
 function shieldSVG(t, n, size = 22) { // a hex's battalions: a shield edged in the owner's colour
@@ -335,6 +380,16 @@ async function importCSV(file) { // the host's file: السؤال، الخيار
       B('استبدال الأسئلة الحالية', 'warn', () => { close(); apply(true); }),
       B('إلغاء', '', close)))));
 }
+// D: a deleted bank question can be put back for undoSeconds
+let bankUndo = null;
+function deleteQuestion(i) {
+  if (bank.length <= 1) return;
+  if (bankUndo) clearTimeout(bankUndo.timer);
+  const row = bank.splice(i, 1)[0]; saveBank();
+  const scrollTop = document.querySelector('.banklist')?.scrollTop || 0;
+  bankUndo = tune.undoSeconds > 0 ? { row, i, timer: setTimeout(() => { bankUndo = null; document.querySelector('.toast')?.remove(); }, tune.undoSeconds * 1000) } : null;
+  go('bank'); const list = document.querySelector('.banklist'); if (list) list.scrollTop = scrollTop;
+}
 function downloadTemplate() {
   const a = h('a', { href: URL.createObjectURL(new Blob([HusunCSV.TEMPLATE], { type: 'text/csv;charset=utf-8' })), download: 'questions-template.csv' });
   document.body.append(a); a.click(); a.remove();
@@ -373,7 +428,7 @@ function reset() {
     picked: null, result: null, reward: 0, reveal: false,     // the team's own question
     buys: [], sel: -1, target: -1, moveN: 1, movesLeft: 0, msg: '', msgGood: false, // market, attack and move
     duel: null,                                                // { from, to, a, d, neutral, b: battle | null, last, outcome }
-    flood: null, fx: [], hover: -1, final: null, log: [],
+    flood: null, fx: [], hover: -1, final: null, log: [], camY: 0, shopScore0: 0,
     terrain: makeTerrain(hexes, mapSeed),
   };
 }
@@ -390,13 +445,24 @@ const income = t => R.hexCount(state.g, t) * tune.payoutPerHex;               //
 const payoutIn = () => tune.payoutEvery - ((state.round - 1) % tune.payoutEvery); // rounds until it comes
 const scoreOf = t => R.score(state.g, t, state.money[t], state.prices, tune.hexWorth);
 const isNeutral = hx => state.g.owner[hx] === -1;
-function setPhase(p) { state.phase = p; state.msg = ''; events.push({ phase: p }); renderAll(); }
+function setPhase(p) { state.phase = p; state.msg = ''; if (p !== 'reveal' && p !== 'duelReveal') verdictUndo = null; events.push({ phase: p }); renderAll(); }
+// D: every verdict can be taken back for undoSeconds: a copy of the whole game from just before it lands.
+let verdictUndo = null; // { snap, until } on the state.t clock
+function snapVerdict() { verdictUndo = tune.undoSeconds > 0 ? { snap: structuredClone(state), until: state.t + tune.undoSeconds } : null; }
+function undoVerdict() {
+  if (!verdictUndo || scene !== 'play') return;
+  const t = state.t; state = verdictUndo.snap; verdictUndo = null;
+  state.t = t; state.fx = []; state.flood = null;
+  state.timer = Math.max(state.timer, tune.tickWarn); // a time-out undone gets the warning seconds back, or it would end again at once
+  state.ticked = -1; events.push({ undo: state.phase }); sfx.click(); renderAll();
+}
 function startQuestion() { state.q = drawQuestion(); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.result = null; state.reveal = false; }
 
 // 1. The team's own question: a right answer pays.
 function askTurnQuestion() { startQuestion(); setPhase('question'); }
 function answerTurn(right, picked = null) {
   if (state.phase !== 'question') return;
+  snapVerdict();
   state.picked = picked; state.result = right ? 'right' : 'wrong'; state.reveal = true;
   if (right) { state.reward = tune.turnReward; state.money[state.cur] += state.reward; sfx.right(); sfx.coin(); } else sfx.wrong();
   events.push({ answer: state.result }); setPhase('reveal');
@@ -406,7 +472,7 @@ function answerTurn(right, picked = null) {
 const GOODS = { troop: 'كتيبة', cannon: 'مدفع', fort: 'حصن' };
 const goodOf = (kind, hx) => kind === 'troop' ? state.g.bat[hx] : kind === 'cannon' ? state.g.cannons[hx] : +state.g.fort[hx];
 function setGood(kind, hx, v) { const g = state.g; if (kind === 'troop') g.bat[hx] = v; else if (kind === 'cannon') g.cannons[hx] = v; else g.fort[hx] = v > 0; }
-function openShop() { state.buys = []; state.sel = state.g.capital[state.cur]; setPhase('shop'); }
+function openShop() { state.buys = []; state.sel = state.g.capital[state.cur]; state.shopScore0 = scoreOf(state.cur); setPhase('shop'); }
 function trade(kind, n) { // n > 0 buys n, n < 0 sells -n, on the chosen hex
   const t = state.cur, hx = state.sel, pr = state.prices[kind], have = goodOf(kind, hx);
   if (hx < 0 || state.g.owner[hx] !== t) return;
@@ -440,9 +506,11 @@ function startBattle() {
 function answerBattle(right, picked = null, time = false) { // one team's answer lands a hit
   const d = state.duel;
   if (state.phase !== 'duel') return;
+  snapVerdict();
   state.picked = picked; state.result = time ? 'time' : right ? 'right' : 'wrong'; state.reveal = true;
   if (d.neutral) { d.last = { right }; d.outcome = right ? 'win' : 'fail'; }
-  else { const side = d.b.turn, r = R.battleAnswer(state.g, d.b, d.from, d.to, right, RP()); d.last = { side, right, ...r }; d.outcome = d.b.over; }
+  else { const side = d.b.turn, r = R.battleAnswer(state.g, d.b, d.from, d.to, right, RP()); d.last = { side, right, ...r }; d.outcome = d.b.over;
+    if (r.loss) addFx(r.loser === 'a' ? d.from : d.to, '−' + r.loss, css('--bad'), 58); }
   (right ? sfx.right : sfx.wrong)();
   events.push({ battle: d.outcome || 'hit' }); setPhase('duelReveal');
 }
@@ -457,7 +525,7 @@ function finishBattle() { // back to the map: the outcome lands on the hexes
     if (before[0] > g.bat[d.from]) addFx(d.from, '-' + (before[0] - g.bat[d.from]), css('--bad'));
     if (!res.taken && before[1] > g.bat[d.to]) addFx(d.to, '-' + (before[1] - g.bat[d.to]), css('--bad'));
   }
-  if (res.fell >= 0) { state.fellAt[res.fell] = state.turns; sfx.fall(); state.log.push({ fell: res.fell, by: d.a }); events.push({ fell: res.fell }); }
+  if (res.fell >= 0) { state.fellAt[res.fell] = state.turns; sfx.fall(); state.log.push({ fell: res.fell, by: d.a }); events.push({ fell: res.fell }); fallBeat(res.fell, d.a); }
   state.duel = null; state.sel = -1; state.target = -1;
   if (R.aliveTeams(g).length <= 1) return setPhase('over');
   openMove();
@@ -514,13 +582,21 @@ function hexAt(px, py) {
   for (const hx of state.g.hexes) { const [x, y] = L.at(hx.col, hx.row), d = Math.hypot(px - x, py - y); if (d < bd) { bd = d; best = hx.id; } }
   return bd < L.r * 0.92 ? best : -1;
 }
-function mapPoint(e) { const b = e.currentTarget.getBoundingClientRect(), s = b.width / MAP.w; return [MAP.x + (e.clientX - b.left) / s, MAP.y + (e.clientY - b.top) / s]; }
+function mapPoint(e) { const b = e.currentTarget.getBoundingClientRect(), s = b.width / MAP.w; return [MAP.x + (e.clientX - b.left) / s, MAP.y + (e.clientY - b.top) / s - state.camY]; }
+// F: while a question is docked under the map, the map slides so the hexes that matter sit in the strip above it.
+const STRIP = { top: MAP.y, bottom: 312 }; // #qpanel starts at 320
+function camTarget() {
+  const p = state.phase, d = state.duel, g = state.g, L = layout();
+  if (!['question', 'reveal', 'duel', 'duelReveal'].includes(p)) return 0;
+  const ys = (d ? [d.from, d.to] : [g.capital[state.cur]]).map(hx => L.at(g.hexes[hx].col, g.hexes[hx].row)[1]);
+  return (STRIP.top + STRIP.bottom) / 2 - (Math.min(...ys) + Math.max(...ys)) / 2;
+}
 function onHexClick(hx) {
   if (state.paused || hx < 0) return;
   const g = state.g, t = state.cur, p = state.phase;
   if (p === 'shop') { if (g.owner[hx] === t) { state.sel = hx; state.msg = ''; sfx.click(); } else { state.msg = 'اختر أرضاً لفريقك'; state.msgGood = false; sfx.bad(); } return renderSide(); }
   if (p === 'attack') {
-    if (g.owner[hx] === t) { state.sel = canAttackFrom(hx) ? hx : -1; state.target = -1; state.msg = state.sel < 0 ? `لا هجوم من هنا: أرض الخصم تحتاج ${tune.attackMin} كتائب على الأقل وأكثر من ضربة واحدة من مدافعه` : ''; state.msgGood = false; (state.sel < 0 ? sfx.bad : sfx.click)(); return renderSide(); }
+    if (g.owner[hx] === t) { state.sel = canAttackFrom(hx) ? hx : -1; state.target = -1; state.msg = state.sel < 0 ? `لا هجوم من هنا: أرض الخصم تحتاج ${bats(tune.attackMin)} على الأقل وأكثر من ضربة واحدة من مدافعه` : ''; state.msgGood = false; (state.sel < 0 ? sfx.bad : sfx.click)(); return renderSide(); }
     if (state.sel >= 0 && g.hexes[state.sel].nb.includes(hx)) { state.target = hx; state.msg = ''; sfx.click(); return renderSide(); }
     state.msg = state.sel < 0 ? 'ابدأ باختيار أرض لفريقك' : 'اختر أرضاً مجاورة للأرض المختارة'; state.msgGood = false; sfx.bad(); return renderSide();
   }
@@ -530,7 +606,21 @@ function onHexClick(hx) {
     state.msg = g.owner[hx] === t ? 'تحتاج كتيبتين على الأقل لتنقل منها' : 'النقل داخل أرضك فقط'; state.msgGood = false; sfx.bad(); renderSide();
   }
 }
-function addFx(hx, text, color) { state.fx.push({ hx, text, color, t0: state.t }); }
+function addFx(hx, text, color, size = 26) { state.fx.push({ hx, text, color, size, t0: state.t }); }
+// G: a capital falls. One beat on the whole stage: the fortress crumbles, the old banner topples, the
+// taker's banner is planted. Enter or a click skips it; it leaves by itself after fallBeat seconds.
+function fallBeat(fell, by) {
+  if (tune.fallBeat <= 0) return;
+  document.getElementById('fallbeat')?.remove();
+  const done = () => el.remove(); // this beat only: a timer left by an earlier beat must not take a newer one down
+  const el = h('div', { class: 'ov', id: 'fallbeat', role: 'alert', onclick: done },
+    h('div', { class: 'scene', 'aria-hidden': 'true' }, h('span', { class: 'fort', html: fortressSVG(fell, 180) }), h('span', { class: 'old', html: bannerSVG(fell, 110) }), h('span', { class: 'new', html: bannerSVG(by, 130) })),
+    h('div', { class: 'head' }, `سقطت عاصمة ${state.names[fell]}`),
+    h('div', { class: 'sub' }, `${state.names[by]} يرفع رايته · ${state.names[fell]} يخرج من الحرب`),
+    h('button', { class: 'btn ghost', 'data-primary': '1', onclick: done, style: 'color:#e8e6df' }, 'متابعة (Enter)'));
+  ui.append(el); el.querySelector('button').focus({ preventScroll: true });
+  setTimeout(done, tune.fallBeat * 1000);
+}
 
 function hexPath(x, y, r) { const p = new Path2D(); for (let i = 0; i < 6; i++) { const a = Math.PI / 180 * (60 * i - 30); p[i ? 'lineTo' : 'moveTo'](x + r * Math.cos(a), y + r * Math.sin(a)); } p.closePath(); return p; }
 function drawPath(d, x, y, s, fill, stroke, lw) { ctx.save(); ctx.translate(x, y); ctx.scale(s, s); if (fill) { ctx.fillStyle = fill; ctx.fill(path(d)); } if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw / s; ctx.stroke(path(d)); } ctx.restore(); }
@@ -545,9 +635,14 @@ function drawBanner(x, y, size, t, drop = 1) { // the pole's foot at x, y; drop 
   const s = size / 40, ox = x - 9.3 * s, oy = y - 38 * s - (1 - drop) * 30;
   ctx.globalAlpha = Math.min(1, drop * 1.5);
   drawPath(BANNER_POLE, ox, oy, s, css('--brass')); drawPath(BANNER_TOP, ox, oy, s, css('--brass'));
-  drawPath(BANNER_CLOTH, ox, oy, s, TEAMS[t].c);
-  ctx.save(); ctx.translate(ox + 15.5 * s, oy + 6.5 * s); ctx.scale(0.6 * s, 0.6 * s); ctx.fillStyle = '#fff'; ctx.fill(path(TEAMS[t].emblem)); ctx.restore();
+  drawPath(BANNER_CLOTH, ox, oy, s, TEAMS[t].c, 'rgba(0,0,0,.35)', 1);
+  ctx.save(); ctx.translate(ox + 15.5 * s, oy + 6.5 * s); ctx.scale(0.6 * s, 0.6 * s); ctx.fillStyle = TEAMS[t].ink; ctx.fill(path(TEAMS[t].emblem)); ctx.restore();
   ctx.globalAlpha = 1;
+}
+function drawEmblem(x, y, size, t) { // a capital's team mark, so ownership never rests on colour alone
+  const s = size / 20; ctx.save(); ctx.translate(x - 10 * s, y - 10 * s); ctx.scale(s, s);
+  ctx.lineJoin = 'round'; ctx.lineWidth = 3.5; ctx.strokeStyle = TEAMS[t].ink; ctx.stroke(path(TEAMS[t].emblem));
+  ctx.fillStyle = TEAMS[t].c; ctx.fill(path(TEAMS[t].emblem)); ctx.restore();
 }
 function drawShield(x, y, size, t, n) {
   const s = size / 20;
@@ -613,11 +708,10 @@ function drawBorderEdge(x, y, r, i, t) { // a team's border along edge i of a he
   ctx.strokeStyle = TEAMS[t].c; ctx.lineWidth = 5; ctx.lineCap = 'round';
   ctx.beginPath(); ctx.moveTo(x + r * Math.cos(a), y + r * Math.sin(a)); ctx.lineTo(x + r * Math.cos(b), y + r * Math.sin(b)); ctx.stroke();
 }
-function drawWater(L) { // sea and lakes on every grid spot without land, shallow along the coast
+function drawWater(L) { // sea and lakes on every grid spot without land, shallow along the coast (drawMap clips and slides it)
   const { r } = L, land = new Set(state.g.hexes.map(h => h.col + ',' + h.row));
-  ctx.save(); ctx.beginPath(); ctx.roundRect(MAP.x, MAP.y, MAP.w, MAP.h, 8); ctx.clip();
-  ctx.fillStyle = DEEP; ctx.fillRect(MAP.x, MAP.y, MAP.w, MAP.h);
-  for (let row = -2; row <= state.rows + 1; row++) for (let col = -2; col <= state.cols + 1; col++) {
+  ctx.fillStyle = DEEP; ctx.fillRect(MAP.x, MAP.y - MAP.h, MAP.w, MAP.h * 3);
+  for (let row = -3; row <= state.rows + 4; row++) for (let col = -2; col <= state.cols + 1; col++) {
     if (land.has(col + ',' + row)) continue;
     const [x, y] = L.at(col, row), coast = EDGE_NB[row & 1].some(([dc, dr]) => land.has((col + dc) + ',' + (row + dr)));
     const p = hexPath(x, y, r - 0.5); ctx.fillStyle = coast ? SHALLOW : DEEP; ctx.fill(p);
@@ -625,12 +719,11 @@ function drawWater(L) { // sea and lakes on every grid spot without land, shallo
     ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 1.5; const wx = x - r * 0.3, wy = y + ((col + row) & 1 ? -1 : 1) * r * 0.2;
     ctx.beginPath(); ctx.moveTo(wx, wy); ctx.quadraticCurveTo(wx + r * 0.15, wy - r * 0.1, wx + r * 0.3, wy); ctx.quadraticCurveTo(wx + r * 0.45, wy + r * 0.1, wx + r * 0.6, wy); ctx.stroke();
   }
-  ctx.restore();
-  ctx.strokeStyle = css('--line'); ctx.lineWidth = 1; ctx.beginPath(); ctx.roundRect(MAP.x, MAP.y, MAP.w, MAP.h, 8); ctx.stroke();
 }
 function marks() { // which hexes the current step lets the host click, and how
   const g = state.g, t = state.cur, m = {};
-  if (state.paused) return m;
+  if (state.paused || scene !== 'play') return m;
+  if (state.duel && (state.phase === 'duel' || state.phase === 'duelReveal')) { m[state.duel.from] = 'from'; m[state.duel.to] = 'aim'; return m; } // the battle in the spotlight
   if (state.phase === 'shop') { g.hexes.forEach(hx => { if (g.owner[hx.id] === t) m[hx.id] = 'pick'; }); if (state.sel >= 0) m[state.sel] = 'from'; }
   if (state.phase === 'attack') {
     if (state.sel < 0) g.hexes.forEach(hx => { if (canAttackFrom(hx.id)) m[hx.id] = 'pick'; });
@@ -648,13 +741,15 @@ function marks() { // which hexes the current step lets the host click, and how
 }
 function drawMap() {
   const L = layout(), g = state.g, r = L.r, brass = css('--brass'), pulse = 0.5 + 0.5 * Math.sin(state.t * 5);
+  const win = scene === 'results' && state.final ? new Set(state.final.filter(e => e.rank === 1 && e.alive).map(e => e.t)) : null; // results: the winners' land in full colour
+  ctx.save(); ctx.beginPath(); ctx.roundRect(MAP.x, MAP.y, MAP.w, MAP.h, 8); ctx.clip(); ctx.translate(0, state.camY);
   drawWater(L);
   const m = marks(), shadow = css('--shade'), anyMark = Object.keys(m).length > 0, f = state.flood;
   const id = new Map(g.hexes.map(h => [h.col + ',' + h.row, h.id]));
   for (const hx of g.hexes) {
     const [x, y] = L.at(hx.col, hx.row), o = g.owner[hx.id], flooding = f && f.hx === hx.id;
     const k = flooding ? clamp((state.t - f.t0) / tune.floodTime, 0, 1) : 1;
-    const p = drawTile(x, y, r - 0.5, state.terrain[hx.id], hx.id % 7, flooding ? f.prev : o, flooding ? TINT * (1 - k) : TINT);
+    const p = drawTile(x, y, r - 0.5, state.terrain[hx.id], hx.id % 7, flooding ? f.prev : o, flooding ? TINT * (1 - k) : win ? (win.has(o) ? 0.8 : 0.12) : TINT);
     if (flooding && o >= 0) { // the signature: a taken hex floods with the winner's colour, then settles to its wash
       ctx.save(); ctx.clip(p); ctx.globalAlpha = TINT + 0.5 * (1 - k); ctx.fillStyle = TEAMS[o].c; ctx.beginPath(); ctx.arc(x, y + r * 0.4, r * 1.3 * k, 0, Math.PI * 2); ctx.fill(); ctx.restore(); ctx.globalAlpha = 1; }
     const mk = m[hx.id];
@@ -671,33 +766,42 @@ function drawMap() {
     const [x, y] = L.at(hx.col, hx.row), mk = m[hx.id];
     if (mk === 'pick') { ctx.lineWidth = 2 + 2 * pulse; ctx.strokeStyle = brass; ctx.stroke(hexPath(x, y, r - 9)); }
     if (mk === 'from') { ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke(hexPath(x, y, r - 9)); }
-    if (mk === 'target') { ctx.setLineDash([7, 5]); ctx.lineDashOffset = -state.t * 20; ctx.lineWidth = 3; ctx.strokeStyle = state.phase === 'move' ? '#fff' : css('--bad'); ctx.stroke(hexPath(x, y, r - 9)); ctx.setLineDash([]); }
-    if (mk === 'aim') { ctx.lineWidth = 5; ctx.strokeStyle = state.phase === 'move' ? '#fff' : css('--bad'); ctx.stroke(hexPath(x, y, r - 9)); }
+    if (mk === 'target') { ctx.setLineDash([7, 5]); ctx.lineDashOffset = -state.t * 20; ctx.lineWidth = 3; ctx.strokeStyle = state.phase === 'move' ? '#fff' : brass; ctx.stroke(hexPath(x, y, r - 9)); ctx.setLineDash([]); }
+    if (mk === 'aim') { ctx.lineWidth = 6; ctx.strokeStyle = state.phase === 'move' ? '#fff' : brass; ctx.stroke(hexPath(x, y, r - 9)); }
   }
-  if (state.sel >= 0 && state.target >= 0) { // an arrow from the chosen hex to its target
-    const a = g.hexes[state.sel], b = g.hexes[state.target], [x1, y1] = L.at(a.col, a.row), [x2, y2] = L.at(b.col, b.row);
+  const arrow = scene !== 'play' ? null : state.sel >= 0 && state.target >= 0 ? [state.sel, state.target] : state.duel && m[state.duel.to] ? [state.duel.from, state.duel.to] : null;
+  if (arrow) { // an arrow from the chosen hex to its target
+    const a = g.hexes[arrow[0]], b = g.hexes[arrow[1]], [x1, y1] = L.at(a.col, a.row), [x2, y2] = L.at(b.col, b.row);
     const ang = Math.atan2(y2 - y1, x2 - x1), ex = x2 - Math.cos(ang) * r * 0.45, ey = y2 - Math.sin(ang) * r * 0.45;
-    ctx.strokeStyle = ctx.fillStyle = state.phase === 'move' ? '#fff' : css('--bad'); ctx.lineWidth = 6; ctx.lineCap = 'round';
+    ctx.strokeStyle = ctx.fillStyle = state.phase === 'move' ? '#fff' : brass; ctx.lineWidth = 6; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(x1 + Math.cos(ang) * r * 0.35, y1 + Math.sin(ang) * r * 0.35); ctx.lineTo(ex - Math.cos(ang) * 10, ey - Math.sin(ang) * 10); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(ex + Math.cos(ang) * 6, ey + Math.sin(ang) * 6); ctx.lineTo(ex - Math.cos(ang - 0.6) * 16, ey - Math.sin(ang - 0.6) * 16); ctx.lineTo(ex - Math.cos(ang + 0.6) * 16, ey - Math.sin(ang + 0.6) * 16); ctx.closePath(); ctx.fill();
   }
   for (const hx of g.hexes) { // figures on top: fortress or banner, and the battalion shield
     const [x, y] = L.at(hx.col, hx.row), o = g.owner[hx.id], cap = R.isCapital(g, hx.id), f = state.flood;
-    if (cap) drawFortress(x, y - r * 0.18, r * 0.82, o);
+    if (cap) { drawFortress(x, y - r * 0.18, r * 0.82, o); drawEmblem(x - r * 0.55, y - r * 0.4, r * 0.34, o); }
     else if (o >= 0) drawBanner(x + r * 0.05, y + r * 0.08, r * 0.62, o, f && f.hx === hx.id ? clamp((state.t - f.t0) / tune.floodTime, 0, 1) : 1);
-    if (o >= 0) drawShield(x + (cap ? r * 0.42 : r * 0.36), y + r * 0.42, r * 0.42, o, g.bat[hx.id]);
+    const big = state.duel && state.duel.b && m[state.duel.to] && (hx.id === state.duel.from || hx.id === state.duel.to); // drawn large below instead
+    if (o >= 0 && !big) drawShield(x + (cap ? r * 0.42 : r * 0.36), y + r * 0.42, r * 0.42, o, g.bat[hx.id]);
     if (g.fort[hx.id] && !cap) drawFortress(x - r * 0.48, y - r * 0.4, r * 0.4, -1);  // a bought fort: a small keep
     if (g.fort[hx.id] && cap) { ctx.lineWidth = 3; ctx.strokeStyle = css('--brass'); ctx.stroke(hexPath(x, y, r - 12)); } // on a capital: a second wall
     if (g.cannons[hx.id]) drawCannon(x - r * 0.42, y + r * 0.46, r * 0.36, g.cannons[hx.id]);
+  }
+  const d = state.duel;
+  if (d && d.b && m[d.to]) for (const [hx, side] of [[d.from, 'a'], [d.to, 'd']]) { // F: each side's battalions, large, ticking down hit by hit
+    const c = g.hexes[hx], [x, y] = L.at(c.col, c.row);
+    drawShield(x, y + r * 0.05, r * 1.0, side === 'a' ? d.a : d.d, Math.round(d.shown?.[side] ?? d.b[side]));
   }
   for (const e of state.fx) { // +1 and -1 rising from a hex
     const k = (state.t - e.t0) / 1.1; if (k > 1) continue;
     const hx = g.hexes[e.hx], [x, y] = L.at(hx.col, hx.row);
     ctx.globalAlpha = 1 - k; ctx.fillStyle = e.color; ctx.strokeStyle = css('--sea'); ctx.lineWidth = 4;
-    ctx.font = `bold 26px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = `bold ${e.size}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.strokeText(e.text, x, y - r * 0.5 - k * 30); ctx.fillText(e.text, x, y - r * 0.5 - k * 30); ctx.globalAlpha = 1;
   }
   state.fx = state.fx.filter(e => state.t - e.t0 < 1.1);
+  ctx.restore();
+  ctx.strokeStyle = css('--line'); ctx.lineWidth = 1; ctx.beginPath(); ctx.roundRect(MAP.x, MAP.y, MAP.w, MAP.h, 8); ctx.stroke();
 }
 
 // ---- Scenes --------------------------------------------------------------------------------
@@ -717,7 +821,7 @@ function renderHeader() {
     state.lastCall ? h('span', { class: 'chip bad' }, 'انتهى الوقت · آخر دور') : null,
     h('span', { class: 'sp' }), themeSeg(renderAll),
     h('span', { class: 'hgroup' },
-      B('شرح اللعبة', 'ghost', () => showHelp()),
+      B('شرح اللعبة', 'ghost', () => showHelp(HELP_AT[state.phase] ?? 0)),
       B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', 'ghost', () => setMuted(!muted)),
       B(state.paused ? 'متابعة' : 'إيقاف مؤقت', 'ghost', () => { state.paused = !state.paused; renderHeader(); }),
       B('إنهاء الحرب', 'ghost danger', confirmEnd))].filter(Boolean));
@@ -728,10 +832,10 @@ function vsBox(d) { // the forecast or the live battle: who fights with what, an
   const nA = d.b ? d.b.a : g.bat[from], nD = d.b ? d.b.d : g.bat[to];
   const gear = hx => [g.cannons[hx] ? `${g.cannons[hx]} مدفع` : '', g.fort[hx] ? 'حصن' : ''].filter(Boolean).join(' · ') || 'بلا مدافع';
   const sideA = h('div', { class: 'side' }, banner(state.duel ? d.a : state.cur, 34), h('b', {}, state.names[state.duel ? d.a : state.cur]), h('span', { class: 'n' }, N(nA)),
-    h('span', { class: 'muted' }, 'كتيبة مهاجمة'), neutral ? null : h('span', { class: 'muted', style: 'font-size:12px' }, gear(from), ' · ضربته ', N(R.hit(g.cannons[from], g.fort[to], P))));
+    h('span', { class: 'muted' }, 'كتائب الهجوم'), neutral ? null : h('span', { class: 'muted', style: 'font-size:12px' }, gear(from), ' · ضربته ', N(R.hit(g.cannons[from], g.fort[to], P))));
   const sideD = neutral ? h('div', { class: 'side' }, h('span', { html: shieldSVG(-1, 0, 28) }), h('b', {}, 'أرض محايدة'), h('span', { class: 'n' }, N(0)), h('span', { class: 'muted' }, 'إجابة صحيحة تأخذها'))
     : h('div', { class: 'side' }, cap ? h('span', { html: fortressSVG(g.owner[to], 38) }) : banner(g.owner[to], 34), h('b', {}, state.names[g.owner[to]]),
-      h('span', { class: 'n' }, N(nD)), h('span', { class: 'muted' }, cap ? 'كتيبة في العاصمة' : 'كتيبة مدافعة'),
+      h('span', { class: 'n' }, N(nD)), h('span', { class: 'muted' }, cap ? 'كتائب العاصمة' : 'كتائب الدفاع'),
       h('span', { class: 'muted', style: 'font-size:12px' }, gear(to), ' · ضربته ', N(R.hit(g.cannons[to], g.fort[from], P))));
   return h('div', { class: 'vs' }, sideA, h('span', { class: 'x' }, 'ضد'), sideD);
 }
@@ -755,21 +859,23 @@ function renderSide() {
     if (hx >= 0) a.push(
       ...['troop', 'cannon', 'fort'].map(k => h('div', { class: 'row', style: 'gap:6px' },
         h('b', { style: 'min-width:54px' }, { troop: 'كتائب', cannon: 'مدافع', fort: 'حصن' }[k]), h('span', { class: 'chip' }, N(k === 'fort' ? (g.fort[hx] ? 'نعم' : 'لا') : goodOf(k, hx))),
-        B('شراء', 'good', () => trade(k, 1), { style: small }), k === 'troop' ? B('+10', 'good', () => trade(k, 10), { style: small }) : null,
+        B('شراء', 'good', () => trade(k, 1), { style: small }), k === 'troop' ? B(N('+10'), 'good', () => trade(k, 10), { style: small }) : null,
         B('بيع', '', () => trade(k, -1), { style: small }),
         h('span', { class: 'muted', style: 'font-size:12px' }, 'شراء ', N(pr[k].buy), ' · بيع ', N(pr[k].sell)))));
+    const spent = state.shopScore0 - scoreOf(t); // G: buying costs more than goods sell for, and points count the sell price
+    if (spent > 0) a.push(h('div', { class: 'muted', style: 'font-size:13px;line-height:1.6' }, 'النقاط تحسب ما تملكه بسعر البيع، والشراء أغلى منه: نقص النقاط ', h('b', { class: 'bad' }, N('−' + fmt(spent))), ' هو فرق السعر، وقوة الجيش زادت.'));
     a.push(msg);
     bottom.push(B('إلى الهجوم', 'pri', openAttack, { 'data-primary': '1' }));
     if (state.buys.length) bottom.push(B('تراجع', '', undoBuy));
   } else if (p === 'attack') {
     const any = g.hexes.some(hx => canAttackFrom(hx.id));
     const ok = state.sel >= 0 && state.target >= 0 && !R.attackBlock(g, t, state.sel, state.target, RP());
-    if (!any) a.push(h('div', { class: 'hint' }, `لا هجوم ممكن الآن: أرض الخصم تحتاج ${tune.attackMin} كتائب على الأقل في أرض مجاورة. انتظر الدفعة أو اشترِ كتائب.`));
-    else if (state.sel < 0) a.push(h('div', { class: 'hint' }, `اختر أرضاً لفريقك تهاجم منها. الأرض المحايدة تكفيها الحدود، وأرض الخصم تحتاج ${tune.attackMin} كتائب على الأقل.`));
+    if (!any) a.push(h('div', { class: 'hint' }, `لا هجوم ممكن الآن: أرض الخصم تحتاج ${bats(tune.attackMin)} على الأقل في أرض مجاورة. انتظر الدفعة أو اشترِ كتائب.`));
+    else if (state.sel < 0) a.push(h('div', { class: 'hint' }, `اختر أرضاً لفريقك تهاجم منها. الأرض المحايدة تكفيها الحدود، وأرض الخصم تحتاج ${bats(tune.attackMin)} على الأقل.`));
     else if (state.target < 0) a.push(h('div', { class: 'hint' }, 'اختر أرضاً مجاورة لتهاجمها. الأرض المحايدة تُؤخذ بإجابة صحيحة، وأرض الخصم تُحسم بأسئلة متتالية.'));
     else {
       a.push(vsBox({ from: state.sel, to: state.target }));
-      if (!ok) a.push(h('div', { class: 'hint bad' }, `لا يكفي: تحتاج ${tune.attackMin} كتائب على الأقل، وأكثر من ضربة واحدة من مدافع الخصم (`, N(R.hit(g.cannons[state.target], g.fort[state.sel], RP())), ').'));
+      if (!ok) a.push(h('div', { class: 'hint bad' }, `لا يكفي: تحتاج ${bats(tune.attackMin)} على الأقل، وأكثر من ضربة واحدة من مدافع الخصم (`, N(R.hit(g.cannons[state.target], g.fort[state.sel], RP())), ').'));
       else a.push(h('div', { class: 'hint muted', style: 'font-size:14px' }, isNeutral(state.target) ? 'إجابة صحيحة تأخذ الأرض.'
         : 'تقاتل كل كتائب أرضك. يجيب الفريقان بالتناوب، المهاجم أولاً، وكل إجابة تُسقط ضربة. للمهاجم أن ينسحب بين الأسئلة.'));
       bottom.push(B('هاجم!', 'warn', startBattle, { 'data-primary': ok ? '1' : null, disabled: !ok }));
@@ -800,11 +906,16 @@ function renderSide() {
     bottom.push(B('النتائج', 'pri', endGame, { 'data-primary': '1' }));
   }
   const fallen = state.log.length ? state.log[state.log.length - 1] : null;
-  const act = h('div', { class: 'panel act' }, ...a, fallen && (p === 'move' || p === 'over') && state.fellAt[fallen.fell] === state.turns
-    ? h('div', { class: 'chip bad', style: 'font-size:15px;padding:8px 12px' }, h('span', { html: fortressSVG(-1, 22) }), `سقطت عاصمة ${state.names[fallen.fell]} وخرج من الحرب`) : null,
-    h('div', { class: 'bottom' }, ...bottom));
+  // A: the content scrolls if it must; the action row below it is always on screen
+  const act = h('div', { class: 'panel act' }, h('div', { class: 'scroll' }, ...a, fallen && (p === 'move' || p === 'over') && state.fellAt[fallen.fell] === state.turns
+    ? h('div', { class: 'chip bad', style: 'font-size:15px;padding:8px 12px' }, h('span', { html: fortressSVG(-1, 22) }), `سقطت عاصمة ${state.names[fallen.fell]} وخرج من الحرب`) : null),
+    bottom.length ? h('div', { class: 'bottom' }, ...bottom) : null);
   const order = [...Array(state.n).keys()].sort((x, y) => (g.alive[y] - g.alive[x]) || scoreOf(y) - scoreOf(x));
-  const board = h('div', { class: 'panel' }, h('table', { class: 'lb' }, h('tr', {}, ...['الفريق', 'أراضٍ', 'كتائب', 'مال', 'نقاط'].map(s => h('th', {}, s))),
+  // A: while the host works the map, the standings shrink to banners and points
+  const board = ['shop', 'attack', 'duel', 'duelReveal', 'move'].includes(p)
+    ? h('div', { class: 'panel mini', 'aria-label': 'الترتيب' }, ...order.map(i => h('div', { class: (i === t ? 'cur' : '') + (g.alive[i] ? '' : ' out'), title: state.names[i] },
+      banner(i, 22), g.alive[i] ? N(fmt(scoreOf(i))) : h('span', { style: 'font-size:14px' }, 'خرج'))))
+    : h('div', { class: 'panel', style: 'flex:none' }, h('table', { class: 'lb' }, h('tr', {}, ...['الفريق', 'أراضٍ', 'كتائب', 'مال', 'نقاط'].map(s => h('th', {}, s))),
     ...order.map(i => h('tr', { class: (i === t ? 'cur' : '') + (g.alive[i] ? '' : ' out') },
       h('td', {}, h('span', { class: 'tn' }, banner(i, 20), state.names[i])), h('td', {}, N(R.hexCount(g, i))), h('td', {}, N(R.battalions(g, i))),
       h('td', {}, N(fmt(state.money[i]))), h('td', { style: 'font-weight:bold' }, g.alive[i] ? N(fmt(scoreOf(i))) : 'خرج')))));
@@ -828,10 +939,15 @@ function renderQuestion() {
   if (settings.qmode === 'choices') {
     parts.push(h('div', { class: 'choices' }, ...q.choices.map((txt, k) => {
       const cls = done && k === q.right ? ' right' : done && k === state.picked ? ' wrong' : '';
-      return h('button', { class: 'choice' + cls, disabled: !canPick, onclick: canPick ? () => answer(k === q.right, k) : null }, h('span', { class: 'k' }, k + 1), txt);
+      const mark = cls ? h('span', { class: 'mark', html: cls === ' right' ? MARK_OK : MARK_NO }) : null; // E: right and wrong carry a shape, not colour alone
+      return h('button', { class: 'choice' + cls, disabled: !canPick, onclick: canPick ? () => answer(k === q.right, k) : null }, h('span', { class: 'k' }, k + 1), txt, mark);
     })));
-  } else if (state.reveal || done) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right]));
-  else parts.push(B('إظهار الإجابة للمقدّم', '', () => { state.reveal = true; renderQuestion(); }, { style: 'align-self:flex-start;font-size:14px;padding:6px 14px;min-height:36px' }));
+  } else if (done) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right]));
+  else { // C: the projected screen shows the answer only while the host holds the button (or H)
+    const peekOn = e => { peekPtr = true; e.currentTarget.setPointerCapture?.(e.pointerId); }, peekOff = () => { peekPtr = false; };
+    parts.push(h('button', { class: 'btn peek', onpointerdown: peekOn, onpointerup: peekOff, onpointercancel: peekOff, onlostpointercapture: peekOff, oncontextmenu: e => e.preventDefault() }, 'اضغط مطولاً لرؤية الإجابة (H)'),
+      h('div', { class: 'answer', id: 'peek', hidden: true }, 'الإجابة الصحيحة: ', q.choices[q.right]));
+  }
   if (settings.qmode === 'judge' && !done) parts.push(h('div', { style: 'display:flex;gap:10px' },
     B('إجابة صحيحة', 'good', () => answer(true), { 'data-primary': '1', style: 'flex:1;font-size:20px' }),
     B('إجابة خاطئة', 'warn', () => answer(false), { style: 'flex:1;font-size:20px' })));
@@ -850,32 +966,41 @@ function renderQuestion() {
     } else {
       const L = d.last, loserTeam = L.loser === 'a' ? d.a : d.d;
       verdict = h('div', { class: 'verdict pop ' + (L.right ? 'ok' : 'bad') }, L.right ? 'إجابة صحيحة' : missed);
-      const end = { win: R.isCapital(state.g, d.to) ? ' · سقطت العاصمة!' : ' · سقطت الأرض!', fail: ' · توقف الهجوم: لا يتحمل المهاجم ضربة أخرى' }[d.outcome] || '';
-      note = `${state.names[loserTeam]} يخسر ${L.loss} كتيبة${end}`;
+      const end = { win: R.isCapital(state.g, d.to) ? 'سقطت العاصمة!' : 'سقطت الأرض!', fail: 'توقف الهجوم: لا يتحمل المهاجم ضربة أخرى' }[d.outcome] || '';
+      // F: the loss is the largest number on screen
+      note = h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('div', { class: 'loss pop' }, N('−' + L.loss)),
+        h('div', { class: 'lossnote' }, h('b', {}, `${state.names[loserTeam]} يخسر ${bats(L.loss)}`), end ? h('span', {}, end) : null));
       next = d.outcome ? [B('إلى الخريطة', 'pri', finishBattle, { 'data-primary': '1' })]
         : [B('السؤال التالي', 'pri', nextBattleQuestion, { 'data-primary': '1' }), B('انسحاب', '', withdraw)];
     }
-    parts.push(h('div', { style: 'display:flex;align-items:center;gap:16px;margin-top:auto' }, verdict, h('div', { class: 'muted', style: 'flex:1;font-size:16px' }, note), ...next));
+    // D: the undo sits in the panel's header, away from the next step's button
+    if (verdictUndo) head.append(B(['تراجع (Z) ', h('span', { id: 'undoleft', class: 'num' }, Math.ceil(verdictUndo.until - state.t))], '', undoVerdict, { id: 'undoverdict', style: 'min-height:36px;padding:4px 14px;font-size:15px;margin-inline-start:auto' }));
+    verdict.style.whiteSpace = 'nowrap'; next.forEach(b => { b.style.whiteSpace = 'nowrap'; });
+    parts.push(h('div', { style: 'display:flex;align-items:center;gap:14px;margin-top:auto' }, verdict, h('div', { class: 'muted', style: 'flex:1;min-width:0;font-size:16px' }, note), ...next));
   }
   ui.append(h('section', { id: 'qpanel', class: 'panel', 'data-size': size }, head, h('div', { class: 'body' }, ...parts)));
 }
+let peekPtr = false;
+const MARK_OK = '<svg width="30" height="30" viewBox="0 0 24 24" role="img" aria-label="صحيحة"><path d="M4 12.5 L9.5 18 L20 6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const MARK_NO = '<svg width="30" height="30" viewBox="0 0 24 24" role="img" aria-label="خاطئة"><path d="M6 6 L18 18 M18 6 L6 18" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg>';
 function timeUp() { // nobody answered in time: an unanswered team counts as wrong
-  if (state.phase === 'question') { state.result = 'time'; state.reveal = true; sfx.wrong(); return setPhase('reveal'); }
+  if (state.phase === 'question') { snapVerdict(); state.result = 'time'; state.reveal = true; sfx.wrong(); return setPhase('reveal'); }
   if (state.phase === 'duel') answerBattle(false, null, true);
 }
 const HELP_FIG = { // the help's drawings, from the game's own figures
   setup: () => `<div style="display:flex;gap:18px;align-items:center;justify-content:center">${[0, 1, 2, 3].map(t => fortressSVG(t, 64)).join('')}</div>`,
-  question: () => `<div style="display:flex;gap:16px;align-items:center;justify-content:center">${ring(18, 30, 96)}<span class="reward">+${fmt(tune.turnReward)}</span></div>`,
+  question: () => `<div style="display:flex;gap:16px;align-items:center;justify-content:center">${ring(18, 30, 96)}<span class="reward num">+${fmt(tune.turnReward)}</span></div>`,
   shop: () => `<div style="display:flex;gap:14px;align-items:center;justify-content:center">${shieldSVG(0, 2, 48)}<b class="brass" style="font-size:40px">←</b>${shieldSVG(0, 3, 48)}</div>`,
   battle: () => `<div style="display:flex;gap:16px;align-items:center;justify-content:center">${bannerSVG(0, 80)}<b class="brass" style="font-size:34px">ضد</b>${bannerSVG(1, 80)}</div>`,
   capital: () => `<div style="display:flex;gap:16px;align-items:center;justify-content:center">${fortressSVG(1, 80)}<b class="bad" style="font-size:40px">←</b>${fortressSVG(0, 80)}</div>`,
   end: () => `<div style="display:flex;justify-content:center">${TROPHY}</div>`,
 };
+const HELP_AT = { ready: 1, question: 1, reveal: 1, shop: 2, attack: 3, duel: 3, duelReveal: 3, move: 4, over: 5 }; // H: help opens on the step in play
 const HELP = [
   ['setup', 'الإعداد', 'يختار المقدّم عدد الفرق وأسماءها، وطريقة عرض الأسئلة، ومتى تنتهي الحرب. لكل فريق عاصمة وأراضٍ حولها على خريطة جديدة كل مرة.'],
-  ['question', 'سؤال الدور', `يبدأ كل دور بسؤال للفريق. الإجابة الصحيحة تضيف ${fmt(tune.turnReward)} إلى ماله. وكل ${tune.payoutEvery} جولات تصل إلى كل عاصمة ${tune.payoutPerHex} كتيبة عن كل أرض يملكها فريقها.`],
+  ['question', 'سؤال الدور', `يبدأ كل دور بسؤال للفريق. الإجابة الصحيحة تضيف ${fmt(tune.turnReward)} إلى ماله. وكل ${tune.payoutEvery} جولات تصل إلى كل عاصمة ${bats(tune.payoutPerHex)} عن كل أرض يملكها فريقها.`],
   ['shop', 'السوق', 'في السوق يشتري الفريق أو يبيع كتائب ومدافع وحصوناً في أي أرض له. الأسعار تتغير كل جولة، والبيع أرخص من الشراء. المدفع يقوّي ضربة الأرض في المعركة، والحصن يقسم الضربات عليها إلى النصف.'],
-  ['battle', 'الهجوم', `الأرض المحايدة المجاورة تُؤخذ بإجابة صحيحة. أرض الخصم تحتاج ${tune.attackMin} كتائب على الأقل، وتُحسم بأسئلة متتالية يجيب عنها الفريقان بالتناوب: كل إجابة صحيحة تُسقط من الخصم 3 + 3 لكل مدفع، وخطأ المدافع يكلفه 3. للمهاجم أن ينسحب بين الأسئلة.`],
+  ['battle', 'الهجوم', `الأرض المحايدة المجاورة تُؤخذ بإجابة صحيحة. أرض الخصم تحتاج ${bats(tune.attackMin)} على الأقل، وتُحسم بأسئلة متتالية يجيب عنها الفريقان بالتناوب: كل إجابة صحيحة تُسقط من الخصم 3 + 3 لكل مدفع، وخطأ المدافع يكلفه 3. للمهاجم أن ينسحب بين الأسئلة.`],
   ['capital', 'سقوط العاصمة', 'الأرض المأخوذة تبدأ خالية وتبقى الكتائب الناجية في أرض الهجوم، فانقلها في خطوة التحريك. إذا سقطت العاصمة خرج فريقها من الحرب وعادت أراضيه محايدة.'],
   ['end', 'نهاية الحرب', 'تنتهي الحرب بسقوط كل العواصم إلا واحدة، أو بانتهاء الوقت أو الجولات. عندها يفوز صاحب أعلى نقاط: الأراضي، والمال، وقيمة الكتائب والمدافع والحصون بسعر البيع.'],
 ];
@@ -890,12 +1015,13 @@ function showHelp(i = 0) {
     h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('السابق', '', () => showHelp(i - 1), { disabled: i === 0 }),
       B(last ? 'إغلاق' : 'التالي', 'pri', last ? close : () => showHelp(i + 1), { 'data-primary': '1' }), last ? null : B('إغلاق', '', close)))));
 }
-function confirmEnd() {
+function confirmBox(title, text, yes, onYes, no) { // the one confirm dialog: Escape or the second button cancels
   if (document.getElementById('confirm')) return;
-  ui.append(h('div', { class: 'ov', id: 'confirm' }, h('div', { class: 'modal' }, h('b', { style: 'font-size:20px' }, 'إنهاء الحرب الآن؟'),
-    h('div', { class: 'muted' }, 'تُحسب النقاط الآن: الأراضي والكتائب والمال، ويُعلن الترتيب.'),
-    h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('نعم، أنهِ الحرب', 'warn', endGame), B('متابعة اللعب', '', () => document.getElementById('confirm').remove())))));
+  const close = () => document.getElementById('confirm')?.remove();
+  ui.append(h('div', { class: 'ov', id: 'confirm' }, h('div', { class: 'modal' }, h('b', { style: 'font-size:20px' }, title), h('div', { class: 'muted' }, text),
+    h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B(yes, 'warn', () => { close(); onYes(); }), B(no, '', close)))));
 }
+const confirmEnd = () => confirmBox('إنهاء الحرب الآن؟', 'تُحسب النقاط الآن: الأراضي والكتائب والمال، ويُعلن الترتيب.', 'نعم، أنهِ الحرب', endGame, 'متابعة اللعب');
 
 const scenes = {
   title: {
@@ -937,7 +1063,7 @@ const scenes = {
               s.end === 'timed' ? numF('مدة الحرب', 'minutes', CONFIG.minutes, 'دقيقة') : s.end === 'rounds' ? numF('عدد الجولات', 'rounds', CONFIG.rounds, 'جولة')
                 : h('div', { class: 'muted', style: 'font-size:12px' }, 'تستمر الحرب حتى تبقى عاصمة واحدة. يستطيع المقدّم إنهاءها متى شاء، فتُحسب النقاط.')),
             h('div', { class: 'panel box' }, h('h3', {}, 'البداية'), h('div', { class: 'muted', style: 'font-size:13px;line-height:1.7' },
-              `خريطة جديدة كل مرة من ${tune.mapCols * tune.mapRows - tune.mapLakes} أرضاً. لكل فريق عاصمة فيها ${tune.startCapitalBattalions} كتيبة${tune.startHexes > 1 ? ` و${tune.startHexes - 1} أراضٍ حولها` : ''}، و${fmt(tune.startMoney)} من المال.`))))));
+              `خريطة جديدة كل مرة من ${tune.mapCols * tune.mapRows - tune.mapLakes} أرضاً. لكل فريق عاصمة فيها ${bats(tune.startCapitalBattalions)}${tune.startHexes > 1 ? ` و${tune.startHexes - 1} أراضٍ حولها` : ''}، و${fmt(tune.startMoney)} من المال.`))))));
     },
     update() {}, draw() { backdrop(false); },
   },
@@ -955,7 +1081,8 @@ const scenes = {
       };
       ui.append(h('div', { class: 'screen' },
         h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('b', { style: 'font-size:26px' }, 'بنك الأسئلة'), h('span', { class: 'chip' }, N(bank.length), ' سؤال'), h('span', { style: 'flex:1' }),
-          B('استعادة الأسئلة الأصلية', '', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); go('bank'); }), B('رجوع', 'ghost', () => go('title'), { 'data-primary': '1' })),
+          B('استعادة الأسئلة الأصلية', '', () => confirmBox('استعادة الأسئلة الأصلية؟', `يُستبدل البنك الحالي (${fmt(bank.length)} سؤالاً) بالأسئلة الأصلية (${fmt(DEFAULT_BANK.length)}). تُحذف الأسئلة المضافة والمستوردة.`,
+            'نعم، استعد الأصلية', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); go('bank'); }, 'إلغاء')), B('رجوع', 'ghost', () => go('title'), { 'data-primary': '1' })),
         h('div', { class: 'grid2', style: 'grid-template-columns:minmax(0,1fr) minmax(0,1fr)' },
           h('div', { class: 'panel box' }, h('h3', {}, 'إضافة سؤال'),
             h('div', { class: 'addq' }, inp('cat', 'التصنيف'), inp('q', 'نص السؤال')),
@@ -969,8 +1096,9 @@ const scenes = {
               B('استيراد أسئلة من ملف', 'pri', () => fileIn.click()), B('تنزيل نموذج', '', downloadTemplate), fileIn))),
         bankMsg ? h('div', { id: 'bankmsg', class: 'panel', style: `padding:10px 14px;font-size:14px;font-weight:bold;color:var(--${bankMsg.good ? 'ok' : 'bad'})` }, bankMsg.text) : null,
         h('div', { class: 'panel banklist' }, ...bank.map((r, i) => h('div', { class: 'bq' }, h('span', { class: 'chip muted', title: r[0], style: 'overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;box-sizing:border-box' }, r[0]), h('span', {}, r[1]),
-          h('span', { class: 'ok', style: 'font-weight:bold' }, r[2]), B('حذف', '', () => { if (bank.length > 1) { bank.splice(i, 1); saveBank(); go('bank'); } }, { style: 'padding:5px 10px;font-size:12px;min-height:34px' }))))));
+          h('span', { class: 'ok', style: 'font-weight:bold' }, r[2]), B('حذف', '', () => deleteQuestion(i), { style: 'padding:5px 10px;font-size:12px;min-height:34px' }))))));
       f.cat.setAttribute('list', 'cats'); bankMsg = null;
+      if (bankUndo) ui.append(h('div', { class: 'toast', role: 'status' }, 'حُذف السؤال', B('تراجع', 'pri', () => { const u = bankUndo; bankUndo = null; clearTimeout(u.timer); bank.splice(u.i, 0, u.row); saveBank(); go('bank'); }, { style: 'min-height:40px;padding:6px 16px' })));
       ui.append(h('datalist', { id: 'cats' }, ...[...new Set(bank.map(r => r[0]))].map(c => h('option', { value: c }))));
     },
     update() {}, draw() { backdrop(false); },
@@ -992,6 +1120,9 @@ const scenes = {
         state.elapsed += dt;
         if (!state.lastCall && state.elapsed >= settings.minutes * 60) { state.lastCall = true; if (state.phase === 'ready') return endGame(); renderHeader(); }
       }
+      state.camY += (camTarget() - state.camY) * (REDUCED.matches ? 1 : 0.12);
+      const d = state.duel;
+      if (d && d.b) { d.shown ??= { a: d.b.a, d: d.b.d }; for (const s of ['a', 'd']) { const gap = d.b[s] - d.shown[s]; d.shown[s] = REDUCED.matches || Math.abs(gap) < 0.5 ? d.b[s] : d.shown[s] + gap * 0.08; } }
       if (state.phase === 'question' || state.phase === 'duel') {
         state.timer -= dt;
         const s = Math.ceil(state.timer);
@@ -1007,6 +1138,10 @@ const scenes = {
       backdrop(false); drawMap();
       const rs = document.getElementById('ringsvg');
       if (rs) { rs.innerHTML = ring(state.timer, settings.answerTime); document.getElementById('ringnum').textContent = Math.ceil(state.timer); }
+      const pk = document.getElementById('peek');
+      if (pk) pk.hidden = !(peekPtr || (down.has('KeyH') && !typing()));
+      const ul = document.getElementById('undoleft');
+      if (ul) { const left = verdictUndo ? verdictUndo.until - state.t : 0; if (left <= 0) { verdictUndo = null; document.getElementById('undoverdict')?.remove(); } else ul.textContent = Math.ceil(left); }
       const cc = document.getElementById('clockchip');
       if (cc) { const left = Math.max(0, settings.minutes * 60 - state.elapsed); cc.textContent = `الوقت المتبقي ${String(Math.floor(left / 60)).padStart(2, '0')}:${String(Math.floor(left % 60)).padStart(2, '0')}`; }
       const ov = document.getElementById('pause');
@@ -1017,27 +1152,38 @@ const scenes = {
   results: {
     enter() {
       if (!state.final) endGameValues();
-      const f = state.final, podium = [1, 0, 2].filter(r => f[r]); // second, first, third, right to left
-      const heights = { 0: 140, 1: 105, 2: 78 }, medal = ['#d9a520', '#9aa5b5', '#b8733a'];
-      ui.append(h('div', { class: 'screen', style: 'align-items:center;gap:12px' },
-        h('div', { style: 'font-size:32px;font-weight:bold' }, 'نهاية الحرب'),
-        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;height:360px' }, ...podium.map(r => { const e = f[r];
-          return h('div', { style: 'display:flex;flex-direction:column;align-items:center;gap:6px;width:210px' },
-            r === 0 ? h('span', { html: TROPHY }) : null, banner(e.t, r === 0 ? 64 : 48), h('b', { style: 'font-size:' + (r === 0 ? 24 : 18) + 'px' }, state.names[e.t]),
-            h('span', { class: 'num', style: 'font-weight:bold;font-size:18px' }, e.alive ? fmt(e.score) + ' نقطة' : 'خرج'),
-            h('div', { style: `width:100%;height:${heights[r]}px;border-radius:10px 10px 0 0;background:linear-gradient(${medal[r]}, ${medal[r]}aa);display:grid;place-items:center;font-size:54px;font-weight:bold;color:#fff;text-shadow:0 2px 4px #0006` }, N(r + 1))); })),
-        h('div', { class: 'panel', style: 'width:820px' }, h('table', { class: 'lb' },
-          h('tr', {}, ...['المركز', 'الفريق', 'الأراضي', 'الكتائب', 'المال', 'النقاط', 'الحالة'].map(s => h('th', {}, s))),
-          ...f.map((e, r) => h('tr', {}, h('td', {}, N(r + 1)), h('td', {}, h('span', { class: 'tn' }, banner(e.t, 20), state.names[e.t])),
-            h('td', {}, N(e.hexes)), h('td', {}, N(e.bat)), h('td', {}, N(fmt(e.money))), h('td', { style: 'font-weight:bold' }, e.alive ? N(fmt(e.score)) : '—'),
-            h('td', { class: e.alive ? 'ok' : 'bad' }, e.alive ? 'صامد' : 'سقطت عاصمته'))))),
-        h('div', { class: 'muted', style: 'font-size:13px' }, `النقاط: كل أرض ${tune.hexWorth} ضعف سعر الكتيبة، والمال، وقيمة الكتائب والمدافع والحصون بسعر البيع. من سقطت عاصمته يأتي بعد الصامدين.`),
+      state.camY = 0;
+      // G: equal results share a rank (labelled تعادل); the standing teams by points, the fallen by when they fell
+      const f = state.final, beats = (x, y) => x.alive !== y.alive ? x.alive > y.alive : x.alive ? x.score > y.score : x.fellAt > y.fellAt;
+      for (const e of f) e.rank = 1 + f.filter(o => beats(o, e)).length;
+      const tied = e => f.some(o => o !== e && o.rank === e.rank), tie = () => h('span', { class: 'tie' }, 'تعادل');
+      const firsts = f.filter(e => e.rank === 1), podium = [1, 0, 2].filter(r => f[r]); // second, first, third, right to left
+      const heights = { 1: 130, 2: 95, 3: 70 }, medal = { 1: '#d9a520', 2: '#9aa5b5', 3: '#b8733a' }, delay = [1.6, 0.9, 0.2]; // revealed 3rd, 2nd, 1st
+      const shade = 'text-shadow:0 2px 10px var(--bg),0 0 2px var(--bg)';
+      ui.append(h('div', { class: 'screen', style: 'align-items:center;gap:14px;padding-top:14px' },
+        h('div', { class: 'winhead', style: shade }, ...(firsts.length > 1
+          ? ['تعادل: ', firsts.map(e => state.names[e.t]).join(' و')]
+          : [banner(f[0].t, 72), `انتصر ${state.names[f[0].t]}`])),
+        h('div', { style: 'display:flex;gap:28px;align-items:flex-end;width:100%;justify-content:center;flex:1;min-height:0' },
+          h('div', { style: 'display:flex;align-items:flex-end;gap:14px' }, ...podium.map(r => { const e = f[r], top = e.rank === 1;
+            return h('div', { class: 'place', style: `animation-delay:${delay[r]}s;display:flex;flex-direction:column;align-items:center;gap:6px;width:180px;${shade}` },
+              top ? h('span', { html: TROPHY }) : null, banner(e.t, top ? 60 : 46), h('b', { style: 'font-size:' + (top ? 24 : 19) + 'px' }, state.names[e.t]),
+              h('span', { style: 'font-weight:bold;font-size:18px' }, e.alive ? [N(fmt(e.score)), ' نقطة'] : 'خرج', tied(e) ? tie() : null),
+              h('div', { style: `width:100%;height:${heights[Math.min(e.rank, 3)]}px;border-radius:10px 10px 0 0;background:${medal[Math.min(e.rank, 3)]};display:grid;place-items:center;font-size:52px;font-weight:bold;color:#1b1406` }, N(e.rank))); })),
+          h('div', { class: 'panel', style: 'width:600px;flex:none' }, h('table', { class: 'lb' },
+            h('tr', {}, ...['المركز', 'الفريق', 'الأراضي', 'الكتائب', 'المال', 'النقاط', 'الحالة'].map(s => h('th', {}, s))),
+            ...f.map(e => h('tr', {}, h('td', {}, N(e.rank), tied(e) ? tie() : null), h('td', {}, h('span', { class: 'tn' }, banner(e.t, 20), state.names[e.t])),
+              h('td', {}, N(e.hexes)), h('td', {}, N(e.bat)), h('td', {}, N(fmt(e.money))), h('td', { style: 'font-weight:bold' }, e.alive ? N(fmt(e.score)) : '—'),
+              h('td', { class: e.alive ? 'ok' : 'bad', style: 'font-size:15px' }, e.alive ? 'صامد' : 'سقطت عاصمته')))))),
+        h('div', { class: 'panel', style: 'padding:6px 12px;font-size:13px;color:var(--muted)' }, `النقاط: كل أرض ${tune.hexWorth} ضعف سعر الكتيبة، والمال، وقيمة الكتائب والمدافع والحصون بسعر البيع. من سقطت عاصمته يأتي بعد الصامدين.`),
         h('div', { style: 'display:flex;gap:12px' }, B('حرب جديدة بنفس الإعدادات', 'pri', () => { reset(); go('play'); }, { 'data-primary': '1' }), B('الشاشة الرئيسية', '', () => go('title')))));
       confetti = Array.from({ length: CHEAP ? 0 : 120 }, () => ({ x: vrng() * W, y: -vrng() * H, v: 60 + vrng() * 90, s: 5 + vrng() * 5, c: TEAMS[(vrng() * state.n) | 0].c, a: vrng() * 6, w: 1 + vrng() * 3 }));
     },
     update(dt) { for (const p of confetti) { p.y += p.v * dt; p.a += p.w * dt; if (p.y > H + 10) p.y = -10; } },
-    draw() {
+    draw() { // G: the final map behind the results, the winner's land in full colour
       backdrop(false);
+      const k = Math.max(W / MAP.w, H / MAP.h); ctx.save(); ctx.translate(W / 2, H / 2); ctx.scale(k, k); ctx.translate(-(MAP.x + MAP.w / 2), -(MAP.y + MAP.h / 2)); drawMap(); ctx.restore();
+      ctx.globalAlpha = 0.5; ctx.fillStyle = css('--bg'); ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
       for (const p of confetti) { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore(); }
     },
   },
@@ -1081,8 +1227,9 @@ function backdrop(title) {
 function step() {
   if (pressed('KeyM') && !typing()) setMuted(!muted);
   if (pressed('KeyP') && !typing() && scene === 'play') { state.paused = !state.paused; renderHeader(); }
+  if (pressed('KeyZ') && !typing() && verdictUndo) undoVerdict();
   if ((pressed('Enter') || pressed('NumpadEnter')) && !typing() && !document.getElementById('confirm')) { // Enter: the screen's main button
-    const p = (document.getElementById('importask') || document.getElementById('help') || ui).querySelector('[data-primary]:not([disabled])');
+    const p = (document.getElementById('fallbeat') || document.getElementById('importask') || document.getElementById('help') || ui).querySelector('[data-primary]:not([disabled])');
     if (p) p.click();
   }
   if (pressed('Escape')) { document.getElementById('confirm')?.remove(); document.getElementById('importask')?.remove(); if (document.getElementById('help')) { document.getElementById('help').remove(); if (scene === 'play') state.paused = false; } }

@@ -652,3 +652,11 @@
   model: claude-opus-5-5
   date: 2026-11-21
   ships: false
+
+- path: vendor/reem-kufi.woff2
+  origin: licensed
+  tool: "copy of Musabaqat-games/fonts/reem-kufi.woff2 (the landing page's Reem Kufi 400-700); display face for the results headline and the fallen-capital beat"
+  source: {vendor: "The Reem Kufi Project Authors (Khaled Hosny)", product: "Reem Kufi", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}  # licence text: assets/logo/OFL.txt
+  date: 2026-11-21
+  ships: true

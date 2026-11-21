@@ -51,4 +51,6 @@ window.CONFIG = {
   // Feel
   tickWarn: { value: 5, min: 0, max: 30, step: 1 },              // seconds left when the ring turns red and ticks
   floodTime: { value: 0.7, min: 0.1, max: 3, step: 0.1 },        // seconds a taken hex takes to fill with its new colour
+  undoSeconds: { value: 5, min: 0, max: 30, step: 1 },           // how long "تراجع (Z)" stays after a verdict, and after deleting a bank question
+  fallBeat: { value: 1.5, min: 0, max: 5, step: 0.1 },           // seconds the fallen-capital beat holds the stage (Enter skips it)
 };
