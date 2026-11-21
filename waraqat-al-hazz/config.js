@@ -45,4 +45,13 @@ window.CONFIG = {
   // Feel
   tickWarn: { value: 5, min: 0, max: 30, step: 1 },        // seconds left when the ring starts ticking
   beamSpeed: { value: 0.35, min: 0, max: 2, step: 0.05 },  // spotlight sweep, radians per second
+  // The card reveal: the chosen card travels to the stage centre, then a banner sized by impact
+  revealTime: { value: 1.8, min: 0.6, max: 4, step: 0.1 },   // seconds from the pick to the buttons (Enter skips)
+  revealZoom: { value: 1.45, min: 1, max: 2, step: 0.05 },   // how big the chosen card grows at the centre
+  impactMedium: { value: 100, min: 0, max: 5000, step: 10 },  // points moved (all teams together) for a medium banner
+  impactBig: { value: 600, min: 0, max: 10000, step: 50 },    // points moved for the big banner (+1000, −1000, fire on 3+ rivals, the bomb)
+  // Mistakes
+  undoSeconds: { value: 5, min: 0, max: 30, step: 1 },        // how long "تراجع" stays after a verdict, and after deleting a question
+  // The winner
+  resultsStep: { value: 1.1, min: 0.2, max: 3, step: 0.1 },   // seconds between 3rd, 2nd and 1st appearing
 };

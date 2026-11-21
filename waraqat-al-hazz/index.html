@@ -57,16 +57,22 @@
   .show { width: 1120px; max-height: 100%; padding: 20px 28px; display: flex; flex-direction: column; gap: 14px; position: relative; box-sizing: border-box; }
   .title { font-size: 26px; font-weight: bold; display: flex; align-items: center; gap: 12px; }
   .levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .lvl { display: grid; place-items: center; gap: 6px; padding: 28px 10px; border-radius: 12px; color: #fff; font-weight: bold; border: 0; box-shadow: 0 6px 0 rgba(0,0,0,.25); }
-  .lvl b { font-size: 72px; line-height: 1; } .lvl > span { font-size: 26px; } .lvl small { font-size: 12px; opacity: .9; font-weight: normal; }
+  .lvl { display: grid; place-items: center; gap: 6px; padding: 22px 10px; border-radius: 12px; color: #1a1000; font-weight: bold; border: 0; box-shadow: 0 6px 0 rgba(0,0,0,.25); }
+  .lvl b { font-size: 72px; line-height: 1; } .lvl > span { font-size: 26px; } .lvl small { font-size: 16px; font-weight: bold; }
+  .lvl .stars { display: flex; gap: 4px; height: 26px; }
   .lvl:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-2px); }
-  .lvl1 { background: linear-gradient(#3fdc8a, #18a65c); } .lvl2 { background: linear-gradient(#5ab8ff, #1f6fd1); } .lvl3 { background: linear-gradient(#ff7a7f, #d1303a); }
+  .lvl1 { background: linear-gradient(#f3c39b, #d08a52); } .lvl2 { background: linear-gradient(#f4f7fb, #aeb9cc); } .lvl3 { background: linear-gradient(#ffe7a0, #e3a812); }
   .q { font-size: 34px; font-weight: 900; line-height: 1.5; }
   .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .choice { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--panel2); border: 2px solid var(--line); border-radius: 12px; font-weight: bold; font-size: 24px; text-align: right; min-height: 78px; }
   .choice:hover:not(:disabled) { border-color: var(--gold); }
   .choice .k { flex: none; width: 38px; height: 38px; font-size: 20px; border-radius: 8px; background-color: var(--gold); background-image: linear-gradient(#ffe08a, var(--gold)); color: var(--ink); display: grid; place-items: center; }
   .choice.right { border-color: var(--good); background: rgba(47,212,122,.18); } .choice.wrong { border-color: var(--bad); background: rgba(255,90,95,.16); }
+  .choice.sel { border-color: var(--gold); border-width: 4px; padding: 10px 12px; background: rgba(246,195,67,.16); }
+  .choice .mk { margin-inline-start: auto; flex: none; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; }
+  .choice.right .mk { background: var(--good); } .choice.wrong .mk { background: var(--bad); }
+  .lockrow { display: flex; align-items: center; gap: 14px; }
+  .peek { user-select: none; touch-action: none; }
   .choice:disabled { cursor: default; }
   .answer { padding: 10px 14px; border-radius: 12px; border: 2px solid var(--good); background: rgba(47,212,122,.15); font-weight: bold; }
   .ring { position: relative; width: 96px; height: 96px; flex: none; }
@@ -85,12 +91,28 @@
   .c3 .bk, .c3 .fc { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 14px; overflow: hidden; }
   .c3 .bk { background: linear-gradient(135deg, #ffe39a, var(--gold) 45%, var(--gold2)); box-shadow: inset 0 0 0 4px rgba(255,255,255,.55), 0 8px 18px rgba(0,0,0,.3); display: grid; place-items: center; }
   .c3 .fc { transform: rotateY(180deg); background: var(--face); color: #13204f; box-shadow: inset 0 0 0 4px var(--gold), 0 8px 18px rgba(0,0,0,.3); display: grid; grid-template-rows: 1fr auto; justify-items: center; align-items: center; padding: 10px 6px 10px; box-sizing: border-box; }
-  .c3 .fc b { font-size: 15px; text-align: center; line-height: 1.25; }
+  .c3 .fc b { font-size: 17px; text-align: center; line-height: 1.25; }
   .c3 .fc span { display: flex; } .c3 .fc span svg { width: 92px; height: 92px; } .c3 .bk svg { width: 108px; height: 108px; }
   .c3 .fc .no { position: absolute; top: 9px; inset-inline-start: 9px; min-width: 22px; height: 22px; border-radius: 11px; background: var(--gold); color: #13204f; font: 900 13px/22px Cairo, Arial; text-align: center; }
   .c3:hover:not(.open) .cin { transform: translateY(-6px); }
   .c3.dim { opacity: .3; cursor: default; }
-  .c3.mine { transform: scale(1.12); z-index: 4; }
+  .c3.mine { transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(var(--zoom, 1.12)); z-index: 4; }
+  .board { position: relative; }
+  .board.skip .c3, .board.skip .cin, .board.skip .banner { transition: none !important; animation: none !important; }
+  .banner { position: absolute; inset-inline: 0; bottom: -4px; display: flex; justify-content: center; align-items: baseline; gap: 22px; z-index: 5; pointer-events: none;
+    padding: 6px 28px; margin: 0 auto; width: max-content; max-width: 100%; box-sizing: border-box; border-radius: 16px; background: var(--panel2); border: 2px solid var(--gold);
+    box-shadow: 0 10px 30px rgba(0,0,0,.45); animation: bannerIn .45s cubic-bezier(.16,1,.3,1) both; }
+  .banner b { font-weight: 900; line-height: 1.15; color: var(--goldtxt); } .banner .v { font-weight: 900; line-height: 1.15; }
+  .banner.small b { font-size: 34px; } .banner.small .v { font-size: 30px; }
+  .banner.medium b { font-size: 50px; } .banner.medium .v { font-size: 46px; }
+  .banner.big { border-width: 4px; } .banner.big b { font-size: 70px; } .banner.big .v { font-size: 64px; }
+  .banner.big.up { background: radial-gradient(circle at 50% 50%, #5a4200, var(--panel2) 70%); }
+  .banner.big.down { border-color: var(--bad); background: radial-gradient(circle at 50% 50%, #5c0a12, var(--panel2) 70%); }
+  .light .banner.big.up { background: radial-gradient(circle at 50% 50%, #ffe08a, var(--panel2) 70%); }
+  .light .banner.big.down { background: radial-gradient(circle at 50% 50%, #ffc9c9, var(--panel2) 70%); }
+  @keyframes bannerIn { from { opacity: 0; transform: scale(.7); } }
+  .shake { animation: shake .5s cubic-bezier(.36,.07,.19,.97) both; }
+  @keyframes shake { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(4px); } 30%, 50%, 70% { transform: translateX(-8px); } 40%, 60% { transform: translateX(8px); } }
   .light .c3 .bk { box-shadow: inset 0 0 0 4px rgba(255,255,255,.55), 0 0 0 2px #b27a00, 0 8px 18px rgba(0,0,0,.25); }
   .c3.mine .fc { box-shadow: inset 0 0 0 5px var(--gold), 0 0 0 4px #fff, 0 0 30px rgba(246,195,67,.9); }
   .c3.static { cursor: default; }
@@ -113,22 +135,28 @@
 
   /* podiums */
   .podiums { display: flex; gap: 14px; justify-content: center; align-items: flex-end; padding: 0 16px 10px; }
-  .pod { position: relative; flex: 1 1 0; max-width: 200px; min-width: 0; padding: 8px 12px 10px; border-radius: 12px 12px 6px 6px; background: var(--panel); border: 2px solid var(--line); display: grid; gap: 2px; justify-items: center; transition: transform .3s, opacity .3s; }
-  .pod:not(.cur) { opacity: .88; }
-  .pod.cur { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(246,195,67,.35), 0 -10px 40px rgba(246,195,67,.35); transform: translateY(-10px); z-index: 2; }
+  .pod { position: relative; flex: 1 1 0; max-width: 200px; min-width: 0; padding: 6px 8px 8px; border-radius: 12px 12px 6px 6px; background: var(--panel); border: 2px solid var(--line); border-top: 8px solid var(--tc); display: grid; gap: 2px; justify-items: center; transition: transform .3s, opacity .3s; }
+  .pod.cur { border-color: var(--gold); border-top-color: var(--tc); box-shadow: 0 0 0 3px rgba(246,195,67,.35), 0 -10px 40px rgba(246,195,67,.35); transform: translateY(-10px); z-index: 2; }
   .pod.cur::before { content: ''; position: absolute; bottom: 100%; left: 50%; width: 280px; height: 230px; margin-left: -140px; clip-path: polygon(38% 100%, 62% 100%, 100% 0, 0 0); background: linear-gradient(to top, rgba(var(--beam),.26), rgba(var(--beam),0)); pointer-events: none; z-index: -1; }
-  .pod.benched { opacity: .5; filter: grayscale(.6); }
+  .pod .next { position: absolute; top: -34px; font-size: 15px; padding: 2px 12px; border-radius: 999px; background: var(--panel2); border: 2px solid var(--line); white-space: nowrap; }
+  .pod.hit { animation: shake .5s cubic-bezier(.36,.07,.19,.97) both, flashBad .9s ease-out both; }
+  @keyframes flashBad { 0%, 30% { background: rgba(255,90,95,.55); } }
+  .pod .blocked { position: absolute; inset: -2px; display: grid; place-items: center; align-content: center; gap: 2px; border-radius: 10px; background: linear-gradient(rgba(47,212,122,.28), rgba(47,212,122,.28)), var(--panel2); border: 3px solid var(--good);
+    font-size: 16px; font-weight: 900; color: var(--text); animation: blockIn 1.6s cubic-bezier(.16,1,.3,1) both; pointer-events: none; }
+  .pod .blocked span { display: flex; background: var(--face); border-radius: 50%; padding: 6px; }
+  @keyframes blockIn { 0% { opacity: 0; transform: scale(1.3); } 15% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; } }
   .pod .nm { display: flex; align-items: center; gap: 6px; font-weight: bold; font-size: 17px; }
-  .pod .sc { font-size: 44px; font-weight: 900; color: var(--goldtxt); line-height: 1.1; }
+  .pod .sc { font-size: 40px; font-weight: 900; color: var(--text); line-height: 1.1; }
   .pod .sc.neg { color: var(--bad); }
-  .pod .inv { display: flex; gap: 6px; min-height: 30px; margin-top: 2px; align-items: center; flex-wrap: wrap; justify-content: center; }
-  .mini { position: relative; width: 26px; height: 30px; border-radius: 6px; background: var(--face); box-shadow: inset 0 0 0 2px var(--gold); display: grid; place-items: center; padding: 0; }
+  .pod .inv { display: flex; gap: 4px; margin-top: 2px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .mini { position: relative; display: inline-flex; align-items: center; gap: 4px; min-height: 40px; padding: 0 8px 0 4px; border-radius: 8px; background: var(--face); color: #13204f; border: 2px solid var(--gold); font-size: 15px; font-weight: 900; white-space: nowrap; }
+  .mini svg { flex: none; }
   .mini.use { cursor: pointer; animation: glow 1.4s ease-in-out infinite; }
-  @keyframes glow { 50% { box-shadow: inset 0 0 0 2px var(--gold), 0 0 12px 2px rgba(246,195,67,.9); } }
-  .mini i { position: absolute; bottom: -6px; left: -6px; font-style: normal; font-size: 10px; font-weight: bold; background: var(--bad); color: #fff; border-radius: 999px; padding: 0 5px; }
-  .bench { font-size: 13px; font-weight: bold; color: #fff; background: var(--bad); border-radius: 999px; padding: 1px 8px; }
+  .mini:disabled { opacity: 1; cursor: default; }
+  @keyframes glow { 50% { box-shadow: 0 0 12px 3px rgba(246,195,67,.9); } }
+  .bench { align-self: stretch; text-align: center; font-size: 16px; font-weight: 900; color: #fff; background: #c4222c; border-radius: 6px; padding: 4px 8px; min-height: 32px; box-sizing: border-box; }
   @keyframes rise { 0% { transform: translate(-50%, 6px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(-50%, -26px); opacity: 0; } }
-  .delta { position: absolute; top: -6px; left: 50%; font-weight: bold; font-size: 20px; animation: rise 1.8s ease-out forwards; pointer-events: none; }
+  .delta { position: absolute; top: -40px; left: 50%; font-weight: 900; font-size: 30px; animation: rise 1.8s ease-out forwards; pointer-events: none; text-shadow: 0 2px 6px rgba(0,0,0,.5); z-index: 3; }
   .ov { position: absolute; inset: 0; background: rgba(3,8,30,.7); display: flex; align-items: center; justify-content: center; z-index: 20; }
   .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px 26px; min-width: 400px; max-width: 640px; display: grid; gap: 14px; justify-items: center; text-align: center; }
   .notes { font-size: 14px; color: var(--muted); }
@@ -145,11 +173,20 @@
   .banklist { overflow: auto; flex: 1; min-height: 0; }
   .bq { display: grid; grid-template-columns: 80px 100px 1fr 180px 64px; gap: 10px; align-items: center; padding: 7px 12px; border-bottom: 1px solid var(--line); font-size: 14px; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; } }
+  .toast { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 30; display: flex; align-items: center; gap: 14px; padding: 8px 10px 8px 18px; font-size: 16px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  #phone { position: fixed; top: 10px; inset-inline: 10px; z-index: 50; display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: #0b1a55; color: #f2f5ff; border: 1px solid #29479b; font: 700 15px/1.5 Cairo, Tahoma, sans-serif; direction: rtl; }
+  #phone button { background: #f6c343; color: #3a2600; padding: 6px 12px; min-height: 40px; border-radius: 8px; }
+  .rstep { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 220px; opacity: 0; animation: stepIn .7s cubic-bezier(.16,1,.3,1) forwards; }
+  @keyframes stepIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+  .winner { font-size: 64px; font-weight: 900; line-height: 1.2; color: var(--goldtxt); text-align: center; opacity: 0; animation: stepIn .8s cubic-bezier(.16,1,.3,1) forwards; }
+  .tie { font-size: 14px; padding: 0 10px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); }
   .addq input, .addq select { direction: rtl; text-align: right; min-width: 0; }
 </style>
 </head>
 <body class="dark">
 <div id="stage"><canvas id="game"></canvas><div id="ui"></div></div>
+<div id="live" class="sr" aria-live="polite"></div>
 <script src="config.js"></script>
 <script src="questions.js"></script>
 <script src="csv.js"></script>
@@ -200,7 +237,9 @@ const pressed = code => hit.has(code);
 const typing = () => document.activeElement && ['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName);
 addEventListener('keydown', e => {
   startAudio();
-  if (!e.repeat) { down.add(e.code); hit.add(e.code); }
+  // Enter on a focused button: the browser already clicks it, so the main-button shortcut must not fire too.
+  const nativeEnter = (e.code === 'Enter' || e.code === 'NumpadEnter') && e.target instanceof Element && e.target.closest('button');
+  if (!e.repeat && !nativeEnter) { down.add(e.code); hit.add(e.code); }
   if (e.code === 'Space' && !typing()) e.preventDefault();
 });
 addEventListener('keyup', e => down.delete(e.code));
@@ -274,12 +313,13 @@ const B = (label, cls, fn, extra = {}) => h('button', { class: 'btn ' + cls, onc
 const N = v => h('span', { class: 'num' }, v);
 
 // ---- Drawn figures -------------------------------------------------------------------------
-const TEAM_COLORS = ['#3fa9ff', '#ff9f1c', '#b26bff', '#19c2a0', '#ff5fa2', '#9bd12f'];
+// Okabe-Ito hues (told apart under protanopia and deuteranopia), spread in lightness; no yellow (the UI's gold)
+const TEAM_COLORS = ['#56b4e9', '#e69f00', '#cc79a7', '#009e73', '#0072b2', '#d55e00'];
+const TEAM_INK = ['#0b1030', '#0b1030', '#0b1030', '#0b1030', '#fff', '#0b1030']; // the shield number: 4.8–8.2:1 on its fill
 function shield(i, size = 22) { // a team's badge: a shield in its colour with its number
-  return h('span', { style: `display:inline-block;width:${size}px;height:${Math.round(size * 1.15)}px;flex:none`, html:
+  return h('span', { role: 'img', 'aria-label': `الفريق ${i + 1}`, style: `display:inline-block;width:${size}px;height:${Math.round(size * 1.15)}px;flex:none`, html:
     `<svg viewBox="0 0 20 23" width="${size}" height="${Math.round(size * 1.15)}"><path d="M10 0 L20 3.5 V11 C20 17 15 21 10 23 C5 21 0 17 0 11 V3.5 Z" fill="${TEAM_COLORS[i]}"/>
-     <path d="M10 2 L18 4.8 V11 C18 15.6 14.4 19 10 20.8 Z" fill="rgba(255,255,255,.2)"/>
-     <text x="10" y="15.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff" font-family="Cairo, Arial">${i + 1}</text></svg>` });
+     <text x="10" y="15.5" text-anchor="middle" font-size="12" font-weight="900" fill="${TEAM_INK[i]}" font-family="Cairo, Arial">${i + 1}</text></svg>` });
 }
 // ---- Card art: one flat, bold set on a 100×100 grid (navy #13204f + one or two strong colours each) ----
 const SVG76 = body => `<svg viewBox="0 0 100 100" width="76" height="76">${body}</svg>`;
@@ -348,7 +388,7 @@ function cardEl(type, cls = '', n) { // a two-sided card: gold back carrying its
   return h('div', { class: 'c3 ' + cls }, h('div', { class: 'cin' }, h('div', { class: 'bk', html: BACK(n) }),
     h('div', { class: 'fc' }, n ? h('i', { class: 'no' }, String(n)) : null, h('span', { html: type ? cardArt(type) : '' }), h('b', {}, type ? CARDS[type].name : ''))));
 }
-const miniArt = type => cardArt(type).replace('width="76" height="76"', 'width="22" height="22"');
+const miniArt = (type, px = 28) => cardArt(type).replace('width="76" height="76"', `width="${px}" height="${px}"`);
 function ring(left, total, size = 96) {
   const r = size / 2 - 7, c = 2 * Math.PI * r, f = clamp(left / total, 0, 1), col = left <= tune.tickWarn ? 'var(--bad)' : 'var(--gold)';
   return `<svg width="${size}" height="${size}" style="transform:rotate(-90deg);display:block"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="7"/>
@@ -359,6 +399,12 @@ const TROPHY = `<svg width="72" height="72" viewBox="0 0 70 70"><path d="M20 8 H
   <rect x="31" y="42" width="8" height="10" fill="#d49400"/><rect x="22" y="52" width="26" height="8" rx="2" fill="#d49400"/>
   <path d="M27 12 V24 C27 30 30 34 34 35" stroke="rgba(255,255,255,.55)" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
 const LEVEL_NAMES = { 1: 'سهل', 2: 'متوسط', 3: 'صعب' };
+const STARS = l => `<svg width="${l * 28}" height="26" viewBox="0 0 ${l * 28} 26">${[...Array(l).keys()].map(k => `<polygon points="${starPts(14 + k * 28, 14, 12)}" fill="#1a1000"/>`).join('')}</svg>`; // a level is told by its stars, not its colour
+const MARK = { // drawn ✓ and ✗ for the revealed choices, so right and wrong never rest on green and red alone
+  right: '<svg width="22" height="22" viewBox="0 0 22 22"><path d="M4 11.5 L9 16.5 L18 6" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  wrong: '<svg width="22" height="22" viewBox="0 0 22 22"><path d="M5.5 5.5 L16.5 16.5 M16.5 5.5 L5.5 16.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></svg>' };
+let peekHeld = false;
+function peekSync() { const el = document.getElementById('peekans'); if (el) el.hidden = !(peekHeld || (down.has('KeyH') && !typing())); }
 const levelPts = l => tune['level' + l + 'Points'];
 
 // ---- Settings, bank and theme (kept in the browser, under this game's own keys) --------------
@@ -391,7 +437,7 @@ function reset() {
     n, names: settings.names.slice(0, n), pts: Array(n).fill(0), doves: Array(n).fill(0), skip: Array(n).fill(0),
     kept: Array.from({ length: n }, () => ({ lightning: 0, fire: 0, stop: 0, nuke: 0 })), deltas: Array(n).fill(null),
     cur: 0, turns: 0, round: 1, elapsed: 0, lastCall: false,
-    phase: 'level', level: 0, q: null, timer: 0, ticked: -1, picked: null, result: null, reveal: false,
+    phase: 'level', level: 0, q: null, timer: 0, ticked: -1, picked: null, sel: null, result: null, reveal: false, hits: Array(n).fill(null),
     board: [], pick: -1, card: null, cardStage: '', lines: [], notes: [], decks: { 1: [], 2: [], 3: [] }, final: null,
   };
 }
@@ -403,7 +449,8 @@ function drawQuestion(level) { // no question repeats in a level until the level
   const order = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
   return { cat: row[0], text: row[1], choices: order.map(k => row[2 + k]), right: order.indexOf(0) };
 }
-function addPts(i, v) { state.pts[i] += v; state.deltas[i] = { v, t: state.t }; }
+function addPts(i, v) { state.pts[i] += v; state.deltas[i] = { v, t: state.t }; say(`${state.names[i]}: ${sign(v)}، المجموع ${fmt(state.pts[i])}`); }
+const say = text => { const l = document.getElementById('live'); if (l) l.textContent = text; }; // read out by screen readers (aria-live)
 function dealBoard() { // each card drawn by its weight: luckyquiz's mix
   const types = Object.keys(CARDS), ws = types.map(k => tune[CARDS[k].w]), total = ws.reduce((a, b) => a + b, 0) || 1;
   state.board = Array.from({ length: tune.cardsOnBoard }, () => { let r = rng() * total; for (let i = 0; i < types.length; i++) if ((r -= ws[i]) < 0) return types[i]; return 'nothing'; });
@@ -412,15 +459,15 @@ function strike(type, from, targets, done) { // an attack lands on each target i
   const lines = []; let k = 0;                // chooses to spend it or take the hit; the stop sign can't be blocked
   ({ lightning: sfx.thunder, fire: sfx.fire, nuke: sfx.boom, stop: sfx.stop })[type]();
   events.push({ attack: type, from, targets });
-  const hitTeam = t => { const v = tune[CARDS[type].hit]; addPts(t, -v); lines.push(`${state.names[t]}: −${v}`); };
+  const hitTeam = t => { const v = tune[CARDS[type].hit]; addPts(t, -v); state.hits[t] = { kind: 'hit', t: state.t }; lines.push(`${state.names[t]}: \u2066−${v}\u2069`); }; // isolated so the minus stays in front in RTL
   const next = () => {
     if (k === targets.length) return done(lines);
     const t = targets[k++];
-    if (type === 'stop') { state.skip[t] += tune.stopTurns; lines.push(`${state.names[t]} ممنوع من اللعب ${turnsWord(tune.stopTurns)}`); return next(); }
+    if (type === 'stop') { state.skip[t] += tune.stopTurns; state.hits[t] = { kind: 'hit', t: state.t }; lines.push(`${state.names[t]} ممنوع من اللعب ${turnsWord(tune.stopTurns)}`); return next(); }
     if (!state.doves[t]) { hitTeam(t); return next(); }
     const answer = use => {
       document.getElementById('dove')?.remove();
-      if (use) { state.doves[t]--; sfx.dove(); lines.push(`حمامة السلام حمت ${state.names[t]}`); } else hitTeam(t);
+      if (use) { state.doves[t]--; state.hits[t] = { kind: 'block', t: state.t }; sfx.dove(); say(`حمامة السلام حمت ${state.names[t]}`); lines.push(`حمامة السلام حمت ${state.names[t]}`); } else hitTeam(t);
       renderPodiums(); next();
     };
     ui.append(h('div', { class: 'ov', id: 'dove' }, h('div', { class: 'modal' }, cardEl('dove', 'open static mine big'),
@@ -439,18 +486,29 @@ function gameOverDue() {
 function setPhase(p) { state.phase = p; events.push({ phase: p }); renderAll(); }
 function chooseLevel(l) {
   if (state.phase !== 'level' || !inLevel(l)) return;
-  state.level = l; state.q = drawQuestion(l); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.result = null; state.reveal = false;
+  state.level = l; state.q = drawQuestion(l); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.sel = null; state.result = null; state.reveal = false;
   setPhase('question');
+}
+let undoSnap = null, undoUntil = 0; // the state just before the last verdict, kept tune.undoSeconds for "تراجع"
+function select(k) { // first press marks a choice; the same choice again (or Enter) locks it in
+  if (state.phase !== 'question') return;
+  if (state.sel === k) return answer(k === state.q.right, k);
+  state.sel = k; sfx.click(); renderShow();
+}
+function undo() {
+  if (!undoSnap || state.phase !== 'reveal') return;
+  const t = state.t; state = undoSnap; state.t = t; undoSnap = null; sfx.click(); events.push({ undo: true }); renderAll();
 }
 function answer(right, picked = null) {
   if (state.phase !== 'question') return;
+  undoSnap = structuredClone(state); undoUntil = state.t + tune.undoSeconds;
   state.picked = picked; state.result = right ? 'right' : 'wrong'; state.reveal = true;
   if (right) { addPts(state.cur, levelPts(state.level)); sfx.right(); }
   else { const loss = Math.round(levelPts(state.level) * tune.wrongPenalty); if (loss) addPts(state.cur, -loss); sfx.wrong(); }
   events.push({ answer: state.result }); setPhase('reveal');
 }
-function timeUp() { state.result = 'time'; state.reveal = true; const loss = Math.round(levelPts(state.level) * tune.wrongPenalty); if (loss) addPts(state.cur, -loss); sfx.wrong(); setPhase('reveal'); }
-function toCards() { dealBoard(); state.pick = -1; state.card = null; state.cardStage = 'pick'; state.lines = []; sfx.deal(); setPhase('cards'); }
+function timeUp() { undoSnap = null; state.result = 'time'; state.reveal = true; const loss = Math.round(levelPts(state.level) * tune.wrongPenalty); if (loss) addPts(state.cur, -loss); sfx.wrong(); setPhase('reveal'); }
+function toCards() { undoSnap = null; dealBoard(); state.pick = -1; state.card = null; state.cardStage = 'pick'; state.lines = []; sfx.deal(); setPhase('cards'); }
 function pickCard(i) {
   if (state.phase !== 'cards' || state.cardStage !== 'pick') return;
   const type = state.board[i], c = CARDS[type], me = state.cur;
@@ -461,7 +519,44 @@ function pickCard(i) {
   state.cardStage = c.kind === 'attack' ? 'choose' : 'done';
   events.push({ card: type });
   [...refs.board.children].forEach((el, k) => { el.classList.add('open'); el.classList.add(k === i ? 'mine' : 'late'); if (k !== i) el.classList.add('dim'); }); // flip in place
-  renderEffect(); renderPodiums();
+  placeMine();
+  // the reveal: flip (0–0.7 s), travel to the centre, the banner at half time, the buttons and podiums at the end; Enter skips
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, T = tune.revealTime * (reduce ? 0.4 : 1);
+  state.revealing = true; renderEffect();
+  revealTimers = [setTimeout(showBanner, T * 500), setTimeout(finishReveal, T * 1000)];
+}
+let revealTimers = [];
+function placeMine() { // the chosen card's offset to the stage centre, top part of the board (the banner sits under it)
+  const el = refs.board?.children[state.pick]; if (!el) return;
+  const b = refs.board, z = tune.revealZoom;
+  el.style.setProperty('--dx', `${b.clientWidth / 2 - (el.offsetLeft + el.offsetWidth / 2)}px`);
+  el.style.setProperty('--dy', `${(el.offsetHeight * z) / 2 - 8 - (el.offsetTop + el.offsetHeight / 2)}px`);
+  el.style.setProperty('--zoom', z);
+}
+function impact(type) { // how many points the card moves, all teams together: picks the banner's size
+  const c = CARDS[type];
+  if (c.kind === 'points') return Math.abs(c.pts);
+  if (c.kind === 'attack') return c.hit ? tune[c.hit] * (c.target === 'one' ? 1 : state.n - 1) : tune.impactMedium;
+  return c.kind === 'nothing' ? 0 : tune.impactMedium;
+}
+function showBanner() {
+  if (!refs.board || state.pick < 0 || refs.board.querySelector('.banner')) return;
+  const type = state.card, c = CARDS[type], v = impact(type), tier = v >= tune.impactBig ? 'big' : v >= tune.impactMedium ? 'medium' : 'small';
+  const loss = (c.kind === 'points' && c.pts < 0) || c.kind === 'attack';
+  const val = c.kind === 'points' ? sign(c.pts) : c.hit ? `−${tune[c.hit].toLocaleString('en-US')}` : null;
+  refs.board.append(h('div', { class: `banner ${tier} ${loss ? 'down' : 'up'}`, role: 'status' }, h('b', {}, c.name),
+    val ? h('span', { class: 'v ' + (loss ? 'bad' : 'good') }, N(val)) : null));
+  if (c.kind === 'points' && c.pts < 0) state.hits[state.cur] = { kind: 'hit', t: state.t };
+  if (tier === 'big' && !matchMedia('(prefers-reduced-motion: reduce)').matches) { refs.board.classList.remove('shake'); void refs.board.offsetWidth; refs.board.classList.add('shake'); }
+  if (c.kind === 'points' && state.deltas[state.cur]) state.deltas[state.cur].t = state.t; // the float starts with the banner, not hidden behind the flip
+  if (state.revealing) state.revealing = 'banner'; // podiums may now show the change
+  renderPodiums();
+}
+function finishReveal() { // also Enter's skip: everything lands at once
+  if (!state.revealing) return;
+  revealTimers.forEach(clearTimeout); revealTimers = [];
+  if (refs.board && !refs.board.querySelector('.banner')) { refs.board.classList.add('skip'); showBanner(); }
+  state.revealing = false; renderEffect(); renderPodiums();
 }
 function useNow() {
   const type = state.card;
@@ -472,8 +567,12 @@ function keepCard() { state.kept[state.cur][state.card]++; state.lines = [`اح�
 function hitTarget(t) { strike(state.card, state.cur, [t], struck); }
 function struck(lines) { state.lines = lines; state.cardStage = 'done'; renderEffect(); renderPodiums(); } // the flipped card's attack is over
 function endTurn() { advance(state.phase === 'cards' && state.card === 'again'); }
+function nextTeam() { // who plays after this turn (benched teams passed over), for the podium tag
+  for (let k = 1, c = state.cur; k <= state.n; k++) { c = (c + 1) % state.n; if (!state.skip[c]) return c; }
+  return state.cur;
+}
 function advance(again) { // next team, passing over benched ones; play again keeps the same team
-  state.turns++; state.notes = [];
+  undoSnap = null; state.turns++; state.notes = [];
   if (!again) {
     let c = state.cur;
     for (let k = 0; k < state.n * (tune.stopTurns + 1) + 1; k++) { // bounded: each pass over a benched team lowers its bench
@@ -534,7 +633,7 @@ function renderShow() {
       state.notes.length ? h('div', { class: 'notes' }, state.notes.join(' · ')) : null,
       h('div', { class: 'muted' }, 'اختر مستوى السؤال: كلما صعب السؤال زادت الدرجات'),
       h('div', { class: 'levels' }, ...[1, 2, 3].map(l => h('button', { class: 'lvl lvl' + l, disabled: !inLevel(l), 'data-primary': l === 2 && inLevel(2) ? '1' : null, onclick: () => { sfx.click(); chooseLevel(l); } },
-        h('span', {}, LEVEL_NAMES[l]), h('b', {}, N(levelPts(l))), h('small', {}, 'درجة · اضغط ', N(l))))),
+        h('span', { class: 'stars', html: STARS(l) }), h('span', {}, LEVEL_NAMES[l]), h('b', {}, N(levelPts(l))), h('small', {}, 'درجة · اضغط ', N(l))))),
       hasKept ? h('div', { class: 'notes' }, 'لديك أوراق محفوظة: اضغط عليها في منصتك لاستخدامها قبل السؤال') : null,
       state.lastCall ? h('div', { class: 'chip bad' }, 'انتهى الوقت: هذا آخر دور') : null].filter(Boolean));
     return;
@@ -546,13 +645,24 @@ function renderShow() {
     const parts = [h('div', { style: 'display:flex;gap:14px;align-items:center' }, done ? null : timerBox(),
       h('div', { style: 'flex:1' }, h('div', { style: 'display:flex;gap:8px' }, h('span', { class: 'chip' }, LEVEL_NAMES[state.level], ' · ', N(levelPts(state.level)), ' درجة'), h('span', { class: 'chip muted' }, q.cat)),
         h('div', { class: 'q', style: 'margin-top:8px' }, q.text)), teamTitle(me))];
-    if (settings.qmode === 'choices') parts.push(h('div', { class: 'choices' }, ...q.choices.map((txt, k) => {
-      const cls = done && k === q.right ? ' right' : done && k === state.picked ? ' wrong' : '';
-      return h('button', { class: 'choice' + cls, disabled: done, onclick: done ? null : () => answer(k === q.right, k) }, h('span', { class: 'k' }, N(k + 1)), txt);
-    })));
-    else {
+    if (settings.qmode === 'choices') {
+      parts.push(h('div', { class: 'choices' }, ...q.choices.map((txt, k) => {
+        const cls = done && k === q.right ? ' right' : done && k === state.picked ? ' wrong' : !done && k === state.sel ? ' sel' : '';
+        const mk = cls === ' right' ? MARK.right : cls === ' wrong' ? MARK.wrong : '';
+        return h('button', { class: 'choice' + cls, disabled: done, 'aria-pressed': !done && k === state.sel ? 'true' : null, onclick: done ? null : () => select(k) },
+          h('span', { class: 'k' }, N(k + 1)), txt, mk ? h('span', { class: 'mk', role: 'img', 'aria-label': cls === ' right' ? 'الإجابة الصحيحة' : 'إجابة الفريق', html: mk }) : null);
+      })));
+      if (!done) parts.push(h('div', { class: 'lockrow' }, B('تأكيد الإجابة', 'gold', () => select(state.sel), { 'data-primary': '1', disabled: state.sel == null, style: 'font-size:18px' }),
+        h('span', { class: 'muted', style: 'font-size:16px' }, state.sel == null ? 'اختر إجابة بالضغط عليها أو برقمها' : 'اضغط الرقم نفسه مرة أخرى أو Enter للتأكيد')));
+    } else {
       if (state.reveal) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right]));
-      else parts.push(B('إظهار الإجابة', '', () => { state.reveal = true; renderShow(); }, { style: 'align-self:flex-start;font-size:13px;padding:6px 12px' }));
+      else { // hold to peek: the answer shows only while the host holds the button or H, so the room never sees it
+        const on = v => { peekHeld = v; peekSync(); };
+        parts.push(h('div', { style: 'display:flex;gap:12px;align-items:center;min-height:52px' },
+          h('button', { class: 'btn peek', style: 'font-size:15px', onpointerdown: e => { e.currentTarget.setPointerCapture?.(e.pointerId); on(true); }, onpointerup: () => on(false),
+            onpointercancel: () => on(false), onlostpointercapture: () => on(false), oncontextmenu: e => e.preventDefault() }, 'اضغط مطولاً لرؤية الإجابة (H)'),
+          h('div', { class: 'answer', id: 'peekans', hidden: true }, 'الإجابة: ', q.choices[q.right])));
+      }
       if (!done) parts.push(h('div', { style: 'display:flex;gap:12px' }, B('إجابة صحيحة', 'good', () => answer(true), { 'data-primary': '1', style: 'flex:1;font-size:18px' }),
         B('إجابة خاطئة', 'bad', () => answer(false), { style: 'flex:1;font-size:18px' })));
     }
@@ -561,6 +671,7 @@ function renderShow() {
       parts.push(h('div', { style: 'display:flex;align-items:center;gap:14px' },
         right ? h('div', { class: 'big good pop' }, N('+' + levelPts(state.level))) : h('div', { class: 'big bad pop', style: 'font-size:30px' }, state.result === 'time' ? 'انتهى الوقت' : 'إجابة خاطئة'),
         h('div', { class: 'muted', style: 'flex:1' }, right ? 'أحسنت! والآن جرّب حظك: اسحب ورقة' : loss ? `خُصمت ${loss} درجة، والدور ينتقل` : 'لا درجات هذه المرة، والدور ينتقل'),
+        undoSnap ? B('تراجع (Z)', 'ghost', undo, { id: 'undobtn', style: 'font-size:16px' }) : null,
         B(right ? 'اسحب ورقة' : 'التالي', 'gold', right ? toCards : () => advance(false), { 'data-primary': '1', style: 'font-size:18px' })));
     }
     box.replaceChildren(...parts);
@@ -571,6 +682,7 @@ function renderShow() {
     refs.board = h('div', { class: 'board' }, ...state.board.map((t, i) => { const el = cardEl(t, shown ? (i === state.pick ? 'open mine' : 'open dim') : '', i + 1); el.addEventListener('click', () => pickCard(i)); return el; }));
     refs.effect = h('div', { class: 'effect' });
     box.replaceChildren(refs.board, refs.effect);
+    if (shown) { refs.board.classList.add('skip'); placeMine(); if (!state.revealing) showBanner(); }
     renderEffect();
   }
 }
@@ -579,31 +691,43 @@ function renderEffectBody() {
   const e = refs.effect, type = state.card, me = state.cur;
   if (!e) return;
   if (state.cardStage === 'pick') { e.replaceChildren(h('div', { class: 'txt muted' }, 'كل ورقة قد تكون ربحاً أو خسارة أو سلاحاً ضد الفرق الأخرى')); return; }
+  if (state.revealing) { e.replaceChildren(h('div', { class: 'txt muted' }, 'Enter: تخطّي')); return; }
   const c = CARDS[type];
-  const head = h('div', { class: 'txt' }, h('b', { style: 'font-size:34px;font-weight:900;color:var(--goldtxt)' }, c.name), ' · ', cardDesc(type),
+  const head = h('div', { class: 'txt' }, cardDesc(type),
     state.lines.length ? h('div', { style: 'font-weight:bold' }, state.lines.join(' · ')) : null);
   if (state.cardStage === 'choose') e.replaceChildren(head, B('استخدمها الآن', 'gold', useNow, { 'data-primary': '1', style: 'font-size:17px' }), B('احتفظ بها', '', keepCard, { style: 'font-size:17px' }));
   else if (state.cardStage === 'target') e.replaceChildren(head, h('div', {}, h('div', { class: 'muted', style: 'font-size:13px;margin-bottom:6px' }, 'اختر الفريق:'),
     h('div', { class: 'tchips' }, ...others(me).map(t => h('button', { class: 'tchip', onclick: () => { sfx.click(); hitTarget(t); } }, shield(t, 18), state.names[t])))));
   else e.replaceChildren(head, B(type === 'again' ? 'العب مرة أخرى' : 'التالي', 'gold', endTurn, { 'data-primary': '1', style: 'font-size:18px' }));
 }
+const SHORT = { dove: 'الحمامة', lightning: 'البرق', fire: 'النار', stop: 'المنع', nuke: 'القنبلة' }; // chip labels that fit a podium
 function renderPodiums() {
-  const me = state.cur, myTurn = state.phase === 'level';
+  const me = state.cur, myTurn = state.phase === 'level', nxt = nextTeam();
+  let label = true; // more than two kinds held: icons and counts only (each keeps its aria-label), so the podium stays one row
+  const chip = (k, count) => [h('span', { style: 'display:flex', html: miniArt(k) }), label ? h('span', {}, SHORT[k]) : null, count > 1 ? h('span', { class: 'num' }, '×' + count) : null];
+  const ago = x => `animation-delay:${-(state.t - x.t).toFixed(2)}s`; // a redraw mid-animation carries on instead of restarting
   refs.podiums.replaceChildren(...state.names.map((nm, i) => {
-    const d = state.deltas[i], showD = d && state.t - d.t < 1.8;
+    const d = state.deltas[i], showD = d && state.t - d.t < 1.8 && state.revealing !== true, hitN = state.hits[i] && state.t - state.hits[i].t < 1.8 && state.revealing !== true ? state.hits[i] : null;
     const inv = [];
-    if (state.doves[i]) inv.push(h('span', { class: 'mini', title: 'حمامة السلام', html: miniArt('dove') + (state.doves[i] > 1 ? `<i>${state.doves[i]}</i>` : '') }));
+    label = (state.doves[i] ? 1 : 0) + ATTACKS.filter(k => state.kept[i][k]).length <= 2;
+    if (state.doves[i]) inv.push(h('span', { class: 'mini', role: 'img', 'aria-label': `حمامة السلام: ${state.doves[i]}` }, ...chip('dove', state.doves[i])));
     for (const k of ATTACKS) if (state.kept[i][k]) {
       const usable = myTurn && i === me;
-      inv.push(h('button', { class: 'mini' + (usable ? ' use' : ''), title: CARDS[k].name + (usable ? ': اضغط للاستخدام' : ''), disabled: !usable,
-        onclick: usable ? () => { sfx.click(); useKept(k); } : null, html: miniArt(k) + (state.kept[i][k] > 1 ? `<i>${state.kept[i][k]}</i>` : '') }));
+      inv.push(h('button', { class: 'mini' + (usable ? ' use' : ''), 'aria-label': `${CARDS[k].name}: ${state.kept[i][k]}` + (usable ? '، اضغط للاستخدام' : ''), title: CARDS[k].name + (usable ? ': اضغط للاستخدام' : ''), disabled: !usable,
+        onclick: usable ? () => { sfx.click(); useKept(k); } : null }, ...chip(k, state.kept[i][k])));
     }
-    return h('div', { class: 'pod' + (i === me ? ' cur' : '') + (state.skip[i] ? ' benched' : '') },
-      showD ? h('div', { class: 'delta ' + (d.v > 0 ? 'good' : 'bad') }, N(sign(d.v))) : null,
-      h('div', { class: 'nm' }, shield(i, 20), nm), h('div', { class: 'sc' + (state.pts[i] < 0 ? ' neg' : '') }, N(fmt(state.pts[i]))),
-      h('div', { class: 'inv' }, ...inv, state.skip[i] ? h('span', { class: 'bench' }, 'ممنوع ', turnsWord(state.skip[i])) : null));
+    return h('div', { class: 'pod' + (i === me ? ' cur' : '') + (state.skip[i] ? ' benched' : '') + (hitN?.kind === 'hit' ? ' hit' : ''), style: `--tc:${TEAM_COLORS[i]};${hitN?.kind === 'hit' ? ago(hitN) : ''}` },
+      i === nxt && i !== me && state.phase !== 'cards' ? h('span', { class: 'next' }, 'التالي') : null,
+      showD ? h('div', { class: 'delta ' + (d.v > 0 ? 'good' : 'bad'), style: ago(d) }, N(sign(d.v))) : null,
+      h('div', { class: 'nm' }, shield(i, 22), nm), h('div', { class: 'sc' + (state.pts[i] < 0 ? ' neg' : '') }, N(fmt(state.pts[i]))),
+      state.skip[i] ? h('div', { class: 'bench' }, 'ممنوع · ', turnsWord(state.skip[i])) : null,
+      inv.length ? h('div', { class: 'inv' }, ...inv) : null,
+      hitN?.kind === 'block' ? h('div', { class: 'blocked', style: ago(hitN) }, h('span', { html: miniArt('dove', 34) }), 'صدّت الحمامة الضربة') : null);
   }));
-  for (let i = 0; i < state.n; i++) if (state.deltas[i] && state.t - state.deltas[i].t >= 1.8) state.deltas[i] = null;
+  for (let i = 0; i < state.n; i++) {
+    if (state.deltas[i] && state.t - state.deltas[i].t >= 1.8) state.deltas[i] = null;
+    if (state.hits[i] && state.t - state.hits[i].t >= 1.8) state.hits[i] = null;
+  }
 }
 const HELP = [ // the game explained in steps: a title, a line, and either a photo (assets/help-<n>.png) or the cards the step explains
   ['اختر المستوى', 'يختار الفريق صاحب الدور مستوى سؤاله: كلما صعب السؤال زادت درجاته.', 1],
@@ -681,6 +805,20 @@ async function importCSV(file) { // the host's file: السؤال، الخيار
       B('إضافتها إلى الأسئلة الحالية', 'good', () => { close(); apply(false); }, { 'data-primary': '1' }),
       B('استبدال الأسئلة الحالية', 'bad', () => { close(); apply(true); }), B('إلغاء', '', close)))));
 }
+let bankUndo = null; // the last deleted question, kept tune.undoSeconds for its "تراجع" toast
+function deleteQuestion(i) {
+  if (bank.length <= 1) return;
+  if (bankUndo) clearTimeout(bankUndo.timer);
+  bankUndo = { i, row: bank.splice(i, 1)[0], timer: setTimeout(() => { bankUndo = null; document.querySelector('.toast')?.remove(); }, tune.undoSeconds * 1000) };
+  saveBank(); state.decks = { 1: [], 2: [], 3: [] }; go('bank');
+}
+function confirmRestore() { // the same dialog as ending the show: replacing the bank loses the host's own questions
+  if (document.getElementById('confirm')) return;
+  const close = () => document.getElementById('confirm')?.remove();
+  ui.append(h('div', { class: 'ov', id: 'confirm' }, h('div', { class: 'modal' }, h('b', { style: 'font-size:20px' }, 'استعادة الأسئلة الأصلية؟'),
+    h('div', { class: 'muted' }, `تُحذف الأسئلة الحالية (${bank.length} سؤالاً) ويعود البنك إلى أسئلة اللعبة الـ${DEFAULT_BANK.length}. لا يمكن التراجع.`),
+    h('div', { style: 'display:flex;gap:10px' }, B('نعم، استعِد الأصلية', 'bad', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); state.decks = { 1: [], 2: [], 3: [] }; go('bank'); }), B('إلغاء', '', close)))));
+}
 function downloadTemplate() {
   const a = h('a', { href: URL.createObjectURL(new Blob([WaraqaCSV.TEMPLATE], { type: 'text/csv;charset=utf-8' })), download: 'waraqat-al-hazz-template.csv' });
   document.body.append(a); a.click(); a.remove();
@@ -700,7 +838,7 @@ const scenes = {
           B('شرح اللعبة', '', () => showHelp(), { style: 'padding:14px 26px;font-size:18px' })),
         themeSeg(() => go('title')),
         h('div', { class: 'panel', style: 'padding:10px 20px;display:flex;gap:24px;font-size:14px' }, ...CONTROLS.map(c => h('span', { class: 'muted' }, c))),
-        h('div', { class: 'muted', style: 'font-size:14px' }, N(bank.length), ' سؤالاً في البنك: ', [1, 2, 3].map(l => `${LEVEL_NAMES[l]} ${inLevel(l)}`).join(' · '))));
+        h('div', { class: 'panel muted', style: 'font-size:15px;padding:4px 16px' }, N(bank.length), ' سؤالاً في البنك: ', [1, 2, 3].map(l => `${LEVEL_NAMES[l]} ${inLevel(l)}`).join(' · '))));
     },
     update() {}, draw() { backdrop(); },
   },
@@ -748,7 +886,7 @@ const scenes = {
       ui.append(h('div', { class: 'screen' },
         h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('b', { style: 'font-size:26px' }, 'بنك الأسئلة'), h('span', { class: 'chip' }, N(bank.length), ' سؤال'),
           h('span', { class: 'chip muted' }, [1, 2, 3].map(l => `${LEVEL_NAMES[l]} ${inLevel(l)}`).join(' · ')), h('span', { style: 'flex:1' }),
-          B('استعادة الأسئلة الأصلية', '', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); state.decks = { 1: [], 2: [], 3: [] }; go('bank'); }), B('رجوع', 'ghost', () => go('title'), { 'data-primary': '1' })),
+          B('استعادة الأسئلة الأصلية', '', confirmRestore), B('رجوع', 'ghost', () => go('title'), { 'data-primary': '1' })),
         h('div', { class: 'grid2' },
           h('div', { class: 'panel box' }, h('h3', {}, 'إضافة سؤال'),
             h('div', { class: 'addq', style: 'display:grid;grid-template-columns:120px 130px minmax(0,1fr);gap:8px' }, h('label', { class: 'field' }, 'المستوى', lvlSel), inp('cat', 'التصنيف'), inp('q', 'نص السؤال')),
@@ -763,9 +901,11 @@ const scenes = {
           h('span', { class: 'chip', style: 'justify-content:center' }, LEVEL_NAMES[r[6]]),
           h('span', { class: 'chip muted', title: r[0], style: 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;box-sizing:border-box' }, r[0]),
           h('span', {}, r[1]), h('span', { class: 'good', style: 'font-weight:bold' }, r[2]),
-          B('حذف', '', () => { if (bank.length > 1) { bank.splice(i, 1); saveBank(); state.decks = { 1: [], 2: [], 3: [] }; go('bank'); } }, { style: 'padding:5px 10px;font-size:12px' }))))));
+          B('حذف', '', () => deleteQuestion(i), { style: 'padding:5px 10px;font-size:14px', 'aria-label': 'حذف: ' + r[1] }))))));
       for (const k of Object.keys(f)) f[k].style.direction = 'rtl';
       bankMsg = null;
+      if (bankUndo) ui.append(h('div', { class: 'panel toast', role: 'status' }, 'حُذف السؤال', B('تراجع', 'gold', () => {
+        clearTimeout(bankUndo.timer); bank.splice(bankUndo.i, 0, bankUndo.row); bankUndo = null; saveBank(); state.decks = { 1: [], 2: [], 3: [] }; go('bank'); })));
     },
     update() {}, draw() { backdrop(); },
   },
@@ -790,10 +930,12 @@ const scenes = {
       }
       if (!typing() && !document.querySelector('.ov')) for (let k = 1; k <= 4; k++) if (pressed('Digit' + k) || pressed('Numpad' + k)) {
         if (state.phase === 'level' && k <= 3) chooseLevel(k);
-        else if (state.phase === 'question' && settings.qmode === 'choices') answer(k - 1 === state.q.right, k - 1);
+        else if (state.phase === 'question' && settings.qmode === 'choices') select(k - 1);
         break;
       }
-      if (state.deltas.some(d => d && state.t - d.t >= 1.8)) renderPodiums();
+      if ([...state.deltas, ...state.hits].some(d => d && state.t - d.t >= 1.8)) renderPodiums();
+      if (undoSnap && state.t > undoUntil) { undoSnap = null; document.getElementById('undobtn')?.remove(); }
+      if (state.phase === 'question') peekSync();
     },
     draw() {
       backdrop();
@@ -808,22 +950,27 @@ const scenes = {
   },
   results: {
     enter() {
-      if (!state.final) state.final = [...Array(state.n).keys()].map(i => ({ i, pts: state.pts[i] }));
-      const f = state.final, podium = [1, 0, 2].filter(r => f[r]);
-      const heights = { 0: 150, 1: 112, 2: 84 }, medal = ['#f6c343', '#b8c2d6', '#cd8a4a'];
-      ui.append(h('div', { class: 'screen', style: 'align-items:center;gap:12px' },
-        h('div', { style: 'font-size:30px;font-weight:900' }, 'النتائج النهائية'),
-        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;height:380px' }, ...podium.map(r => { const e = f[r];
-          return h('div', { style: 'display:flex;flex-direction:column;align-items:center;gap:6px;width:210px' },
-            r === 0 ? h('span', { html: TROPHY }) : null, shield(e.i, r === 0 ? 50 : 40), h('b', { style: 'font-size:' + (r === 0 ? 22 : 18) + 'px' }, state.names[e.i]),
-            h('span', { class: 'num', style: 'font-weight:bold;font-size:20px;color:var(--goldtxt)' }, fmt(e.pts)),
-            h('div', { style: `width:100%;height:${heights[r]}px;border-radius:12px 12px 0 0;background:linear-gradient(${medal[r]}, ${medal[r]}99);display:grid;place-items:center;font-size:56px;font-weight:bold;color:#fff;text-shadow:0 2px 4px #0006` }, N(r + 1))); })),
-        h('div', { class: 'panel', style: 'width:620px;padding:6px 0' }, ...f.map((e, r) => h('div', { style: 'display:flex;align-items:center;gap:12px;padding:4px 16px;font-weight:bold' },
-          h('span', { class: 'muted', style: 'width:24px' }, N(r + 1)), shield(e.i, 18), h('span', { style: 'flex:1' }, state.names[e.i]), h('span', { class: 'num', style: 'color:var(--goldtxt)' }, fmt(e.pts))))),
+      if (!state.final) state.final = [...Array(state.n).keys()].map(i => ({ i, pts: state.pts[i] })).sort((a, b) => b.pts - a.pts);
+      const groups = rankGroups(state.final), top = groups.slice(0, 3), rest = groups.slice(3);
+      const D = tune.resultsStep, at = g => (top.length - 1 - g) * D + 0.3; // 3rd, then 2nd, then 1st
+      const heights = [130, 96, 70], medal = ['#f6c343', '#b8c2d6', '#cd8a4a'], names = g => g.teams.map(e => state.names[e.i]).join(' و');
+      revealAt = at(0);
+      ui.append(h('div', { class: 'screen', style: 'align-items:center;justify-content:center;gap:14px' },
+        h('div', { class: 'winner', style: `animation-delay:${at(0)}s` }, top[0].teams.length > 1 ? `تعادل على المركز الأول: ${names(top[0])}` : `الفائز: ${names(top[0])}`),
+        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;min-height:300px' }, ...[1, 0, 2].filter(g => top[g]).map(g => { const grp = top[g];
+          return h('div', { class: 'rstep', style: `animation-delay:${at(g)}s` },
+            g === 0 ? h('span', { html: TROPHY }) : null,
+            ...grp.teams.map(e => h('b', { style: `display:flex;gap:8px;align-items:center;font-size:${g === 0 ? 24 : 19}px` }, shield(e.i, g === 0 ? 34 : 26), state.names[e.i])),
+            grp.teams.length > 1 ? h('span', { class: 'tie' }, 'تعادل') : null,
+            h('span', { class: 'num', style: 'font-weight:900;font-size:24px' }, fmt(grp.pts)),
+            h('div', { style: `width:100%;height:${heights[g]}px;border-radius:12px 12px 0 0;background:linear-gradient(${medal[g]}, ${medal[g]}cc);display:grid;place-items:center;font-size:52px;font-weight:900;color:#3a2600` }, N(grp.rank))); })),
+        rest.length ? h('div', { class: 'panel rstep', style: `width:560px;padding:4px 0;animation-delay:${at(0) + D}s` }, ...rest.flatMap(g => g.teams.map(e => h('div', { style: 'display:flex;align-items:center;gap:12px;padding:3px 16px;font-size:15px' },
+          h('span', { class: 'muted', style: 'width:24px' }, N(g.rank)), shield(e.i, 18), h('span', { style: 'flex:1' }, state.names[e.i]), h('span', { class: 'num' }, fmt(e.pts)))))) : null,
         h('div', { style: 'display:flex;gap:12px' }, B('مسابقة جديدة بنفس الإعدادات', 'gold', () => { reset(); go('play'); }, { 'data-primary': '1' }), B('الشاشة الرئيسية', '', () => go('title')))));
-      confetti = Array.from({ length: CHEAP ? 0 : 130 }, () => ({ x: vrng() * W, y: -vrng() * H, v: 60 + vrng() * 90, s: 5 + vrng() * 6, c: vrng() < 0.6 ? '#f6c343' : TEAM_COLORS[(vrng() * state.n) | 0], a: vrng() * 6, w: 1 + vrng() * 3 }));
+      resultsT0 = state.t;
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) confetti = []; else confetti = Array.from({ length: CHEAP ? 0 : 130 }, () => ({ x: vrng() * W, y: -vrng() * H, v: 60 + vrng() * 90, s: 5 + vrng() * 6, c: vrng() < 0.6 ? '#f6c343' : TEAM_COLORS[(vrng() * state.n) | 0], a: vrng() * 6, w: 1 + vrng() * 3 }));
     },
-    update(dt) { for (const p of confetti) { p.y += p.v * dt; p.a += p.w * dt; if (p.y > H + 10) p.y = -10; } },
+    update(dt) { if (state.t - resultsT0 < revealAt) return; for (const p of confetti) { p.y += p.v * dt; p.a += p.w * dt; if (p.y > H + 10) p.y = -10; } },
     draw() { backdrop(); for (const p of confetti) { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore(); } },
   },
   figures: { // every card face and figure side by side, each named
@@ -838,7 +985,12 @@ const scenes = {
     update() {}, draw() { backdrop(); },
   },
 };
-let confetti = [];
+let confetti = [], resultsT0 = 0, revealAt = 0; // confetti falls once the winner is shown
+function rankGroups(final) { // teams with equal points share a rank ("تعادل"); the next rank skips past them (1, 1, 3)
+  const out = [];
+  final.forEach((e, k) => { const g = out[out.length - 1]; if (g && g.pts === e.pts) g.teams.push(e); else out.push({ rank: k + 1, pts: e.pts, teams: [e] }); });
+  return out;
+}
 
 // ---- Background: the stage, sweeping spotlights, a glowing floor, sparkles ---------------------
 const sparks = Array.from({ length: 40 }, () => ({ x: vrng() * W, y: vrng() * H * 0.6, p: vrng() * 6, s: 1 + vrng() * 2 }));
@@ -865,7 +1017,9 @@ function backdrop() {
 function step() {
   if (pressed('KeyM') && !typing()) setMuted(!muted);
   if ((pressed('KeyP') || pressed('Space')) && !typing() && scene === 'play') { state.paused = !state.paused; renderHeader(); }
-  if ((pressed('Enter') || pressed('NumpadEnter')) && !typing() && !document.getElementById('confirm')) { // Enter: an open dialog's main button first, else the screen's
+  if (pressed('KeyZ') && !typing() && scene === 'play' && !document.querySelector('.ov')) undo();
+  if (scene === 'play' && state.revealing && (pressed('Enter') || pressed('NumpadEnter'))) finishReveal(); // skip the reveal, never also click
+  else if ((pressed('Enter') || pressed('NumpadEnter')) && !typing() && !document.getElementById('confirm')) { // Enter: an open dialog's main button first, else the screen's
     const p = (document.querySelector('.ov:not(#pause)') || ui).querySelector('[data-primary]:not([disabled])');
     if (p) p.click();
   }
@@ -894,6 +1048,8 @@ window.game = {
   step(n = 1, draw = true, alpha = 1) { for (let i = 0; i < n; i++) step(); if (draw) { ALPHA = alpha; drawFrame(); } },
 };
 
+if (innerWidth < 700 && innerHeight > innerWidth) document.body.append(h('div', { id: 'phone', role: 'note' }, h('span', { style: 'flex:1' }, 'صُممت هذه اللعبة للابتوب وشاشة العرض'),
+  h('button', { onclick: e => e.currentTarget.parentElement.remove() }, 'حسناً')));
 reset();
 go(params.get('scene') || 'title');
 last = clock.now();
