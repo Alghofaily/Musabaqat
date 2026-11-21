@@ -50,4 +50,6 @@ window.CONFIG = {
   // Feel
   tickWarn: { value: 5, min: 0, max: 30, step: 1 },                  // seconds left when the ring starts ticking
   tickerSpeed: { value: 40, min: 10, max: 200, step: 5 },            // ticker tape, px per second
+  undoTime: { value: 5, min: 0, max: 30, step: 1 },                 // seconds the undo stays after a verdict or a deleted question; 0: none
+  revealStep: { value: 1.2, min: 0, max: 5, step: 0.1 },             // seconds between podium places (3rd, 2nd, then 1st)
 };

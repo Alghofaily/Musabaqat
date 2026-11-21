@@ -15,8 +15,8 @@
   @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-latin-500.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
   @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-latin-700.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
   :root { --up: #16c784; --down: #ea3943; --gold: #f5b301; }
-  .dark { --bg: #0b1220; --panel: #121a2b; --panel2: #0f1726; --line: #1f2a40; --text: #e6edf7; --muted: #8a99b4; --accent: #3b82f6; --hover: #182238; --upbg: rgba(22,199,132,.14); --downbg: rgba(234,57,67,.14); --grid: rgba(120,150,200,.06); }
-  .light { --bg: #eef2f8; --panel: #ffffff; --panel2: #f5f7fb; --line: #e2e8f0; --text: #0f172a; --muted: #5b6b84; --accent: #2563eb; --hover: #eef3fb; --upbg: rgba(22,199,132,.13); --downbg: rgba(234,57,67,.11); --grid: rgba(30,60,120,.06); --up: #067a4d; --down: #c5222f; --gold: #9a6700; }
+  .dark { --bg: #0b1220; --panel: #121a2b; --panel2: #0f1726; --line: #1f2a40; --text: #e6edf7; --muted: #8a99b4; --accent: #dce6f5; --onaccent: #0b1220; --down: #f2555e; --hover: #182238; --upbg: rgba(22,199,132,.14); --downbg: rgba(234,57,67,.12); --grid: rgba(120,150,200,.06); }
+  .light { --bg: #eef2f8; --panel: #ffffff; --panel2: #f5f7fb; --line: #e2e8f0; --text: #0f172a; --muted: #5b6b84; --accent: #0f172a; --onaccent: #fff; --hover: #eef3fb; --upbg: rgba(22,199,132,.13); --downbg: rgba(234,57,67,.11); --grid: rgba(30,60,120,.06); --up: #067a4d; --down: #c5222f; --gold: #9a6700; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
   body { font-family: 'Plex', Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; font-weight: 500; font-variant-numeric: tabular-nums; }
   #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: var(--bg); color: var(--text); }
@@ -32,19 +32,20 @@
   .ph { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: bold; font-size: 15px; }
   .btn { padding: 10px 18px; min-height: 44px; font-weight: 700; font-size: 16px; background: var(--panel2); border: 1px solid var(--line); }
   .btn:hover { background: var(--hover); }
-  .btn.pri { background: var(--accent); color: #fff; border-color: transparent; }
+  .btn.pri { background: var(--accent); color: var(--onaccent); border-color: transparent; }
   .btn.buy { background: var(--up); color: #fff; border-color: transparent; }
   .dark .btn.buy { color: #03150d; }
   .btn.ghost { background: transparent; color: var(--muted); }
   .btn.ghost.danger { color: var(--down); }
   .btn.ghost:hover { color: var(--text); }
   .btn.sell { background: var(--down); color: #fff; border-color: transparent; }
+  .dark .btn.sell, .dark .news { color: #1a0306; }
   .btn:disabled { opacity: .35; cursor: default; }
   .seg { display: inline-flex; background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 3px; gap: 3px; }
   .seg button { padding: 7px 14px; min-height: 38px; background: transparent; font-size: 14px; font-weight: 700; color: var(--muted); }
-  .seg button.on { background: var(--accent); color: #fff; }
+  .seg button.on { background: var(--accent); color: var(--onaccent); }
   .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 4px; background: var(--panel2); border: 1px solid var(--line); font-size: 13px; font-weight: 700; }
-  .pill { display: inline-block; min-width: 64px; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 13px; text-align: center; direction: ltr; }
+  .pill { display: inline-block; min-width: 70px; padding: 3px 8px; border-radius: 6px; font-weight: bold; font-size: 16px; text-align: center; direction: ltr; }
   .pill.up { background: var(--upbg); } .pill.down { background: var(--downbg); } .pill.flat { background: var(--panel2); color: var(--muted); }
 
   /* dashboard */
@@ -64,26 +65,29 @@
   main.trade > #mk { grid-column: 1; grid-row: 1 / 3; }
   main.trade > .card { grid-column: 2; grid-row: 1; }
   main.focus table.mw :is(th, td):is(:nth-child(2), :nth-child(5), :nth-child(6)) { display: none; }
-  main.focus table.mw td { height: 26px; padding: 0 8px; }
+  main.focus table.mw td { height: 28px; padding: 0 8px; }
   main.focus .co small { display: none; }
   main.focus .co > span { width: 20px !important; height: 20px !important; }
-  main.focus .co b { font-size: 13px; }
-  main.focus .price { font-size: 14px; }
-  main.focus .pill { min-width: 54px; font-size: 12px; padding: 1px 6px; }
-  main.focus table.lb td { height: 26px; }
+  main.focus .co b { font-size: 16px; }
+  main.focus .price { font-size: 16px; }
+  main.focus .pill { min-width: 70px; font-size: 16px; padding: 1px 6px; }
+  main.focus table.lb td { height: 30px; }
+  main.focus #lb .ph { display: none; }
   main.focus table.lb th { padding: 4px 10px; }
   main.focus table.mw th { padding: 4px 8px; }
   main.trade table.lb :is(th, td):is(:nth-child(3), :nth-child(5)) { display: none; }
-  main.trade table.lb td { height: 26px; }
+  main.trade table.lb td { height: 30px; }
+  main.trade .card .body { gap: 8px; padding: 12px 16px; }
+  main.focus #mk .ph { padding: 6px 14px; }
   main.trade #lb .ph { display: none; }
-  table.mw { width: 100%; border-collapse: collapse; font-size: 14px; }
-  table.mw th { color: var(--muted); font-weight: 500; font-size: 12px; text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+  table.mw { width: 100%; border-collapse: collapse; font-size: 16px; }
+  table.mw th { color: var(--muted); font-weight: 500; font-size: 14px; text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--line); }
   table.mw td { padding: 0 10px; height: 49px; border-bottom: 1px solid var(--line); }
   table.mw tr.row.pick { cursor: pointer; }
   table.mw tr.row.pick:hover { background: var(--hover); }
   table.mw tr.sel { background: var(--hover); box-shadow: inset -3px 0 0 var(--accent); }
   .co { display: flex; align-items: center; gap: 10px; }
-  .co b { font-size: 15px; } .co small { color: var(--muted); font-size: 11px; display: block; }
+  .co b { font-size: 17px; } .co small { color: var(--muted); font-size: 14px; display: block; }
   .price { font-weight: bold; font-size: 16px; }
   @keyframes fUp { from { background: rgba(22,199,132,.45); } to { background: transparent; } }
   @keyframes fDown { from { background: rgba(234,57,67,.45); } to { background: transparent; } }
@@ -97,15 +101,17 @@
   .choice .k { flex: none; width: 24px; height: 24px; border-radius: 6px; background: var(--line); display: grid; place-items: center; font-size: 13px; }
   .choice.right { background: var(--upbg); border-color: var(--up); } .choice.wrong { background: var(--downbg); border-color: var(--down); }
   .choice:disabled { cursor: default; }
+  .choice .mark { margin-inline-start: auto; flex: none; display: grid; }
+  .choice.right .mark { color: var(--up); } .choice.wrong .mark { color: var(--down); }
   .answer { padding: 10px 12px; border-radius: 6px; background: var(--upbg); border: 1px solid var(--up); font-weight: bold; }
   .big { font-size: 40px; font-weight: bold; }
   .teams { display: flex; flex-wrap: wrap; gap: 6px; }
   .tchip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px 8px 10px; min-height: 44px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--line); font-weight: bold; font-size: 13px; }
-  .tchip.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
-  table.lb { width: 100%; border-collapse: collapse; font-size: 13px; }
-  table.lb th { color: var(--muted); font-weight: normal; font-size: 11px; text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  .tchip.on { border-color: var(--team); box-shadow: 0 0 0 2px var(--team) inset; }
+  table.lb { width: 100%; border-collapse: collapse; font-size: 18px; }
+  table.lb th { color: var(--muted); font-weight: normal; font-size: 14px; text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--line); }
   table.lb td { padding: 0 10px; height: 33px; border-bottom: 1px solid var(--line); }
-  table.lb tr.cur { background: var(--hover); box-shadow: inset -3px 0 0 var(--accent); }
+  table.lb tr.cur { background: color-mix(in srgb, var(--team) 20%, transparent); }
   .ring { position: relative; width: 74px; height: 74px; flex: none; }
   .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 20px; }
   main.focus .ring b { font-size: 30px; }
@@ -136,8 +142,8 @@
   .names input { width: 100%; box-sizing: border-box; direction: rtl; text-align: right; font-size: 14px; }
   .banklist { overflow: auto; flex: 1; min-height: 0; }
   .bq { display: grid; grid-template-columns: 110px 1fr 190px 70px; gap: 10px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 14px; }
-  .pips { display: inline-flex; gap: 3px; vertical-align: middle; margin-inline: 4px; }
-  .pips i { width: 9px; height: 9px; border-radius: 2px; border: 1px solid var(--muted); box-sizing: border-box; }
+  .pips { display: inline-flex; gap: 4px; vertical-align: middle; margin-inline: 6px; }
+  .pips i { width: 14px; height: 14px; border-radius: 2px; border: 1px solid var(--muted); box-sizing: border-box; }
   .pips i.on { background: var(--accent); border-color: var(--accent); }
   .reward { font-size: 76px; font-weight: 700; color: var(--gold); line-height: 1; }
   main.focus .card .body { padding: 22px 28px; gap: 18px; }
@@ -157,6 +163,28 @@
   main.focus .card .big { font-size: 48px; }
   main.focus .card .btn { font-size: 20px; min-height: 52px; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } }
+  .card.turn { border-color: var(--team); box-shadow: inset 0 0 0 1px var(--team); }
+  .card.turn > .ph { background: color-mix(in srgb, var(--team) 18%, var(--panel)); border-bottom-color: color-mix(in srgb, var(--team) 50%, var(--line)); }
+  .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px; }
+  .who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .who .verb { font-size: 18px; font-weight: 500; }
+  .who .tname { font-size: 30px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  main.focus .card .ph:has(.who), main.trade .card .ph:has(.who) { padding: 8px 18px; }
+  .peek { align-self: flex-start; font-size: 15px; padding: 8px 14px; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+  .peek[aria-pressed=true] { background: var(--hover); border-color: var(--text); }
+  .undo { position: relative; overflow: hidden; }
+  .undo::after { content: ''; position: absolute; inset: auto 0 0 0; height: 3px; background: var(--text); transform-origin: right; animation: drain var(--d) linear forwards; }
+  @keyframes drain { to { transform: scaleX(0); } }
+  .toast { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 30; display: flex; align-items: center; gap: 14px; padding: 8px 10px 8px 18px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.35); font-weight: 700; font-size: 16px; }
+  .pod { opacity: 0; transform: translateY(24px); transition: opacity .45s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1); }
+  .pod.in { opacity: 1; transform: none; }
+  .winner { height: 78px; display: flex; align-items: center; justify-content: center; gap: 14px; font-weight: 700; text-wrap: balance; text-align: center; }
+  @media (prefers-reduced-motion: reduce) { .pod { transition: none; } }
+  #phone { position: fixed; inset: auto 10px 10px 10px; z-index: 50; display: flex; align-items: center; gap: 10px; padding: 10px 12px; direction: rtl;
+    background: #121a2b; color: #e6edf7; border: 1px solid #1f2a40; border-radius: 8px; font: 700 15px/1.5 'Plex', Tahoma, sans-serif; }
+  #phone span { flex: 1; }
+  #phone button { min-height: 40px; padding: 6px 12px; background: #e6edf7; color: #0b1220; font-weight: 700; }
   .addq { display: grid; grid-template-columns: 130px minmax(0,1fr); gap: 8px; }
   .addq input { direction: rtl; text-align: right; }
 </style>
@@ -180,7 +208,7 @@ const W = 1280, H = 720;
 const PIXEL = false;
 const FONT = "Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif";
 const TITLE = 'سوق المعرفة';
-const CONTROLS = ['الفأرة أو اللمس: كل شيء', '1-4: اختيار الإجابة', 'Enter: الزر الرئيسي', 'P: إيقاف مؤقت · M: كتم الصوت'];
+const CONTROLS = ['الفأرة أو اللمس: كل شيء', '1-4: اختيار الإجابة', 'Enter: الزر الرئيسي', 'P: إيقاف مؤقت · M: كتم الصوت', 'H مطولاً: رؤية الإجابة · Z: تراجع'];
 const clock = window.GAME_CLOCK || { now: () => performance.now() / 1000 };
 const CHEAP = params.get('render') === 'cheap';
 let seed;
@@ -213,7 +241,9 @@ const pressed = code => hit.has(code);
 const typing = () => document.activeElement && ['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName);
 addEventListener('keydown', e => {
   startAudio();
-  if (!e.repeat) { down.add(e.code); hit.add(e.code); }
+  // Enter on a focused button: the browser already clicks it, so the main-button shortcut must not fire too.
+  const nativeEnter = (e.code === 'Enter' || e.code === 'NumpadEnter') && e.target instanceof Element && e.target.closest('button');
+  if (!e.repeat && !nativeEnter) { down.add(e.code); hit.add(e.code); }
   if (e.code === 'Space' && !typing()) e.preventDefault();
 });
 addEventListener('keyup', e => down.delete(e.code));
@@ -252,6 +282,12 @@ const sfx = {
 
 // ---- Helpers ---------------------------------------------------------------------------
 const fmt = n => Math.round(n).toLocaleString('en-US');
+function qCount(n) { // Arabic number agreement: سؤال واحد، سؤالان، 3 أسئلة، 11 سؤالاً، 100 سؤال
+  if (n === 1) return 'سؤال واحد';
+  if (n === 2) return 'سؤالان';
+  const r = n % 100;
+  return `${fmt(n)} ${r >= 3 && r <= 10 ? 'أسئلة' : r >= 11 ? 'سؤالاً' : 'سؤال'}`;
+}
 const pct = x => (x > 0 ? '+' : '') + (x * 100).toFixed(2) + '%';
 const uni = (a, b) => a + (b - a) * rng();
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -273,12 +309,14 @@ const B = (label, cls, fn, extra = {}) => h('button', { class: 'btn ' + cls, onc
 const N = v => h('span', { class: 'num' }, v);
 
 // ---- Drawn figures -------------------------------------------------------------------------
-const TEAM_COLORS = ['#3b82f6', '#f59e0b', '#a855f7', '#14b8a6', '#ec4899', '#84cc16'];
+// six hues that also differ in lightness, so they stay apart under deuteranopia and protanopia; only teams use them
+const TEAM_COLORS = ['#78a7fc', '#f6b324', '#8b57be', '#14a094', '#b02a68', '#d4f58c'];
+const TEAM_INK = ['#0b1220', '#0b1220', '#fff', '#0b1220', '#fff', '#0b1220']; // the number on each shield: 5:1 or more
 function shield(i, size = 22) { // a team's badge: a shield in its colour with its number
   return h('span', { style: `display:inline-block;width:${size}px;height:${Math.round(size * 1.15)}px;flex:none`, html:
-    `<svg viewBox="0 0 20 23" width="${size}" height="${Math.round(size * 1.15)}"><path d="M10 0 L20 3.5 V11 C20 17 15 21 10 23 C5 21 0 17 0 11 V3.5 Z" fill="${TEAM_COLORS[i]}"/>
-     <path d="M10 2 L18 4.8 V11 C18 15.6 14.4 19 10 20.8 Z" fill="rgba(255,255,255,.18)"/>
-     <text x="10" y="15.5" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff" font-family="Plex, Arial">${i + 1}</text></svg>` });
+    `<svg viewBox="0 0 20 23" width="${size}" height="${Math.round(size * 1.15)}"><path d="M10 0 L20 3.5 V11 C20 17 15 21 10 23 C5 21 0 17 0 11 V3.5 Z" fill="${TEAM_COLORS[i]}" stroke="var(--text)" stroke-opacity=".45" stroke-width=".8"/>
+     <path d="M10 2 L18 4.8 V11 C18 15.6 14.4 19 10 20.8 Z" fill="${TEAM_INK[i] === '#fff' ? 'rgba(0,0,0,.16)' : 'rgba(255,255,255,.18)'}"/>
+     <text x="10" y="15.5" text-anchor="middle" font-size="11" font-weight="bold" fill="${TEAM_INK[i]}" font-family="Plex, Arial">${i + 1}</text></svg>` });
 }
 const LOGO = (s = 1) => `<svg width="${46 * s}" height="${36 * s}" viewBox="19 35 222 174">
   <g fill="none" stroke="var(--up)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M40 128 L96 184 L208 72"/><path d="M132 60 H220 V148"/></g></svg>`; // the same mark as assets/favicon.svg
@@ -289,13 +327,13 @@ const SECTOR_ICON = { // each sector's own small glyph, drawn
   'تجزئة': '<path d="M2 3 H5 L7 14 H17 L19 6 H6" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="8" cy="18" r="1.8" fill="currentColor"/><circle cx="16" cy="18" r="1.8" fill="currentColor"/>',
   'عقار': '<path d="M2 20 V9 L8 4 L14 9 V20 Z M14 20 V12 H19 V20 Z" fill="currentColor"/><rect x="6" y="13" width="4" height="7" fill="var(--panel)"/>',
 };
-const secIcon = (s, c) => h('span', { style: `display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;flex:none;background:${c}22;color:${c}`,
+const secIcon = s => h('span', { style: 'display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;flex:none;background:var(--panel2);border:1px solid var(--line);box-sizing:border-box;color:var(--muted)',
   html: `<svg viewBox="0 0 20 21" width="18" height="18">${SECTOR_ICON[s]}</svg>` });
-function spark(hist, w = 120, hh = 30) { // a sparkline with a soft area under it
+function spark(hist, base = hist[0], w = 120, hh = 30) { // a sparkline with a soft area under it
   const lo = Math.min(...hist), hi = Math.max(...hist), span = hi - lo || 1;
   const pts = hist.map((v, i) => [hist.length === 1 ? w : (i / (hist.length - 1)) * w, hist.length === 1 ? hh / 2 : hh - 3 - ((v - lo) / span) * (hh - 6)]);
   if (pts.length === 1) pts.unshift([0, hh / 2]);
-  const c = hist[hist.length - 1] > hist[0] ? 'var(--up)' : hist[hist.length - 1] < hist[0] ? 'var(--down)' : 'var(--muted)';
+  const c = hist[hist.length - 1] > base ? 'var(--up)' : hist[hist.length - 1] < base ? 'var(--down)' : 'var(--muted)';
   const line = pts.map(p => p.map(n => n.toFixed(1)).join(',')).join(' ');
   return `<svg width="${w}" height="${hh}" viewBox="0 0 ${w} ${hh}" style="direction:ltr;display:block"><polygon points="0,${hh} ${line} ${w},${hh}" fill="${c}" opacity=".12"/>
     <polyline points="${line}" fill="none" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/></svg>`;
@@ -307,13 +345,15 @@ function ring(left, total, size = 74) { // countdown ring: blue, then red in the
   return `<svg width="${size}" height="${size}" style="transform:rotate(-90deg);display:block"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="6"/>
     <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${col}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${(c * (1 - f)).toFixed(2)}"/></svg>`;
 }
+const MARK_RIGHT = '<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L9.5 18 L20 6.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const MARK_WRONG = '<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6 L18 18 M18 6 L6 18" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg>';
 const TROPHY = `<svg width="70" height="70" viewBox="0 0 70 70"><path d="M20 8 H50 V24 C50 36 43 42 35 42 C27 42 20 36 20 24 Z" fill="var(--gold)"/>
   <path d="M20 12 H10 C10 24 16 28 22 28 M50 12 H60 C60 24 54 28 48 28" fill="none" stroke="var(--gold)" stroke-width="4"/>
   <rect x="31" y="42" width="8" height="10" fill="#d49400"/><rect x="22" y="52" width="26" height="8" rx="2" fill="#d49400"/>
   <path d="M27 12 V24 C27 30 30 34 34 35" stroke="rgba(255,255,255,.55)" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
 
 // ---- The market -----------------------------------------------------------------------------
-const SECTORS = { 'طاقة': '#f59e0b', 'بنوك': '#3b82f6', 'اتصالات': '#a855f7', 'تجزئة': '#ec4899', 'عقار': '#14b8a6' };
+const SECTORS = ['طاقة', 'بنوك', 'اتصالات', 'تجزئة', 'عقار']; // glyphs only, in one neutral colour: hues belong to teams
 const COMPANIES = [ // fictional companies, two per sector
   { name: 'نفط الواحة', code: '2041', sector: 'طاقة' }, { name: 'شمس للطاقة', code: '2087', sector: 'طاقة' },
   { name: 'بنك الأمانة', code: '1124', sector: 'بنوك' }, { name: 'مصرف الرواد', code: '1168', sector: 'بنوك' },
@@ -354,18 +394,18 @@ async function importCSV(file) { // the host's file: السؤال، الخيار
   const apply = replace => { // the host chose: replace the existing questions, or add to them
     bank = replace ? questions : questions.concat(bank);
     const saved = saveBank();
-    say(`${replace ? 'استُبدلت الأسئلة بـ' : 'أُضيف'} ${questions.length} سؤالاً من "${file.name}"` + (skipped.length ? ` · تُجوهل ${skipped.length}: ${whyList(skipped)}` : '')
+    say(`${replace ? 'استُبدلت الأسئلة بـ' : 'أُضيف'} ${qCount(questions.length)} من "${file.name}"` + (skipped.length ? ` · تُجوهل ${skipped.length}: ${whyList(skipped)}` : '')
       + (saved ? '' : ' · تنبيه: تعذر الحفظ في المتصفح، ستبقى الأسئلة حتى إغلاق الصفحة فقط'), saved);
   };
   const close = () => document.getElementById('importask')?.remove();
   close();
   ui.append(h('div', { class: 'ov', id: 'importask' }, h('div', { class: 'modal', style: 'max-width:560px' },
-    h('b', { style: 'font-size:20px' }, `في الملف ${questions.length} سؤالاً`),
+    h('b', { style: 'font-size:20px' }, `في الملف ${qCount(questions.length)}`),
     skipped.length ? h('div', { class: 'down', style: 'font-size:13px' }, `سيُتجاهل ${skipped.length}: ${whyList(skipped)}`) : null,
-    h('div', { class: 'muted' }, `في البنك الآن ${bank.length} سؤالاً. ماذا تريد أن تفعل بها؟`),
+    h('div', { class: 'muted' }, `في البنك الآن ${qCount(bank.length)}. ماذا تريد أن تفعل بالجديدة؟`),
     h('div', { style: 'display:flex;gap:10px;justify-content:center;flex-wrap:wrap' },
-      B('إضافتها إلى الأسئلة الحالية', 'buy', () => { close(); apply(false); }, { 'data-primary': '1' }),
-      B('استبدال الأسئلة الحالية', 'sell', () => { close(); apply(true); }),
+      B('إضافتها إلى الأسئلة الحالية', 'pri', () => { close(); apply(false); }, { 'data-primary': '1' }),
+      B('استبدال الأسئلة الحالية', '', () => { close(); apply(true); }),
       B('إلغاء', '', close)))));
 }
 function downloadTemplate() {
@@ -403,7 +443,7 @@ function reset() {
   state = {
     t: 0, score: 0, gained: '', paused: false,
     n, names: s.names.slice(0, n), cash: Array(n).fill(s.cash), shares: Array.from({ length: n }, () => Array(10).fill(0)), startWorth: s.cash,
-    price, open: price.slice(), hist, flash: Array(10).fill(null),
+    price, open: hist.map(p => p[0]), hist, flash: Array(10).fill(null), // the open is the chart's first point, so the change pill and the sparkline agree
     cur: 0, turns: 0, round: 1, elapsed: 0, lastCall: false,
     phase: 'ready', timer: 0, ticked: -1, q: null, answeredBy: null, picked: null, result: null, reward: 0, news: null,
     sel: 0, buys: 0, sells: 0, msg: '', msgGood: false, deck: [], reveal: false, final: null,
@@ -416,6 +456,8 @@ function drawQuestion() { // no question repeats until the whole bank has been a
   return { cat: row[0], text: row[1], choices: order.map(k => row[2 + k]), right: order.indexOf(0) };
 }
 const worth = i => state.cash[i] + state.shares[i].reduce((a, n, c) => a + n * state.price[c], 0);
+// competition ranking on the riyal shown: equal worth shares a place (1, 1, 3), never split by team order
+const rankOf = (w, all) => 1 + all.filter(x => Math.round(x) > Math.round(w)).length;
 function movePrice(co, np) {
   np = Math.max(1, Math.round(np));
   if (np === state.price[co]) return;
@@ -434,7 +476,7 @@ function trade(buy) {
   if (!(qty > 0)) return fail('أدخل كمية صحيحة');
   if (buy) {
     if (state.buys >= tune.maxBuys) return fail(`انتهت عمليات الشراء لهذا الدور (${tune.maxBuys})`);
-    if (qty * p > state.cash[t]) return fail('الرصيد لا يكفي');
+    if (qty * p > state.cash[t]) return fail(`الرصيد لا يكفي: أقصى كمية ${fmt(Math.floor(state.cash[t] / p))} سهم`);
     state.cash[t] -= qty * p; state.shares[t][co] += qty; state.buys++;
   } else {
     if (state.sells >= tune.maxSells) return fail(`انتهت عمليات البيع لهذا الدور (${tune.maxSells})`);
@@ -452,7 +494,7 @@ function rollNews() { // my twists: sector news, dividend day, trading halt; nev
   if (state.turns === 0 || rng() * 100 >= tune.newsChance) return null;
   const total = tune.newsSector + tune.newsDividend + tune.newsHalt; let r = rng() * total;
   if ((r -= tune.newsSector) < 0) {
-    const secs = Object.keys(SECTORS), sec = secs[Math.floor(rng() * secs.length)], good = rng() < 0.5;
+    const secs = SECTORS, sec = secs[Math.floor(rng() * secs.length)], good = rng() < 0.5;
     const mag = uni(tune.sectorMoveMin, tune.sectorMoveMax), moves = [];
     COMPANIES.forEach((c, co) => { if (c.sector === sec) { const before = state.price[co]; movePrice(co, before * (1 + (good ? 1 : -1) * mag * uni(0.8, 1.2))); moves.push([co, before, state.price[co]]); } });
     return { kind: 'sector', good, sec, text: HEADLINES[sec][good ? 0 : 1], moves };
@@ -472,19 +514,32 @@ function gameOverDue() {
   if (settings.end === 'timed') return state.elapsed >= settings.minutes * 60;
   return false;
 }
-function setPhase(p) { state.phase = p; state.msg = ''; refs.qtyVal = ''; events.push({ phase: p }); renderAll(); }
+function setPhase(p) { if (p !== 'reveal') undo = null; state.phase = p; state.msg = ''; refs.qtyVal = ''; events.push({ phase: p }); renderAll(); }
+let undo = null; // the state just before the last verdict, kept for tune.undoTime seconds while the verdict is on screen
+function undoVerdict() {
+  if (!undo || state.phase !== 'reveal') return;
+  const u = undo; undo = null; state = u.state; seed = u.seed; refs.countFor = null;
+  sfx.click(); events.push({ undo: 'verdict' }); renderAll();
+}
+function setPeek(on) { // judge mode: the answer shows only while the host holds the button or H
+  state.peek = on;
+  document.getElementById('peekans')?.style.setProperty('visibility', on ? 'visible' : 'hidden');
+  document.getElementById('peekbtn')?.setAttribute('aria-pressed', String(on));
+}
 function newQuestion() {
-  state.q = drawQuestion(); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.result = null; state.reveal = false;
+  state.q = drawQuestion(); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.result = null; state.reveal = false; state.peek = false;
   state.answeredBy = settings.mode === 'seq' ? state.cur : null; setPhase('question');
 }
 function answer(right, picked = null) {
   if (state.answeredBy == null || state.phase !== 'question') return;
-  state.cur = state.answeredBy; state.picked = picked; state.result = right ? 'right' : 'wrong'; state.reveal = true;
+  const snap = { state: structuredClone(state), seed, until: state.t + tune.undoTime };
+  state.cur = state.answeredBy; state.peek = false; state.picked = picked; state.result = right ? 'right' : 'wrong'; state.reveal = true;
   if (right) { // Ma3aliSahmuk's reward: int(U(.25, 1) * 1% * cash) * 5
     state.reward = Math.trunc(uni(tune.rewardMin, tune.rewardMax) * 0.01 * state.cash[state.cur]) * 5;
     state.cash[state.cur] += state.reward; sfx.right(); sfx.cash();
   } else sfx.wrong();
   events.push({ answer: state.result }); setPhase('reveal');
+  if (tune.undoTime > 0) { undo = snap; renderCard(); }
 }
 function timeUp() { state.result = 'time'; state.reveal = true; sfx.wrong(); setPhase('reveal'); }
 function afterReveal() {
@@ -503,11 +558,11 @@ function endTurn() {
 function endGame() { // every share is valued at the market price
   state.final = [...Array(state.n).keys()].map(i => ({ i, cash: state.cash[i], stock: worth(i) - state.cash[i], worth: worth(i) })).sort((a, b) => b.worth - a.worth);
   state.score = Math.round(state.final[0].worth); state.gained = `${state.names[state.final[0].i]}: ${fmt(state.final[0].worth)}`;
-  sfx.win(); go('results');
+  go('results');
 }
 
 // ---- Scenes --------------------------------------------------------------------------------
-function go(name) { scene = name; state.paused = false; ui.replaceChildren(); (scenes[name].enter || (() => {}))(); events.push({ scene: name }); }
+function go(name) { if (name !== scene) document.getElementById('toast')?.remove(); scene = name; state.paused = false; ui.replaceChildren(); (scenes[name].enter || (() => {}))(); events.push({ scene: name }); }
 
 // The dashboard's parts, each re-rendered when its data changes
 let refs = {};
@@ -544,8 +599,8 @@ function renderMarket() {
     const fl = f && state.t - f.t < 1.1 ? (f.dir > 0 ? 'fUp' : 'fDown') : '';
     const cls = ch > 0 ? 'up' : ch < 0 ? 'down' : 'flat';
     return h('tr', { class: `row ${trading ? 'pick' : ''} ${trading && state.sel === co ? 'sel' : ''}`, onclick: trading ? () => { state.sel = co; sfx.click(); refs.qtyVal = ''; state.msg = ''; renderMarket(); renderCard(); } : null },
-      h('td', {}, h('div', { class: 'co' }, secIcon(c.sector, SECTORS[c.sector]), h('div', {}, h('b', {}, c.name), h('small', {}, c.sector, ' · ', N(c.code))))),
-      h('td', { html: spark(state.hist[co]) }),
+      h('td', {}, h('div', { class: 'co' }, secIcon(c.sector), h('div', {}, h('b', {}, c.name), h('small', {}, c.sector, ' · ', N(c.code))))),
+      h('td', { html: spark(state.hist[co], state.open[co]) }),
       h('td', { class: 'price ' + fl }, N(fmt(state.price[co]))),
       h('td', {}, h('span', { class: 'pill ' + cls }, pct(ch))),
       h('td', {}, state.shares[t][co] ? N(fmt(state.shares[t][co])) : h('span', { class: 'muted' }, '—')),
@@ -557,7 +612,7 @@ function renderMarket() {
     h('table', { class: 'mw' }, h('tr', {}, ...['الشركة', 'الأداء', 'السعر', 'التغير منذ الافتتاح', 'لديك', 'القيمة'].map(s => h('th', {}, s))), ...rows));
 }
 function teamChip(i, on, fn) {
-  return h('button', { class: 'tchip' + (on ? ' on' : ''), onclick: fn ? () => { sfx.click(); fn(); } : null, style: fn ? '' : 'cursor:default' }, shield(i, 18), state.names[i]);
+  return h('button', { class: 'tchip' + (on ? ' on' : ''), onclick: fn ? () => { sfx.click(); fn(); } : null, style: `--team:${TEAM_COLORS[i]};` + (fn ? '' : 'cursor:default') }, shield(i, 18), state.names[i]);
 }
 function countUp(el, to) { // the reward counts up to its value; decoration only, skipped for reduced motion
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -569,6 +624,10 @@ const pips = (left, total) => h('span', { class: 'pips' }, ...[...Array(total).k
 function renderCard() {
   const p = state.phase, c = refs.card, t = state.cur;
   const head = (title, right) => h('div', { class: 'ph' }, h('span', {}, title), right || '');
+  const turnHead = (verb, i, right) => h('div', { class: 'ph' }, h('span', { class: 'who' }, h('span', { class: 'verb' }, verb), shield(i, 34), h('b', { class: 'tname' }, state.names[i])), right || '');
+  // the team on turn tints the card's edge and header band for its whole turn
+  const ti = settings.mode === 'seq' ? t : p === 'question' || p === 'reveal' ? state.answeredBy : p === 'ready' ? null : t;
+  c.classList.toggle('turn', ti != null); c.style.setProperty('--team', ti == null ? 'var(--line)' : TEAM_COLORS[ti]);
   c.dataset.size = '';
   const timerBox = total => h('div', { class: 'ring', style: `width:${ringSize()}px;height:${ringSize()}px` }, h('span', { id: 'ringsvg', html: ring(state.timer, total, ringSize()) }), h('b', { id: 'ringnum' }, N(Math.ceil(state.timer))));
   if (p === 'ready') {
@@ -587,16 +646,24 @@ function renderCard() {
     c.dataset.size = q.text.length > 110 || longest > 45 ? 'l' : q.text.length > 70 || longest > 30 ? 'm' : '';
     const parts = [h('div', { style: 'display:flex;gap:12px;align-items:center' }, done ? null : timerBox(settings.answerTime),
       h('div', { style: 'flex:1' }, h('span', { class: 'chip muted' }, q.cat), h('div', { class: 'q', style: 'margin-top:6px' }, q.text)))];
-    if (settings.mode === 'fast' && !done) parts.push(h('div', {}, h('div', { class: 'muted', style: 'font-size:12px;margin-bottom:5px' }, state.answeredBy == null ? 'من أجاب أولاً؟ (أو اضغط رقم الفريق)' : 'يجيب الآن:'),
+    if (settings.mode === 'fast' && !done) parts.push(h('div', {}, h('div', { class: 'muted', style: 'font-size:14px;margin-bottom:5px' }, state.answeredBy == null ? 'من أجاب أولاً؟ (أو اضغط رقم الفريق)' : 'يجيب الآن:'),
       h('div', { class: 'teams' }, ...[...Array(state.n).keys()].map(i => teamChip(i, state.answeredBy === i, () => { state.answeredBy = i; renderCard(); renderBoard(); })))));
     if (settings.qmode === 'choices') {
       parts.push(h('div', { class: 'choices' }, ...q.choices.map((txt, k) => {
         const cls = done && k === q.right ? ' right' : done && k === state.picked ? ' wrong' : '';
-        return h('button', { class: 'choice' + cls, disabled: !canAnswer, onclick: canAnswer ? () => answer(k === q.right, k) : null }, h('span', { class: 'k' }, k + 1), txt);
+        const mark = cls === ' right' ? MARK_RIGHT : cls === ' wrong' ? MARK_WRONG : null;
+        return h('button', { class: 'choice' + cls, disabled: !canAnswer, onclick: canAnswer ? () => answer(k === q.right, k) : null }, h('span', { class: 'k' }, k + 1), txt,
+          mark && h('span', { class: 'mark', html: mark, 'aria-label': cls === ' right' ? 'الإجابة الصحيحة' : 'إجابة خاطئة' }));
       })));
     } else {
-      if (state.reveal) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right]));
-      else parts.push(B('إظهار الإجابة', '', () => { state.reveal = true; renderCard(); }, { style: 'align-self:flex-start;font-size:13px;padding:6px 12px' }));
+      if (done) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right]));
+      else {
+        const off = () => setPeek(false);
+        parts.push(h('button', { class: 'btn peek', id: 'peekbtn', 'aria-pressed': String(!!state.peek), oncontextmenu: e => e.preventDefault(),
+          onpointerdown: e => { e.currentTarget.setPointerCapture?.(e.pointerId); setPeek(true); }, onpointerup: off, onpointercancel: off, onlostpointercapture: off },
+          'اضغط مطولاً لرؤية الإجابة (H)'),
+          h('div', { class: 'answer', id: 'peekans', style: `visibility:${state.peek ? 'visible' : 'hidden'}` }, 'الإجابة الصحيحة: ', q.choices[q.right]));
+      }
       if (!done) parts.push(h('div', { style: 'display:flex;gap:10px' },
         B('إجابة صحيحة', 'buy', () => answer(true), { disabled: !canAnswer, 'data-primary': canAnswer ? '1' : null, style: 'flex:1' }),
         B('إجابة خاطئة', 'sell', () => answer(false), { disabled: !canAnswer, style: 'flex:1' })));
@@ -606,9 +673,10 @@ function renderCard() {
       parts.push(h('div', { style: 'display:flex;align-items:center;gap:12px;margin-top:auto' },
         right ? h('div', { class: 'reward pop', id: 'rew' }, N('+' + fmt(state.reward))) : h('div', { class: 'big down pop', style: 'font-size:28px' }, state.result === 'time' ? 'انتهى الوقت' : 'إجابة خاطئة'),
         h('div', { class: 'muted', style: 'flex:1;font-size:13px' }, right ? `مكافأة ${state.names[state.cur]} أُضيفت إلى الرصيد، والسوق يفتح الآن` : state.answeredBy == null ? 'لم يُجب أحد' : `تُلغى فرصة ${state.names[state.answeredBy]} في هذه الجولة`),
+        undo ? B('تراجع (Z)', 'undo', undoVerdict, { style: `--d:${Math.max(0, undo.until - state.t).toFixed(2)}s`, title: 'إلغاء الحكم واستعادة الحالة قبله' }) : null,
         B(right ? 'افتح السوق' : 'التالي', 'pri', afterReveal, { 'data-primary': '1' })));
     }
-    c.replaceChildren(head(settings.mode === 'seq' ? `سؤال ${state.names[t]}` : 'سؤال الأسرع'), h('div', { class: 'body' }, ...parts));
+    c.replaceChildren(ti != null ? turnHead(settings.mode === 'seq' ? 'سؤال' : 'يجيب', ti) : head('سؤال الأسرع'), h('div', { class: 'body' }, ...parts));
     const rew = document.getElementById('rew');
     if (rew && refs.countFor !== state.q) { refs.countFor = state.q; countUp(rew.firstChild, state.reward); }
     return;
@@ -627,26 +695,35 @@ function renderCard() {
   }
   if (p === 'trade') {
     const co = state.sel, cpy = COMPANIES[co], price = state.price[co], qtyNow = refs.qtyVal ?? '';
-    const cost = h('b', { class: 'num', style: 'color:var(--text)' }, fmt((toNum(qtyNow) || 0) * price));
-    const after = h('b', { class: 'num', style: 'color:var(--text)' }, fmt(state.cash[t] - (toNum(qtyNow) || 0) * price));
-    const qty = h('input', { id: 'qty', inputmode: 'numeric', value: qtyNow, placeholder: '0',
-      oninput: e => { refs.qtyVal = e.target.value; cost.textContent = fmt((toNum(e.target.value) || 0) * price); after.textContent = fmt(state.cash[t] - (toNum(e.target.value) || 0) * price); },
-      onkeydown: e => { if (e.code === 'Enter' || e.code === 'NumpadEnter') { e.preventDefault(); e.stopPropagation(); trade(true); } } });
-    const setQ = v => { qty.value = String(v); refs.qtyVal = qty.value; cost.textContent = fmt(v * price); after.textContent = fmt(state.cash[t] - v * price); };
     const maxBuy = Math.floor(state.cash[t] / price);
-    c.replaceChildren(head(`تداول ${state.names[t]}`, h('span', { class: 'muted', style: 'font-weight:normal;font-size:12px' }, 'شراء', pips(tune.maxBuys - state.buys, tune.maxBuys), 'بيع', pips(tune.maxSells - state.sells, tune.maxSells))),
+    const cost = h('b', { class: 'num', style: 'color:var(--text)' }), after = h('b', { class: 'num' });
+    const msg = h('div', { class: 'msg' });
+    const buyBtn = B('شراء', 'buy', () => trade(true), { style: 'flex:1;font-size:18px' });
+    const preview = v => { // the ticket never offers a buy that would take the balance below zero
+      const n = toNum(v) || 0, short = n * price > state.cash[t];
+      cost.textContent = fmt(n * price); after.textContent = fmt(state.cash[t] - n * price); after.style.color = short ? 'var(--down)' : 'var(--text)';
+      buyBtn.disabled = state.buys >= tune.maxBuys || short;
+      msg.className = 'msg ' + (short || !state.msgGood ? 'down' : 'up');
+      msg.textContent = short ? `الرصيد لا يكفي: أقصى كمية ${fmt(maxBuy)} سهم` : state.msg;
+    };
+    const qty = h('input', { id: 'qty', inputmode: 'numeric', value: qtyNow, placeholder: '0',
+      oninput: e => { refs.qtyVal = e.target.value; preview(e.target.value); },
+      onkeydown: e => { if (e.code === 'Enter' || e.code === 'NumpadEnter') { e.preventDefault(); e.stopPropagation(); trade(true); } } });
+    const setQ = v => { qty.value = String(v); refs.qtyVal = qty.value; preview(v); };
+    preview(qtyNow);
+    c.replaceChildren(turnHead('تداول', t),
       h('div', { class: 'body' },
         h('div', { style: 'display:flex;gap:12px;align-items:center' }, timerBox(settings.tradeTime),
-          h('div', { style: 'flex:1' }, h('div', { style: 'display:flex;align-items:center;gap:8px' }, secIcon(cpy.sector, SECTORS[cpy.sector]), h('b', { style: 'font-size:19px' }, cpy.name)),
-            h('div', { class: 'muted', style: 'margin-top:4px' }, 'السعر ', h('b', { class: 'num', style: 'color:var(--text);font-size:18px' }, fmt(price)), ' · لديك ', N(fmt(state.shares[t][co])), ' سهم'))),
+          h('div', { style: 'flex:1' }, h('div', { style: 'display:flex;align-items:center;gap:8px' }, secIcon(cpy.sector), h('b', { style: 'font-size:19px' }, cpy.name)),
+            h('div', { class: 'muted', style: 'margin-top:4px' }, 'السعر ', h('b', { class: 'num', style: 'color:var(--text);font-size:18px' }, fmt(price)), ' · لديك ', N(fmt(state.shares[t][co])), ' سهم'),
+            h('div', { class: 'muted', style: 'margin-top:4px;font-size:15px' }, 'شراء', pips(tune.maxBuys - state.buys, tune.maxBuys), ' بيع', pips(tune.maxSells - state.sells, tune.maxSells)))),
         h('div', { class: 'ticket' },
           h('div', { class: 'qtyrow' }, qty, ...[10, 50, 100].map(v => h('button', { onclick: () => setQ(v) }, N(v))),
             h('button', { onclick: () => setQ(maxBuy), title: 'أقصى كمية يسمح بها الرصيد' }, 'الأقصى'), h('button', { onclick: () => setQ(state.shares[t][co]), title: 'كل الأسهم التي لديك' }, 'الكل')),
-          h('div', { class: 'muted', style: 'font-size:13px' }, 'القيمة: ', cost, ' · الرصيد بعد الشراء: ', after),
-          h('div', { style: 'display:flex;gap:10px' },
-            B('شراء', 'buy', () => trade(true), { style: 'flex:1;font-size:18px', disabled: state.buys >= tune.maxBuys }),
+          h('div', { class: 'muted', style: 'font-size:14px' }, 'القيمة: ', cost, ' · الرصيد بعد الشراء: ', after),
+          h('div', { style: 'display:flex;gap:10px' }, buyBtn,
             B('بيع', 'sell', () => trade(false), { style: 'flex:1;font-size:18px', disabled: state.sells >= tune.maxSells || !state.shares[t][co] })),
-          h('div', { class: 'msg ' + (state.msgGood ? 'up' : 'down') }, state.msg)),
+          msg),
         h('div', { style: 'margin-top:auto;display:flex;justify-content:space-between;align-items:center' },
           h('span', { class: 'muted', style: 'font-size:12px' }, 'كل صفقة تحرك السعر: الشراء يرفعه والبيع يخفضه'),
           B('إنهاء التداول', 'pri', endTurn, { 'data-primary': '1' }))));
@@ -655,11 +732,12 @@ function renderCard() {
 function renderBoard() {
   const order = [...Array(state.n).keys()].sort((a, b) => worth(b) - worth(a));
   const active = state.phase === 'ready' && settings.mode === 'fast' ? -1 : state.phase === 'question' && settings.mode === 'fast' ? state.answeredBy : state.cur;
-  refs.board.replaceChildren(h('div', { class: 'ph' }, 'الترتيب', h('span', { class: 'muted', style: 'font-weight:normal;font-size:12px' }, 'صافي الثروة = الرصيد + قيمة الأسهم')),
+  const all = order.map(worth);
+  refs.board.replaceChildren(h('div', { class: 'ph' }, 'الترتيب', h('span', { class: 'muted', style: 'font-weight:normal;font-size:14px' }, 'صافي الثروة = الرصيد + قيمة الأسهم')),
     h('table', { class: 'lb' }, h('tr', {}, ...['#', 'الفريق', 'الرصيد', 'صافي الثروة', 'الأداء'].map(s => h('th', {}, s))),
       ...order.map((i, r) => { const g = (worth(i) - state.startWorth) / state.startWorth;
-        return h('tr', { class: i === active ? 'cur' : '' },
-          h('td', { class: 'muted' }, N(r + 1)), h('td', {}, h('span', { style: 'display:flex;gap:7px;align-items:center;font-weight:bold' }, shield(i, 18), state.names[i])),
+        return h('tr', { class: i === active ? 'cur' : '', style: `--team:${TEAM_COLORS[i]}` },
+          h('td', { class: 'muted' }, N(rankOf(all[r], all))), h('td', {}, h('span', { style: 'display:flex;gap:7px;align-items:center;font-weight:bold' }, shield(i, 18), h('span', { class: 'nm' }, state.names[i]))),
           h('td', {}, N(fmt(state.cash[i]))), h('td', { style: 'font-weight:bold' }, N(fmt(worth(i)))),
           h('td', {}, h('span', { class: 'pill ' + (g > 0 ? 'up' : g < 0 ? 'down' : 'flat') }, pct(g)))); })));
 }
@@ -684,11 +762,19 @@ function showHelp(i = 0) { // the how-to-play dialog: one photo and one step at 
     h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('السابق', '', () => showHelp(i - 1), { disabled: i === 0 }),
       B(last ? 'إغلاق' : 'التالي', 'pri', last ? close : () => showHelp(i + 1), { 'data-primary': '1' }), last ? null : B('إغلاق', '', close)))));
 }
-function confirmEnd() {
+function confirmBox(title, text, yes, onYes, no) { // asks before an action that cannot be taken back; Enter does nothing here, Escape cancels
   if (document.getElementById('confirm')) return;
-  ui.append(h('div', { class: 'ov', id: 'confirm' }, h('div', { class: 'modal' }, h('b', { style: 'font-size:20px' }, 'إنهاء المسابقة الآن؟'),
-    h('div', { class: 'muted' }, 'تُقيّم كل الأسهم بسعر السوق الحالي ويُعلن الترتيب.'),
-    h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('نعم، أنهِ المسابقة', 'sell', endGame), B('متابعة اللعب', '', () => document.getElementById('confirm').remove())))));
+  const close = () => document.getElementById('confirm')?.remove();
+  ui.append(h('div', { class: 'ov', id: 'confirm' }, h('div', { class: 'modal' }, h('b', { style: 'font-size:20px' }, title),
+    h('div', { class: 'muted' }, text),
+    h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B(yes, 'sell', () => { close(); onYes(); }), B(no, '', close)))));
+}
+const confirmEnd = () => confirmBox('إنهاء المسابقة الآن؟', 'تُقيّم كل الأسهم بسعر السوق الحالي ويُعلن الترتيب.', 'نعم، أنهِ المسابقة', endGame, 'متابعة اللعب');
+function toast(text, onUndo) { // a short notice with an undo button, gone after tune.undoTime seconds
+  document.getElementById('toast')?.remove(); clearTimeout(toast.timer);
+  const el = h('div', { class: 'toast', id: 'toast', role: 'status' }, text,
+    B('تراجع', 'undo', () => { el.remove(); clearTimeout(toast.timer); onUndo(); }, { style: `--d:${tune.undoTime}s;min-height:40px;padding:6px 14px;font-size:15px` }));
+  stage.append(el); toast.timer = setTimeout(() => el.remove(), tune.undoTime * 1000);
 }
 
 const scenes = {
@@ -702,7 +788,7 @@ const scenes = {
           B('شرح اللعبة', '', () => showHelp(), { style: 'padding:14px 26px;font-size:18px' })),
         themeSeg(() => go('title')),
         h('div', { class: 'panel', style: 'padding:12px 20px;display:flex;gap:26px;font-size:14px' }, ...CONTROLS.map(c => h('span', { class: 'muted' }, c))),
-        h('div', { class: 'muted', style: 'font-size:14px' }, N(bank.length), ' سؤالاً في البنك')));
+        h('div', { class: 'muted', style: 'font-size:14px' }, qCount(bank.length), ' في البنك')));
     },
     update() {}, draw() { backdrop(true); },
   },
@@ -749,8 +835,9 @@ const scenes = {
         bank.unshift(row); saveBank(); go('bank');
       };
       ui.append(h('div', { class: 'screen' },
-        h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('b', { style: 'font-size:26px' }, 'بنك الأسئلة'), h('span', { class: 'chip' }, N(bank.length), ' سؤال'), h('span', { style: 'flex:1' }),
-          B('استعادة الأسئلة الأصلية', '', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); go('bank'); }), B('رجوع', 'ghost', () => go('title'), { 'data-primary': '1' })),
+        h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('b', { style: 'font-size:26px' }, 'بنك الأسئلة'), h('span', { class: 'chip' }, qCount(bank.length)), h('span', { style: 'flex:1' }),
+          B('استعادة الأسئلة الأصلية', '', () => confirmBox('استعادة الأسئلة الأصلية؟', `يُحذف ما في البنك الآن (${qCount(bank.length)})، وتعود الأسئلة الأصلية (${qCount(DEFAULT_BANK.length)}).`, 'نعم، استعدها',
+            () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); go('bank'); }, 'إلغاء')), B('رجوع', 'ghost', () => go('title'), { 'data-primary': '1' })),
         h('div', { class: 'grid2', style: 'grid-template-columns:minmax(0,1fr) minmax(0,1fr)' },
           h('div', { class: 'panel box' }, h('h3', {}, 'إضافة سؤال'),
             h('div', { class: 'addq' }, inp('cat', 'التصنيف'), inp('q', 'نص السؤال')),
@@ -764,7 +851,8 @@ const scenes = {
               B('استيراد أسئلة من ملف', 'pri', () => fileIn.click()), B('تنزيل نموذج', '', downloadTemplate), fileIn))),
         bankMsg ? h('div', { id: 'bankmsg', class: 'panel', style: `padding:10px 14px;font-size:14px;font-weight:bold;color:var(--${bankMsg.good ? 'up' : 'down'})` }, bankMsg.text) : null,
         h('div', { class: 'panel banklist' }, ...bank.map((r, i) => h('div', { class: 'bq' }, h('span', { class: 'chip muted', title: r[0], style: 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;box-sizing:border-box' }, r[0]), h('span', {}, r[1]),
-          h('span', { class: 'up', style: 'font-weight:bold' }, r[2]), B('حذف', '', () => { if (bank.length > 1) { bank.splice(i, 1); saveBank(); go('bank'); } }, { style: 'padding:5px 10px;font-size:12px' }))))));
+          h('span', { class: 'up', style: 'font-weight:bold' }, r[2]), B('حذف', '', () => { if (bank.length > 1) { const [row] = bank.splice(i, 1); saveBank(); go('bank');
+            toast('حُذف السؤال', () => { bank.splice(Math.min(i, bank.length), 0, row); saveBank(); if (scene === 'bank') go('bank'); }); } }, { style: 'padding:5px 10px;font-size:14px' }))))));
       for (const k of ['cat', 'q', 'a', 'w1', 'w2', 'w3']) f[k].style.direction = 'rtl';
       f.cat.setAttribute('list', 'cats'); bankMsg = null;
       ui.append(h('datalist', { id: 'cats' }, ...[...new Set(bank.map(r => r[0]))].map(c => h('option', { value: c }))));
@@ -783,6 +871,10 @@ const scenes = {
     },
     update(dt) {
       if (state.paused) return;
+      if (undo && pressed('KeyZ') && !typing()) return undoVerdict();
+      if (undo && state.t > undo.until) { undo = null; renderCard(); }
+      const hHeld = down.has('KeyH') && !typing(); // H acts on press and release only, so it never fights a held pointer
+      if (hHeld !== !!refs.hHeld) { refs.hHeld = hHeld; if (state.phase === 'question' && settings.qmode === 'judge') setPeek(hHeld); }
       if (settings.end === 'timed') {
         state.elapsed += dt;
         if (!state.lastCall && state.elapsed >= settings.minutes * 60) { state.lastCall = true; if (state.phase === 'ready') return endGame(); renderCard(); }
@@ -816,25 +908,52 @@ const scenes = {
   results: {
     enter() {
       if (!state.final) { reset(); endGameValues(); }
-      const f = state.final, podium = [1, 0, 2].filter(r => f[r]); // second, first, third, right to left
-      const heights = { 0: 140, 1: 105, 2: 78 }, medal = ['#e0a100', '#94a3b8', '#b8733a'];
-      ui.append(h('div', { class: 'screen', style: 'align-items:center;gap:12px' },
-        h('div', { style: 'font-size:32px;font-weight:bold' }, 'النتائج النهائية'),
-        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;height:360px' }, ...podium.map(r => { const e = f[r];
-          return h('div', { style: 'display:flex;flex-direction:column;align-items:center;gap:6px;width:210px' },
-            r === 0 ? h('span', { html: TROPHY }) : null, shield(e.i, r === 0 ? 50 : 40), h('b', { style: 'font-size:' + (r === 0 ? 22 : 18) + 'px' }, state.names[e.i]),
-            h('span', { class: 'num', style: 'font-weight:bold;font-size:18px' }, fmt(e.worth)),
-            h('div', { style: `width:100%;height:${heights[r]}px;border-radius:10px 10px 0 0;background:linear-gradient(${medal[r]}, ${medal[r]}aa);display:grid;place-items:center;font-size:54px;font-weight:bold;color:#fff;text-shadow:0 2px 4px #0006` }, N(r + 1))); })),
-        h('div', { class: 'panel', style: 'width:780px' }, h('table', { class: 'lb' },
-          h('tr', {}, ...['المركز', 'الفريق', 'الرصيد', 'قيمة الأسهم', 'صافي الثروة', 'الأداء'].map(s => h('th', {}, s))),
-          ...f.map((e, r) => { const g = (e.worth - state.startWorth) / state.startWorth;
-            return h('tr', {}, h('td', {}, N(r + 1)), h('td', {}, h('span', { style: 'display:flex;gap:7px;align-items:center;font-weight:bold' }, shield(e.i, 18), state.names[e.i])),
-              h('td', {}, N(fmt(e.cash))), h('td', {}, N(fmt(e.stock))), h('td', { style: 'font-weight:bold' }, N(fmt(e.worth))),
-              h('td', {}, h('span', { class: 'pill ' + (g > 0 ? 'up' : g < 0 ? 'down' : 'flat') }, pct(g)))); }))),
+      const all = state.final.map(e => e.worth);
+      const f = state.final.map(e => ({ ...e, rank: rankOf(e.worth, all) })).sort((a, b) => a.rank - b.rank || a.i - b.i);
+      const tied = r => f.filter(e => e.rank === r).length > 1;
+      const places = [...new Set(f.map(e => e.rank))].filter(r => r <= 3); // ascending: 1, then 2 or 3
+      const heights = { 1: 140, 2: 105, 3: 78 }, medal = { 1: '#e0a100', 2: '#94a3b8', 3: '#b8733a' };
+      const steps = {};
+      for (const r of places) {
+        const who = f.filter(e => e.rank === r);
+        steps[r] = h('div', { class: 'pod', style: `display:flex;flex-direction:column;align-items:center;gap:6px;width:${Math.max(210, who.length * 150)}px` },
+          h('div', { style: 'display:flex;gap:14px;align-items:flex-end' }, ...who.map(e => h('div', { style: 'display:flex;flex-direction:column;align-items:center;gap:4px;max-width:200px' },
+            shield(e.i, r === 1 ? 50 : 40), h('b', { style: `font-size:${r === 1 ? 22 : 18}px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%` }, state.names[e.i])))),
+          h('span', { class: 'num', style: 'font-weight:bold;font-size:18px' }, fmt(who[0].worth)),
+          h('div', { style: `width:100%;height:${heights[r]}px;border-radius:10px 10px 0 0;background:linear-gradient(${medal[r]}, ${medal[r]}aa);display:grid;place-items:center;font-size:54px;font-weight:bold;color:#fff;text-shadow:0 2px 4px #0006` },
+            h('span', { style: 'display:flex;align-items:center;gap:10px' }, N(r), who.length > 1 ? h('span', { style: 'font-size:20px' }, 'تعادل') : null)));
+      }
+      const top = f.filter(e => e.rank === 1).map(e => state.names[e.i]);
+      const line = top.length > 1 ? 'تعادل: ' + top.slice(0, -1).join('، ') + ' و' + top[top.length - 1] : 'الفائز: ' + top[0];
+      const headline = h('div', { class: 'winner', style: 'font-size:32px' }, 'النتائج النهائية');
+      const table = h('div', { class: 'panel', style: 'width:820px;visibility:hidden' }, h('table', { class: 'lb' },
+        h('tr', {}, ...['المركز', 'الفريق', 'الرصيد', 'قيمة الأسهم', 'صافي الثروة', 'الأداء'].map(s => h('th', {}, s))),
+        ...f.map(e => { const g = (e.worth - state.startWorth) / state.startWorth;
+          return h('tr', {}, h('td', {}, h('span', { style: 'display:flex;gap:8px;align-items:center' }, N(e.rank), tied(e.rank) ? h('span', { class: 'chip', style: 'font-size:14px;padding:2px 8px' }, 'تعادل') : null)),
+            h('td', {}, h('span', { style: 'display:flex;gap:7px;align-items:center;font-weight:bold' }, shield(e.i, 18), state.names[e.i])),
+            h('td', {}, N(fmt(e.cash))), h('td', {}, N(fmt(e.stock))), h('td', { style: 'font-weight:bold' }, N(fmt(e.worth))),
+            h('td', {}, h('span', { class: 'pill ' + (g > 0 ? 'up' : g < 0 ? 'down' : 'flat') }, pct(g)))); })));
+      ui.append(h('div', { class: 'screen', style: 'align-items:center;gap:10px;padding-top:14px' }, headline,
+        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;height:300px' }, ...[2, 1, 3].filter(r => steps[r]).map(r => steps[r])), // second, first, third, right to left
+        table,
         h('div', { style: 'display:flex;gap:12px' }, B('مسابقة جديدة بنفس الإعدادات', 'pri', () => { reset(); go('play'); }, { 'data-primary': '1' }), B('الشاشة الرئيسية', '', () => go('title')))));
-      confetti = Array.from({ length: CHEAP ? 0 : 120 }, () => ({ x: vrng() * W, y: -vrng() * H, v: 60 + vrng() * 90, s: 5 + vrng() * 5, c: TEAM_COLORS[(vrng() * state.n) | 0], a: vrng() * 6, w: 1 + vrng() * 3 }));
+      const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      confetti = [];
+      const finale = () => { // first place: the headline in display size, the full table, then the confetti
+        headline.replaceChildren(h('span', { html: TROPHY, style: 'display:flex' }), h('span', {}, line));
+        headline.style.fontSize = line.length > 40 ? '34px' : '52px'; headline.style.animation = 'pop .5s ease-out';
+        table.style.visibility = 'visible'; sfx.win();
+        if (!still) confetti = Array.from({ length: CHEAP ? 0 : 120 }, () => ({ x: vrng() * W, y: -vrng() * H, v: 60 + vrng() * 90, s: 5 + vrng() * 5, c: TEAM_COLORS[f[(vrng() * top.length) | 0].i], a: vrng() * 6, w: 1 + vrng() * 3 }));
+      };
+      // the podium fills from the lowest place up; tune.revealStep seconds apart, all at once for reduced motion
+      res = { t: 0, n: 0, queue: places.slice().reverse().map(r => () => { steps[r].classList.add('in'); if (r === 1) finale(); else sfx.cash(); }) };
+      if (still) { res.queue.forEach(fn => fn()); res.queue = []; }
     },
-    update(dt) { for (const p of confetti) { p.y += p.v * dt; p.a += p.w * dt; if (p.y > H + 10) p.y = -10; } },
+    update(dt) {
+      res.t += dt;
+      while (res.queue.length && res.t >= tune.revealStep * (res.n + 1)) { res.n++; res.queue.shift()(); }
+      for (const p of confetti) { p.y += p.v * dt; p.a += p.w * dt; if (p.y > H + 10) p.y = -10; }
+    },
     draw() {
       backdrop(false);
       for (const p of confetti) { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore(); }
@@ -847,13 +966,13 @@ const scenes = {
         cell(h('span', { html: LOGO(1.6) }), 'الشعار'), cell(h('span', { html: TROPHY }), 'الكأس'),
         cell(h('span', { html: ring(18, 30) }), 'عداد الوقت'), cell(h('span', { html: spark([100, 104, 99, 108, 112, 109, 118]) }), 'رسم الأداء'),
         cell(h('span', { style: 'display:flex;gap:6px' }, ...[0, 1, 2, 3, 4, 5].map(i => shield(i, 26))), 'شعارات الفرق'),
-        ...Object.keys(SECTORS).map(s => cell(secIcon(s, SECTORS[s]), 'قطاع ' + s))));
+        ...SECTORS.map(s => cell(secIcon(s), 'قطاع ' + s))));
     },
     update() {}, draw() { backdrop(false); },
   },
 };
 function endGameValues() { state.final = [...Array(state.n).keys()].map(i => ({ i, cash: state.cash[i], stock: 0, worth: worth(i) })); }
-let confetti = [];
+let confetti = [], res = { t: 0, n: 0, queue: [] };
 
 // ---- Background: the platform's faint grid, and on the title a slow candle chart --------------
 let candleData = null;
@@ -909,6 +1028,9 @@ window.game = {
   step(n = 1, draw = true, alpha = 1) { for (let i = 0; i < n; i++) step(); if (draw) { ALPHA = alpha; drawFrame(); } },
 };
 
+if (matchMedia('(max-width: 699px) and (orientation: portrait)').matches) // a phone held upright: the 1280x720 screen is tiny there
+  document.body.append(h('div', { id: 'phone', role: 'note' }, h('span', {}, 'صُممت هذه اللعبة للابتوب وشاشة العرض'),
+    h('button', { onclick: () => document.getElementById('phone').remove() }, 'حسناً')));
 reset();
 go(params.get('scene') || 'title');
 last = clock.now();
