@@ -47,7 +47,7 @@
 
 - path: assets/favicon.svg
   origin: ai
-  tool: "hand-written SVG; the same mark is inlined as LOGO in index.html"
+  tool: "Book Wall small cut on a navy tile, copied from the studio's husun-al-marifa/assets/logo/web/favicon.svg"
   model: claude-opus-5-5
-  date: 2026-11-19
+  date: 2026-11-21
   ships: true

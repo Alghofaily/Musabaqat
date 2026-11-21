@@ -1,0 +1,28 @@
+{
+  "brand": "مسابقات",
+  "tagline": "Musabaqat: team quiz games that run in the browser",
+  "brief": "The umbrella for a family of Arabic team quiz games (سوق المعرفة, ورقة الحظ, حصون المعرفة), played offline in the browser and shared as a GitHub repo and Pages site. The logo leads the link-preview card.",
+  "adjectives": ["lively", "communal", "Arabic", "simple"],
+  "criteria": "Holds the three games together without copying one; avoids quiz clichés (question marks, bulbs, trophies, buzzers); reads in a 400 px link preview and at 16 px.",
+  "mockups": ["social", "website", "favicon-tab", "readme", "app-icon", "sticker"],
+  "nav": ["الألعاب", "التنزيل", "GitHub"],
+  "brand_color": "#0b8a5a",
+  "tile_color": "#0b1220",
+  "final": true,
+  "greyscale": false,
+  "designer": "Musabaqat",
+  "concepts": [{
+    "name": "Three Dots",
+    "symbol": "masters/symbol-light.svg",
+    "symbol_on_tile": "masters/symbol-dark.svg",
+    "symbol_on_dark": "masters/symbol-dark.svg",
+    "lockup": "masters/lockup-horizontal-light.svg",
+    "lock_dark": "masters/lockup-horizontal-dark.svg",
+    "stacked": "masters/lockup-stacked-light.svg",
+    "stack_dark": "masters/lockup-stacked-dark.svg",
+    "idea": "Three calligraphy dots, as written over ث, one per game in that game's colour.",
+    "rationale": ["An Arabic sign without using a letter; echoes the name's own dots (ق ت)", "One dot per game: green souq, yellow cards, blue fortress", "Equal 18-unit gaps; still three dots at 16 px", "Grows with the family: a new game recolours or adds a dot in the pattern"]
+  }],
+  "recommendation": "Three Dots: the simplest, most Arabic and most scalable of the three directions.",
+  "next_steps": ["Upload social-card.png in GitHub Settings → Social preview", "Add the og: tags and favicon to the Pages landing page", "Sync the new حصون المعرفة icon to the games repo"]
+}

@@ -1,4 +1,4 @@
-# مسابقات
+<h1 align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="brand/masters/lockup-horizontal-dark.svg"><img src="brand/masters/lockup-horizontal-light.svg" alt="مسابقات" height="96"></picture></h1>
 
 مجموعة ألعاب مسابقات للفرق تعمل في المتصفح مباشرة، دون إنترنت ودون تثبيت أي برنامج. كل لعبة في مجلد مستقل بذاته.
 
