@@ -2,10 +2,12 @@
 <html lang="ar" dir="rtl">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>مسابقات</title>
+<title>مسابقات: ألعاب مسابقات للفرق</title>
 <link rel="icon" href="brand/web/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="brand/web/favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="brand/web/apple-touch-icon.png">
+<link rel="manifest" href="brand/web/site.webmanifest">
+<meta name="theme-color" content="#fbfaf6">
 <meta name="description" content="ألعاب مسابقات للفرق في المتصفح، بلا إنترنت ولا تثبيت">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ar_AR">
@@ -19,13 +21,271 @@
 <meta property="og:image:alt" content="شعار مسابقات: ألعاب مسابقات للفرق في المتصفح">
 <meta name="twitter:card" content="summary_large_image">
 <style>
-body{font-family:system-ui,sans-serif;max-width:32rem;margin:3rem auto;padding:0 1rem;line-height:1.7}
-a{display:block;margin:.75rem 0;padding:1rem;border:1px solid #888;border-radius:.5rem;text-decoration:none;color:inherit;font-size:1.25rem}
-a:hover{background:#8881}
+@font-face { font-family: Plex; font-weight: 500; font-display: swap; src: url(brand/card/plex-arabic-500.woff2) format('woff2'); }
+:root {
+  --ink: #0b1220; --muted: #4a5568; --paper: #fbfaf6; --line: #e7e3d8;
+  --green: #16c784; --gold: #f6c343; --blue: #4f7fd8;          /* button fills, ink text on top */
+  --green-d: #0b8a5a; --gold-d: #8a5e00; --blue-d: #2c56a8;    /* text and icons on white */
+  --green-t: #e2f6ec; --gold-t: #fdf2d2; --blue-t: #e3ebfa;    /* card tints */
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: Plex, system-ui, sans-serif; line-height: 1.75; }
+a { color: inherit; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+:focus-visible { outline: 3px solid var(--blue-d); outline-offset: 3px; border-radius: 8px; }
+
+/* Header */
+header { border-bottom: 1px solid var(--line); background: #fffdf8cc; backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 5; }
+header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+header img { height: 40px; display: block; }
+header nav { display: flex; gap: 22px; font-size: 15px; }
+header nav a { text-decoration: none; color: var(--muted); }
+header nav a:hover { color: var(--ink); }
+
+/* Hero */
+.hero { position: relative; overflow: hidden; }
+.hero::before { content: ""; position: absolute; inset: -20% -10% auto auto; width: 70%; height: 140%;
+  background: radial-gradient(closest-side, #16c78426, transparent 70%) 70% 30% / 60% 60% no-repeat,
+              radial-gradient(closest-side, #f6c34333, transparent 70%) 20% 60% / 55% 55% no-repeat,
+              radial-gradient(closest-side, #4f7fd826, transparent 70%) 60% 85% / 60% 60% no-repeat; pointer-events: none; }
+.hero .wrap { position: relative; display: grid; grid-template-columns: 1.15fr 1fr; gap: 32px; align-items: center; padding-top: 64px; padding-bottom: 56px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--line); border-radius: 99px; padding: 4px 14px; font-size: 14px; color: var(--muted); }
+.eyebrow i { width: 8px; height: 8px; background: var(--green); transform: rotate(45deg); }
+h1 { font-size: clamp(38px, 5.4vw, 64px); line-height: 1.25; margin: 18px 0 14px; font-weight: 700; }
+h1 em { font-style: normal; background: linear-gradient(90deg, var(--blue-d), var(--green-d)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lead { font-size: 19px; color: var(--muted); max-width: 34em; margin: 0 0 28px; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 14px; font-weight: 700; font-size: 17px; text-decoration: none; border: 1px solid transparent; cursor: pointer; font-family: inherit; transition: transform .15s, box-shadow .15s; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px #0b122014; }
+.btn.primary { background: var(--ink); color: #fff; }
+.btn.ghost { background: #fff; border-color: var(--line); color: var(--ink); }
+.art { position: relative; height: 380px; }
+.art .mark { position: absolute; width: 230px; inset: 0; margin: auto; filter: drop-shadow(0 18px 30px #0b122018); }
+.tile { position: absolute; width: 118px; padding: 14px 10px 10px; background: #fff; border-radius: 22px; box-shadow: 0 12px 30px #0b122014; text-align: center; font-size: 13px; text-decoration: none; transition: transform .2s; }
+.tile:hover { transform: translateY(-4px) rotate(0deg) !important; }
+.tile img { width: 56px; height: 56px; display: block; margin: 0 auto 6px; }
+.t1 { top: 6%; right: 6%; transform: rotate(6deg); background: var(--green-t); }
+.t2 { top: 2%; left: 8%; transform: rotate(-7deg); background: var(--gold-t); }
+.t3 { bottom: 0; right: 14%; transform: rotate(4deg); background: var(--blue-t); }
+
+/* Steps */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 8px 0 72px; padding: 0; list-style: none; }
+.steps li { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 20px 22px; display: flex; gap: 14px; }
+.steps b { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 18px; }
+.steps li:nth-child(1) b { background: var(--green-t); color: var(--green-d); }
+.steps li:nth-child(2) b { background: var(--gold-t); color: var(--gold-d); }
+.steps li:nth-child(3) b { background: var(--blue-t); color: var(--blue-d); }
+.steps h3 { margin: 0 0 2px; font-size: 18px; }
+.steps p { margin: 0; color: var(--muted); font-size: 15px; }
+
+/* Sections */
+section { scroll-margin-top: 84px; }
+.kicker { color: var(--green-d); font-size: 14px; margin: 0; }
+h2 { font-size: 32px; margin: 0 0 6px; }
+.sub { color: var(--muted); margin: 0 0 28px; }
+
+/* Game cards */
+.games { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-bottom: 80px; }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 26px; overflow: hidden; display: flex; flex-direction: column; transition: transform .2s, box-shadow .2s; }
+.card:hover { transform: translateY(-4px); box-shadow: 0 18px 40px #0b122012; }
+.card .top { position: relative; height: 170px; display: grid; place-items: center; overflow: hidden; }
+.card .top::before, .card .top::after { content: ""; position: absolute; transform: rotate(45deg); border-radius: 18px; opacity: .55; }
+.card .top::before { width: 160px; height: 160px; top: -70px; left: -40px; background: #fff; }
+.card .top::after { width: 90px; height: 90px; bottom: -40px; right: 30px; background: #ffffffaa; }
+.card .top img { position: relative; width: 96px; height: 96px; z-index: 1; filter: drop-shadow(0 10px 16px #0b12201f); }
+.card .num { position: absolute; top: 12px; right: 18px; font-size: 13px; color: var(--muted); z-index: 1; }
+.card.green .top { background: var(--green-t); } .card.gold .top { background: var(--gold-t); } .card.blue .top { background: var(--blue-t); }
+.card .body { padding: 22px 22px 20px; display: flex; flex-direction: column; flex: 1; }
+.card h3 { margin: 0 0 6px; font-size: 24px; }
+.card .desc { margin: 0 0 14px; color: var(--muted); font-size: 15.5px; flex: 1; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; padding: 0; list-style: none; }
+.tags li { font-size: 13px; padding: 2px 10px; border-radius: 99px; background: #f3f1ea; color: var(--muted); }
+.card.green .tags li:first-child { background: var(--green-t); color: var(--green-d); }
+.card.gold .tags li:first-child { background: var(--gold-t); color: var(--gold-d); }
+.card.blue .tags li:first-child { background: var(--blue-t); color: var(--blue-d); }
+.card .actions { display: flex; gap: 10px; }
+.card .play { flex: 1; justify-content: center; color: var(--ink); }
+.card.green .play { background: var(--green); } .card.gold .play { background: var(--gold); } .card.blue .play { background: var(--blue); }
+details.how { margin-top: 14px; border-top: 1px dashed var(--line); padding-top: 10px; }
+details.how summary { cursor: pointer; font-size: 15px; color: var(--muted); list-style: none; display: flex; align-items: center; gap: 6px; }
+details.how summary::-webkit-details-marker { display: none; }
+details.how summary::before { content: "+"; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; background: #f3f1ea; font-size: 14px; }
+details.how[open] summary::before { content: "−"; }
+details.how ol { margin: 10px 0 0; padding-inline-start: 20px; font-size: 15px; color: var(--muted); }
+
+/* Offline download */
+.offline { background: var(--ink); color: #f7f3ea; border-radius: 28px; padding: 40px; display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; margin-bottom: 80px; position: relative; overflow: hidden; }
+.offline::after { content: ""; position: absolute; width: 260px; height: 260px; left: -60px; bottom: -120px; background: url(brand/masters/symbol-paper.svg) center / contain no-repeat; opacity: .06; }
+.offline h2 { color: #fff; }
+.offline ol { margin: 0; padding-inline-start: 22px; color: #c9cfdb; }
+.offline .btn { background: var(--gold); color: var(--ink); font-size: 18px; padding: 14px 26px; position: relative; z-index: 1; }
+.offline small { display: block; margin-top: 10px; color: #9aa3b5; text-align: center; }
+
+/* FAQ */
+.faq { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 80px; }
+.faq details { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 16px 20px; }
+.faq summary { cursor: pointer; font-weight: 700; }
+.faq p { margin: 8px 0 0; color: var(--muted); font-size: 15.5px; }
+
+footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 14px; }
+footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+footer img { height: 30px; display: block; }
+
+@media (max-width: 900px) {
+  .hero .wrap { grid-template-columns: 1fr; padding-top: 36px; }
+  .art { height: 260px; order: -1; }
+  .art .mark { width: 150px; }
+  .t3 { right: 2%; bottom: -2%; }
+  .tile { width: 96px; font-size: 12px; } .tile img { width: 44px; height: 44px; }
+  .steps, .games, .faq { grid-template-columns: 1fr; }
+  .offline { grid-template-columns: 1fr; padding: 28px; }
+  header nav a:not(:first-child) { display: none; }
+}
 </style>
-<h1 style="margin:0 0 1rem"><img src="brand/masters/lockup-horizontal-light.svg" alt="مسابقات" style="height:4.5rem;display:block"></h1>
-<p>اختر لعبة:</p>
-<a href="souq-al-marifa/">سوق المعرفة</a>
-<a href="waraqat-al-hazz/">ورقة الحظ</a>
-<a href="husun-al-marifa/">حصون المعرفة</a>
-<p><a href="https://github.com/Alghofaily/Musabaqat" style="font-size:1rem">الكود وطريقة التنزيل على GitHub</a></p>
+
+<header>
+  <div class="wrap">
+    <a href="./" aria-label="مسابقات: الصفحة الرئيسية"><img src="brand/masters/lockup-horizontal-light.svg" alt="مسابقات"></a>
+    <nav aria-label="أقسام الصفحة">
+      <a href="#games">الألعاب</a>
+      <a href="#offline">بدون إنترنت</a>
+      <a href="#faq">أسئلة شائعة</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow"><i></i>ألعاب مسابقات للفرق</span>
+        <h1>اختر لعبتك،<br><em>والمسابقة جاهزة</em></h1>
+        <p class="lead">مسابقات معلومات بين الفرق تُعرض على البروجكتر أو الشاشة الكبيرة، ويديرها المقدّم من جهاز واحد. تعمل في المتصفح مباشرة، بلا تثبيت ولا حسابات.</p>
+        <div class="ctas">
+          <a class="btn primary" href="#games">اختر لعبة ←</a>
+          <a class="btn ghost" href="#how">أول مرة؟</a>
+        </div>
+      </div>
+      <div class="art" aria-hidden="true">
+        <img class="mark" src="brand/masters/symbol-light.svg" alt="">
+        <a class="tile t1" href="souq-al-marifa/" tabindex="-1"><img src="souq-al-marifa/assets/favicon.svg" alt="">سوق المعرفة</a>
+        <a class="tile t2" href="waraqat-al-hazz/" tabindex="-1"><img src="waraqat-al-hazz/assets/favicon.svg" alt="">ورقة الحظ</a>
+        <a class="tile t3" href="husun-al-marifa/" tabindex="-1"><img src="husun-al-marifa/assets/favicon.svg" alt="">حصون المعرفة</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section id="how" aria-label="طريقة البدء">
+      <ol class="steps">
+        <li><b>١</b><div><h3>اختاروا اللعبة</h3><p>اضغط «ابدأ اللعب» فتفتح اللعبة في المتصفح على اللابتوب.</p></div></li>
+        <li><b>٢</b><div><h3>جهّزوا الفرق</h3><p>من فريقين إلى ستة فرق. استخدموا الأسئلة الجاهزة أو أضيفوا أسئلتكم من ملف.</p></div></li>
+        <li><b>٣</b><div><h3>اعرضوا وتنافسوا</h3><p>اوصلوا اللابتوب بالبروجكتر، والمقدّم يدير اللعب والفرق تجيب.</p></div></li>
+      </ol>
+    </section>
+
+    <section id="games">
+      <p class="kicker">٣ ألعاب · ٢–٦ فرق · جهاز واحد</p>
+      <h2>الألعاب</h2>
+      <p class="sub">كل لعبة مسابقة معلومات، لكن لكل واحدة طريقتها في الفوز.</p>
+      <div class="games">
+
+        <article class="card green">
+          <div class="top"><span class="num">٠١</span><img src="souq-al-marifa/assets/favicon.svg" alt=""></div>
+          <div class="body">
+            <h3>سوق المعرفة</h3>
+            <p class="desc">الإجابة الصحيحة تكسب المال، والمال يُستثمر في سوق أسهم حيّ تتحرك أسعاره مع كل صفقة. الفريق الأغنى يفوز.</p>
+            <ul class="tags"><li>تداول واستثمار</li><li>٢–٦ فرق</li><li>أسئلة بخيارات أو شفهية</li></ul>
+            <div class="actions"><a class="btn play" href="souq-al-marifa/">ابدأ اللعب ←</a></div>
+            <details class="how"><summary>كيف تُلعب؟</summary>
+              <ol>
+                <li>يُطرح السؤال على الفريق صاحب الدور.</li>
+                <li>الإجابة الصحيحة تضيف مالاً إلى رصيده وتفتح له السوق.</li>
+                <li>يشتري الفريق أسهماً أو يبيعها، وكل صفقة تحرك السعر على الجميع.</li>
+                <li>في النهاية تُحسب الثروة: النقد مع قيمة الأسهم.</li>
+              </ol>
+            </details>
+          </div>
+        </article>
+
+        <article class="card gold">
+          <div class="top"><span class="num">٠٢</span><img src="waraqat-al-hazz/assets/favicon.svg" alt=""></div>
+          <div class="body">
+            <h3>ورقة الحظ</h3>
+            <p class="desc">على طريقة البرامج التلفزيونية: اختر مستوى سؤالك، أجب صحيحاً، ثم اقلب ورقة قد تربحك ألف درجة أو تضرب بها الفرق الأخرى.</p>
+            <ul class="tags"><li>حظ ومفاجآت</li><li>٢–٦ فرق</li><li>ثلاثة مستويات</li></ul>
+            <div class="actions"><a class="btn play" href="waraqat-al-hazz/">ابدأ اللعب ←</a></div>
+            <details class="how"><summary>كيف تُلعب؟</summary>
+              <ol>
+                <li>يختار الفريق المستوى: سهل ٢٥، متوسط ٥٠، صعب ١٠٠ درجة.</li>
+                <li>الإجابة الصحيحة تمنح الدرجات وتفتح اثنتي عشرة ورقة مقلوبة.</li>
+                <li>يقلب الفريق ورقة: ربح، أو خسارة، أو سلاح ضد غيره.</li>
+                <li>صاحب أعلى درجات في النهاية يفوز.</li>
+              </ol>
+            </details>
+          </div>
+        </article>
+
+        <article class="card blue">
+          <div class="top"><span class="num">٠٣</span><img src="husun-al-marifa/assets/favicon.svg" alt=""></div>
+          <div class="body">
+            <h3>حصون المعرفة</h3>
+            <p class="desc">حرب معلومات على خريطة: الإجابة الصحيحة تكسب المال، والمال يشتري كتائب ومدافع وحصوناً، والمعارك تُحسم بالأسئلة حتى تسقط العواصم.</p>
+            <ul class="tags"><li>خطط ومعارك</li><li>٢–٦ فرق</li><li>خريطة جديدة كل حرب</li></ul>
+            <div class="actions"><a class="btn play" href="husun-al-marifa/">ابدأ اللعب ←</a></div>
+            <details class="how"><summary>كيف تُلعب؟</summary>
+              <ol>
+                <li>لكل فريق عاصمة، والإجابة الصحيحة تضيف إلى ماله.</li>
+                <li>يشتري الفريق كتائب ومدافع وحصوناً من السوق.</li>
+                <li>يهاجم أرضاً مجاورة، والمعركة تُحسم بأسئلة متتالية.</li>
+                <li>الفائز آخر عاصمة صامدة، أو صاحب أعلى نقاط عند انتهاء الوقت.</li>
+              </ol>
+            </details>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <section id="offline" class="offline">
+      <div>
+        <h2>العب بدون إنترنت</h2>
+        <p class="sub" style="color:#c9cfdb">في قاعة بلا شبكة؟ نزّل الألعاب مرة واحدة واحملها على فلاش.</p>
+        <ol>
+          <li>نزّل الملف المضغوط.</li>
+          <li>فك الضغط، وافتح مجلد اللعبة التي تريدها.</li>
+          <li>افتح الملف <b>index.html</b> بالنقر المزدوج، فتعمل اللعبة في المتصفح.</li>
+        </ol>
+      </div>
+      <div>
+        <a class="btn" href="https://github.com/Alghofaily/Musabaqat/archive/refs/heads/main.zip">⬇ نزّل كل الألعاب</a>
+        <small>ملف ZIP واحد · كل لعبة في مجلدها</small>
+      </div>
+    </section>
+
+    <section id="faq">
+      <p class="kicker">قبل ما تبدأ</p>
+      <h2>أسئلة شائعة</h2>
+      <p class="sub">إجابات قصيرة لأكثر ما يُسأل عنه.</p>
+      <div class="faq">
+        <details><summary>هل أحتاج إلى إنترنت؟</summary><p>فقط لفتح اللعبة من هذا الموقع. وإن نزّلتها فلا تحتاج إلى إنترنت أبداً.</p></details>
+        <details><summary>هل أحتاج إلى تثبيت برنامج أو إنشاء حساب؟</summary><p>لا. تعمل الألعاب في أي متصفح حديث: Chrome أو Edge أو Firefox أو Safari.</p></details>
+        <details><summary>كم فريقاً يمكن أن يلعب؟</summary><p>من فريقين إلى ستة فرق في كل الألعاب، ولكل فريق اسم تختارونه.</p></details>
+        <details><summary>كيف أضيف أسئلتي الخاصة؟</summary><p>داخل كل لعبة خيار «استيراد من ملف CSV». جهّز أسئلتك في Excel واحفظها بصيغة CSV UTF-8، ثم استوردها بإضافتها إلى الأسئلة الحالية أو استبدالها.</p></details>
+        <details><summary>هل تُحفظ أسئلتي وإعداداتي؟</summary><p>نعم، في المتصفح نفسه على الجهاز نفسه. على جهاز أو متصفح آخر استوردوا الملف مرة أخرى.</p></details>
+        <details><summary>ما أفضل طريقة للعرض؟</summary><p>لابتوب موصول ببروجكتر أو شاشة كبيرة. المقدّم يدير اللعبة من اللابتوب والفرق تشاهد وتجيب.</p></details>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <img src="brand/masters/lockup-horizontal-light.svg" alt="مسابقات">
+    <span>ألعاب مسابقات للفرق في المتصفح، بلا إنترنت ولا تثبيت</span>
+    <a href="https://github.com/Alghofaily/Musabaqat">للمطوّرين: الكود على GitHub</a>
+  </div>
+</footer>
+</html>
