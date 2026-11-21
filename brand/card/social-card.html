@@ -4,28 +4,19 @@
 <title>مسابقات — social card</title>
 <style>
   @font-face { font-family: Plex; font-weight: 500; src: url(plex-arabic-500.woff2) format('woff2'); }
-  @font-face { font-family: Plex; font-weight: 700; src: url(plex-arabic-700.woff2) format('woff2'); }
   html, body { margin: 0; }
   .card { width: 1280px; height: 640px; box-sizing: border-box; background: #0b1220; color: #f7f3ea;
-    font-family: Plex, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 34px;
+    font-family: Plex, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
     position: relative; overflow: hidden; }
   /* A faint field of the same dots in two corners. */
   .dots { position: absolute; width: 360px; opacity: .07; }
-  .lockup { height: 210px; display: block; }
-  .tag { font-size: 34px; font-weight: 500; color: #c9cfdb; margin: 0; }
-  .games { display: flex; gap: 56px; margin-top: 6px; }
-  .game { display: flex; flex-direction: column; align-items: center; gap: 12px; font-size: 24px; font-weight: 700; }
-  .game img { width: 84px; height: 84px; display: block; border-radius: 20px; box-shadow: 0 0 0 2px #2a3850; }
+  .lockup { height: 250px; display: block; }
+  .tag { font-size: 38px; font-weight: 500; color: #c9cfdb; margin: 0; }
 </style>
 <div class="card">
   <img class="dots" src="../masters/symbol-paper.svg" style="top:-120px;right:-90px" alt="">
   <img class="dots" src="../masters/symbol-paper.svg" style="bottom:-150px;left:-100px" alt="">
   <img class="lockup" src="lockup.svg" alt="مسابقات">
   <p class="tag">ألعاب مسابقات للفرق في المتصفح، بلا إنترنت ولا تثبيت</p>
-  <div class="games">
-    <div class="game"><img src="souq-al-marifa.svg" alt="">سوق المعرفة</div>
-    <div class="game"><img src="waraqat-al-hazz.svg" alt="">ورقة الحظ</div>
-    <div class="game"><img src="husun-al-marifa.svg" alt="">حصون المعرفة</div>
-  </div>
 </div>
 </html>
