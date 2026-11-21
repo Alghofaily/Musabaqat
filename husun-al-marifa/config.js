@@ -6,6 +6,7 @@
 window.CONFIG = {
   seed: 0, // every gameplay random call reads rng(), seeded from this (or ?seed= in the address); 0: a new map each game
   volume: { value: 0.5, min: 0, max: 1, step: 0.05 },
+  introTime: { value: 3, min: 0, max: 6, step: 0.5 },            // seconds of the logo intro on load (any key or click skips it); 0: none
 
   // Setup defaults (the host changes them on the setup screen)
   teams: { value: 4, min: 2, max: 6, step: 1 },
