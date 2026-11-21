@@ -2,6 +2,9 @@
 
 مجموعة ألعاب مسابقات للفرق تعمل في المتصفح مباشرة، دون إنترنت ودون تثبيت أي برنامج. كل لعبة في مجلد مستقل بذاته.
 
+<h3 align="center"><a href="https://alghofaily.github.io/Musabaqat/">◀ افتح صفحة الألعاب: alghofaily.github.io/Musabaqat</a></h3>
+<p align="center">فيها كل الألعاب وطريقة اللعب وتنزيلها للعب دون إنترنت، بلا حاجة إلى GitHub.</p>
+
 ## العب الآن دون تنزيل
 
 - [<img src="souq-al-marifa/assets/favicon.svg" width="24" height="24" align="absmiddle" alt=""> سوق المعرفة](https://alghofaily.github.io/Musabaqat/souq-al-marifa/)
