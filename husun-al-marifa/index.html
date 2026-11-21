@@ -62,16 +62,21 @@
   #mapbox { position: absolute; left: 8px; top: 64px; width: 842px; height: 648px; cursor: pointer; }
   #side { position: absolute; right: 8px; top: 64px; width: 414px; height: 648px; display: flex; flex-direction: column; gap: 8px; }
   #side > .panel { display: flex; flex-direction: column; }
+  /* B: a battle takes the whole stage; the panel slides off to the right and comes back for market, attack and move */
+  #side { transition: transform .4s cubic-bezier(0.16, 1, 0.3, 1), opacity .3s; }
+  #side.gone { transform: translateX(440px); opacity: 0; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { #side { transition: opacity .2s; } #side.gone { transform: none; } }
   .turn { padding: 12px 14px; display: grid; gap: 10px; }
   .turn .who { display: flex; align-items: center; gap: 12px; }
   .turn .who b { font-size: 26px; }
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
   .stat { background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; display: grid; gap: 2px; }
-  .stat small { color: var(--muted); font-size: 12px; } .stat b { font-size: 19px; }
+  .stat small { color: var(--muted); font-size: 16px; white-space: nowrap; } .stat b { font-size: 19px; }
   .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
-  .steps span { text-align: center; padding: 6px 0; border-radius: 4px; font-size: 13px; font-weight: 700; color: var(--muted); background: var(--panel2); border: 1px solid var(--line); }
+  .steps span { text-align: center; padding: 5px 0; border-radius: 4px; font-size: 16px; font-weight: 700; color: var(--muted); background: var(--panel2); border: 1px solid var(--line); }
   .steps span.on { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
   .steps span.done { color: var(--text); }
+  .steps span.next { color: var(--text); border: 1px dashed var(--brass); } /* the question is answered: this step comes next */
   .act { flex: 1; min-height: 0; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
   .act .scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
   .act .hint { font-size: 16px; line-height: 1.6; }
@@ -88,21 +93,34 @@
   .stepper button { width: 44px; height: 44px; font-size: 22px; font-weight: 700; background: var(--panel2); border: 1px solid var(--line); }
   .stepper b { min-width: 46px; text-align: center; font-size: 24px; }
   table.lb { width: 100%; border-collapse: collapse; font-size: 18px; }
-  table.lb th { color: var(--muted); font-weight: 500; font-size: 12px; text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--line); }
+  table.lb th { color: var(--muted); font-weight: 500; font-size: 16px; text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--line); }
   table.lb td { padding: 0 8px; height: 36px; border-bottom: 1px solid var(--line); }
   table.lb td .tn { font-size: 16px; }
   table.lb tr:last-child td { border-bottom: 0; }
   table.lb tr.cur { background: var(--hover); box-shadow: inset -3px 0 0 var(--brass); }
   table.lb tr.out td { color: var(--muted); text-decoration: line-through; }
-  .tn { display: flex; gap: 7px; align-items: center; font-weight: 700; white-space: nowrap; overflow: hidden; max-width: 150px; }
-  #side > .panel.mini { flex: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 6px; }
-  .mini > div { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 8px; border-radius: 6px; background: var(--panel2); font-size: 18px; font-weight: 700; }
+  .tn { display: flex; gap: 7px; align-items: center; font-weight: 700; white-space: nowrap; min-width: 0; max-width: 150px; }
+  .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  #side > .panel.mini { flex: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 6px; }
+  .mini > div { display: flex; align-items: center; gap: 8px; padding: 3px 8px; border-radius: 6px; background: var(--panel2); font-size: 18px; font-weight: 700; }
+  .mini .nm { flex: 1; font-size: 16px; }
   .mini > div.cur { outline: 2px solid var(--brass); outline-offset: -2px; }
   .mini > div.out { color: var(--muted); text-decoration: line-through; }
 
   /* the question, over the map */
   #qpanel { position: absolute; left: 8px; top: 320px; width: 842px; height: 392px; display: flex; flex-direction: column; z-index: 5; animation: rise .3s cubic-bezier(0.16, 1, 0.3, 1); box-sizing: border-box; box-shadow: 0 -10px 28px rgba(0,0,0,.35); }
   #qpanel .ph { padding: 7px 14px; }
+  #qpanel.battle { border-width: 3px; }
+  #qpanel.leave { animation: sink .25s cubic-bezier(0.7, 0, 0.84, 0) both; }
+  @keyframes sink { to { transform: translateY(110%); opacity: 0; } }
+  /* A: who answers now, large enough for the back of the room */
+  .answering { display: flex; gap: 12px; align-items: center; min-width: 0; }
+  .answering small { display: block; font-size: 16px; color: var(--muted); line-height: 1.1; }
+  .answering b { display: block; font-size: 34px; line-height: 1.15; max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sides { display: flex; gap: 14px; align-items: center; font-size: 16px; font-weight: 700; }
+  .sides > span { display: flex; gap: 6px; align-items: center; }
+  .sides .nm { max-width: 130px; }
+  .sides .n { font-size: 26px; } .sides .x { color: var(--brass); } .sides .muted { font-weight: 500; }
   #qpanel .body { flex: 1; padding: 12px 20px 14px; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
   .q { font-size: 27px; font-weight: 700; line-height: 1.4; text-wrap: balance; }
   .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; max-height: 150px; grid-auto-rows: 1fr; }
@@ -118,7 +136,8 @@
   .answer { padding: 10px 16px; border-radius: 8px; background: var(--okbg); border: 1px solid var(--ok); font-weight: 700; font-size: 22px; }
   .answer[hidden] { display: none; }
   .peek { align-self: flex-start; font-size: 14px; padding: 6px 14px; min-height: 36px; touch-action: none; user-select: none; }
-  .loss { font-size: 76px; font-weight: 700; color: var(--bad); line-height: .9; }
+  .loss { font-size: 76px; font-weight: 700; color: var(--text); line-height: .9; } /* C: whose loss it is reads from the banner beside it, not from red */
+  .fallen { font-family: 'Kufi', 'Plex', sans-serif; font-size: 46px; font-weight: 700; line-height: 1.1; }
   .lossnote { display: grid; gap: 2px; font-size: 16px; color: var(--muted); }
   .lossnote b { color: var(--text); font-size: 18px; white-space: nowrap; }
   .ring { position: relative; flex: none; }
@@ -187,6 +206,7 @@
      (brand/GUIDELINES.md §4); 50px tall on the stage keeps the lockup at or above its 40px minimum down to a 0.8 stage scale (§3). */
   .family { position: absolute; top: 20px; left: 26px; z-index: 2; display: block; height: 62px; padding: 6px; box-sizing: border-box; border-radius: 10px; line-height: 0; }
   .family svg { height: 100%; width: auto; }
+  .family.end { top: auto; bottom: 18px; }
   .family:hover { background: color-mix(in srgb, var(--mq-name) 9%, transparent); }
   .family:focus-visible { outline: 3px solid var(--mq-y); outline-offset: 2px; }
   .dark { --mq-name: #f7f3ea; --mq-g: #16c784; --mq-y: #f6c343; --mq-b: #4f7fd8; }
@@ -344,6 +364,7 @@ function bannerSVG(t, size = 34) { // a team's banner: a swallow-tail cloth with
     <path d="${BANNER_CLOTH}" fill="${TEAMS[t].c}" stroke="rgba(0,0,0,.35)" stroke-width=".8"/><path d="${TEAMS[t].emblem}" fill="${TEAMS[t].ink}" transform="translate(15.5 6.5) scale(0.6)"/></svg>`;
 }
 const banner = (t, size) => h('span', { style: 'display:inline-block;flex:none', html: bannerSVG(t, size) });
+const teamName = (t, size = 20) => h('span', { class: 'tn', title: state.names[t] }, banner(t, size), h('span', { class: 'nm' }, state.names[t])); // F: long names end in an ellipsis
 function shieldSVG(t, n, size = 22) { // a hex's battalions: a shield edged in the owner's colour
   const c = t >= 0 ? TEAMS[t].c : 'var(--muted)';
   return `<svg viewBox="-1 -1 22 25" width="${size}" height="${Math.round(size * 1.15)}" style="display:block;flex:none"><path d="${SHIELD}" fill="var(--panel)" stroke="${c}" stroke-width="2"/>
@@ -439,7 +460,8 @@ setTheme(theme);
 
 // ---- Game state and rules ----------------------------------------------------------------------
 let scene, state;
-const PHASE_STEP = { ready: 0, question: 0, reveal: 0, shop: 1, attack: 2, duel: 2, duelReveal: 2, move: 3, over: 3 };
+const PHASE_STEP = { ready: 0, question: 0, reveal: 0, shop: 1, attack: 2, duel: 2, duelReveal: 2, capture: 2, move: 3, over: 3 };
+const fullStage = () => ['duel', 'duelReveal', 'capture'].includes(state.phase); // B: a battle, and the flood after it, own the whole stage
 function reset() {
   seed = Number(params.get('seed')) || CONFIG.seed || (Date.now() | 0); // seed 0: a new map every game
   const n = settings.teams, cols = tune.mapCols, rows = tune.mapRows, mapSeed = seed;
@@ -453,6 +475,7 @@ function reset() {
     picked: null, result: null, reward: 0, reveal: false,     // the team's own question
     buys: [], sel: -1, target: -1, moveN: 1, movesLeft: 0, msg: '', msgGood: false, // market, attack and move
     duel: null,                                                // { from, to, a, d, neutral, b: battle | null, last, outcome }
+    capture: null,                                             // { fell, by, until }: the flood on the full stage after a taken hex
     flood: null, fx: [], hover: -1, final: null, log: [], camY: 0, shopScore0: 0,
     terrain: makeTerrain(hexes, mapSeed),
   };
@@ -542,17 +565,26 @@ function answerBattle(right, picked = null, time = false) { // one team's answer
 function nextBattleQuestion() { startQuestion(); sfx.drums(); setPhase('duel'); }
 function withdraw() { const d = state.duel; if (!d || d.neutral || d.b.over) return; d.outcome = d.b.over = 'withdraw'; finishBattle(); }
 function finishBattle() { // back to the map: the outcome lands on the hexes
+  if (state.phase === 'capture') return; // the leaving panel's button, pressed twice
   const d = state.duel, g = state.g, prev = g.owner[d.to], before = [g.bat[d.from], g.bat[d.to]];
   const res = R.applyBattle(g, d.from, d.to, d.outcome === 'win' ? 'win' : d.outcome || 'fail', d.b);
-  if (res.taken) { state.flood = { hx: d.to, team: d.a, prev, t0: state.t }; sfx.capture(); }
-  else if (!d.neutral) sfx.hold();
   if (d.b) {
     if (before[0] > g.bat[d.from]) addFx(d.from, '-' + (before[0] - g.bat[d.from]), css('--bad'));
     if (!res.taken && before[1] > g.bat[d.to]) addFx(d.to, '-' + (before[1] - g.bat[d.to]), css('--bad'));
   }
-  if (res.fell >= 0) { state.fellAt[res.fell] = state.turns; sfx.fall(); state.log.push({ fell: res.fell, by: d.a }); events.push({ fell: res.fell }); fallBeat(res.fell, d.a); }
-  state.duel = null; state.sel = -1; state.target = -1;
-  if (R.aliveTeams(g).length <= 1) return setPhase('over');
+  if (res.fell >= 0) { state.fellAt[res.fell] = state.turns; state.log.push({ fell: res.fell, by: d.a }); events.push({ fell: res.fell }); }
+  if (res.taken) { // C: the question panel sinks first, then the hex floods on the full stage while the room watches
+    state.flood = { hx: d.to, team: d.a, prev, t0: state.t + (REDUCED.matches ? 0 : 0.25) };
+    state.capture = { fell: res.fell, by: d.a, until: state.flood.t0 + tune.floodTime + tune.floodHold };
+    sfx.capture(); return setPhase('capture');
+  }
+  if (!d.neutral) sfx.hold();
+  afterBattle(-1, d.a);
+}
+function afterBattle(fell, by) { // the flood has played: a fallen capital gets its beat, then the side panel returns for the move
+  if (fell >= 0) { sfx.fall(); fallBeat(fell, by); }
+  state.duel = null; state.capture = null; state.sel = -1; state.target = -1;
+  if (R.aliveTeams(state.g).length <= 1) return setPhase('over');
   openMove();
 }
 // 4. One move: battalions from one hex to another of the team's, through its own land.
@@ -593,10 +625,12 @@ function endGame() { // alive teams by score; the fallen after them, the last to
 }
 
 // ---- The map: geometry, clicks and drawing -------------------------------------------------------
-const MAP = { x: 8, y: 64, w: 842, h: 648 };
+const MAP = { x: 8, y: 64, w: 842, h: 648 }; // w widens to the whole stage in a battle (B), eased in play.update
+const MAP_W = 842, MAP_WIDE = W - 16;
 function layout() {
   const s3 = Math.sqrt(3), cols = state.cols, rows = state.rows;
-  const r = Math.min((MAP.w - 30) / (s3 * (cols + 0.5)), (MAP.h - 30) / (1.5 * (rows - 1) + 2));
+  const fitStrip = scene === 'results' ? Infinity : (STRIP.bottom - STRIP.top - 10) / 3.5; // B: two neighbours on different rows still fit above the docked question
+  const r = Math.min((MAP.w - 30) / (s3 * (cols + 0.5)), (MAP.h - 30) / (1.5 * (rows - 1) + 2), fitStrip);
   const gw = s3 * r * (cols + 0.5), gh = r * (1.5 * (rows - 1) + 2);
   const x0 = MAP.x + (MAP.w - gw) / 2 + s3 * r / 2, y0 = MAP.y + (MAP.h - gh) / 2 + r;
   return { r, at: (col, row) => [x0 + s3 * r * (col + 0.5 * (row & 1)), y0 + 1.5 * r * row] };
@@ -612,7 +646,7 @@ function mapPoint(e) { const b = e.currentTarget.getBoundingClientRect(), s = b.
 const STRIP = { top: MAP.y, bottom: 312 }; // #qpanel starts at 320
 function camTarget() {
   const p = state.phase, d = state.duel, g = state.g, L = layout();
-  if (!['question', 'reveal', 'duel', 'duelReveal'].includes(p)) return 0;
+  if (!['question', 'reveal', 'duel', 'duelReveal', 'capture'].includes(p)) return 0;
   const ys = (d ? [d.from, d.to] : [g.capital[state.cur]]).map(hx => L.at(g.hexes[hx].col, g.hexes[hx].row)[1]);
   return (STRIP.top + STRIP.bottom) / 2 - (Math.min(...ys) + Math.max(...ys)) / 2;
 }
@@ -633,18 +667,19 @@ function onHexClick(hx) {
 }
 function addFx(hx, text, color, size = 26) { state.fx.push({ hx, text, color, size, t0: state.t }); }
 // G: a capital falls. One beat on the whole stage: the fortress crumbles, the old banner topples, the
-// taker's banner is planted. Enter or a click skips it; it leaves by itself after fallBeat seconds.
+// taker's banner is planted. It holds fallBeat seconds; Enter or a click moves on, but only once the banner is planted.
 function fallBeat(fell, by) {
-  if (tune.fallBeat <= 0) return;
   document.getElementById('fallbeat')?.remove();
-  const done = () => el.remove(); // this beat only: a timer left by an earlier beat must not take a newer one down
+  let planted = false;
+  const done = () => { if (planted) el.remove(); }; // this beat only: a timer left by an earlier beat must not take a newer one down
   const el = h('div', { class: 'ov', id: 'fallbeat', role: 'alert', onclick: done },
     h('div', { class: 'scene', 'aria-hidden': 'true' }, h('span', { class: 'fort', html: fortressSVG(fell, 180) }), h('span', { class: 'old', html: bannerSVG(fell, 110) }), h('span', { class: 'new', html: bannerSVG(by, 130) })),
     h('div', { class: 'head' }, `سقطت عاصمة ${state.names[fell]}`),
     h('div', { class: 'sub' }, `${state.names[by]} يرفع رايته · ${state.names[fell]} يخرج من الحرب`),
     h('button', { class: 'btn ghost', 'data-primary': '1', onclick: done, style: 'color:#e8e6df' }, 'متابعة (Enter)'));
   ui.append(el); el.querySelector('button').focus({ preventScroll: true });
-  setTimeout(done, tune.fallBeat * 1000);
+  el.querySelector('.new').addEventListener('animationend', () => { planted = true; }, { once: true }); // C: an early Enter cannot cut the fall short
+  setTimeout(() => el.remove(), tune.fallBeat * 1000);
 }
 
 function hexPath(x, y, r) { const p = new Path2D(); for (let i = 0; i < 6; i++) { const a = Math.PI / 180 * (60 * i - 30); p[i ? 'lineTo' : 'moveTo'](x + r * Math.cos(a), y + r * Math.sin(a)); } p.closePath(); return p; }
@@ -686,7 +721,7 @@ function drawCannon(x, y, size, n) { // a hex's cannons: a barrel on a wheel and
 // ---- Terrain: looks only, the rules never read it -----------------------------------------
 const TERRAIN = { grass: '#5f8b3c', plains: '#a59c55', desert: '#d3b878', forest: '#4a7331', hills: '#8e8651', mountain: '#857e72' };
 const TERRAIN_POOL = ['grass', 'grass', 'grass', 'plains', 'plains', 'desert', 'forest', 'forest', 'hills', 'mountain'];
-const DEEP = '#1d5079', SHALLOW = '#3a83ab', TINT = 0.3;
+const DEEP = '#1d5079', SHALLOW = '#3a83ab', TINT = 0.4, KEYLINE = '#0b1220'; // KEYLINE: under team borders and the white aim rings (E)
 const EDGE_NB = [[[1, 0], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1]], [[1, 0], [1, 1], [0, 1], [-1, 0], [0, -1], [1, -1]]]; // neighbour across edge i, odd-r
 // Regions of one terrain (each hex takes its nearest seed hex's kind) with a few odd hexes, from the map's seed
 // on the decoration stream, so the game's own random calls are untouched.
@@ -725,12 +760,19 @@ function drawTile(x, y, r, kind, v, owner, tint = TINT) {
   ctx.save(); ctx.clip(p); drawTerrainIcons(kind, x, y, r, v);
   const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.45, r * 0.1, x, y, r * 1.1);
   g.addColorStop(0, 'rgba(255,250,225,.16)'); g.addColorStop(1, 'rgba(0,0,0,.2)'); ctx.fillStyle = g; ctx.fill(p); ctx.restore();
-  if (owner >= 0) { ctx.globalAlpha = tint; ctx.fillStyle = TEAMS[owner].c; ctx.fill(p); ctx.globalAlpha = 1; }
+  tintHex(p, owner, tint);
   return p;
 }
-function drawBorderEdge(x, y, r, i, t) { // a team's border along edge i of a hex, just inside it
+// D: ownership recolours the terrain (the team's hue over the terrain's own light and shade, so its icons stay readable), then a light wash
+function tintHex(p, owner, tint) {
+  if (owner < 0 || tint <= 0) return;
+  ctx.save(); ctx.fillStyle = TEAMS[owner].c;
+  ctx.globalCompositeOperation = 'color'; ctx.globalAlpha = Math.min(1, tint * 1.6); ctx.fill(p);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = tint * 0.5; ctx.fill(p); ctx.restore();
+}
+function drawBorderEdge(x, y, r, i, t, key = false) { // a team's border along edge i of a hex, just inside it; key: its dark keyline, drawn first
   const a = Math.PI / 180 * (60 * i - 30), b = a + Math.PI / 3;
-  ctx.strokeStyle = TEAMS[t].c; ctx.lineWidth = 5; ctx.lineCap = 'round';
+  ctx.strokeStyle = key ? KEYLINE : TEAMS[t].c; ctx.lineWidth = key ? 9 : 5; ctx.lineCap = 'round';
   ctx.beginPath(); ctx.moveTo(x + r * Math.cos(a), y + r * Math.sin(a)); ctx.lineTo(x + r * Math.cos(b), y + r * Math.sin(b)); ctx.stroke();
 }
 function drawWater(L) { // sea and lakes on every grid spot without land, shallow along the coast (drawMap clips and slides it)
@@ -765,7 +807,7 @@ function marks() { // which hexes the current step lets the host click, and how
   return m;
 }
 function drawMap() {
-  const L = layout(), g = state.g, r = L.r, brass = css('--brass'), pulse = 0.5 + 0.5 * Math.sin(state.t * 5);
+  const L = layout(), g = state.g, r = L.r, pulse = 0.5 + 0.5 * Math.sin(state.t * 5);
   const win = scene === 'results' && state.final ? new Set(state.final.filter(e => e.rank === 1 && e.alive).map(e => e.t)) : null; // results: the winners' land in full colour
   ctx.save(); ctx.beginPath(); ctx.roundRect(MAP.x, MAP.y, MAP.w, MAP.h, 8); ctx.clip(); ctx.translate(0, state.camY);
   drawWater(L);
@@ -775,38 +817,44 @@ function drawMap() {
     const [x, y] = L.at(hx.col, hx.row), o = g.owner[hx.id], flooding = f && f.hx === hx.id;
     const k = flooding ? clamp((state.t - f.t0) / tune.floodTime, 0, 1) : 1;
     const p = drawTile(x, y, r - 0.5, state.terrain[hx.id], hx.id % 7, flooding ? f.prev : o, flooding ? TINT * (1 - k) : win ? (win.has(o) ? 0.8 : 0.12) : TINT);
-    if (flooding && o >= 0) { // the signature: a taken hex floods with the winner's colour, then settles to its wash
-      ctx.save(); ctx.clip(p); ctx.globalAlpha = TINT + 0.5 * (1 - k); ctx.fillStyle = TEAMS[o].c; ctx.beginPath(); ctx.arc(x, y + r * 0.4, r * 1.3 * k, 0, Math.PI * 2); ctx.fill(); ctx.restore(); ctx.globalAlpha = 1; }
+    if (flooding && o >= 0 && k > 0) { // the signature: a taken hex floods with the winner's colour, then settles to its wash
+      const c = new Path2D(); c.arc(x, y + r * 0.4, r * 1.3 * k, 0, Math.PI * 2);
+      ctx.save(); ctx.clip(p); tintHex(c, o, TINT + 0.5 * (1 - k)); ctx.restore(); }
     const mk = m[hx.id];
     if ((anyMark && !mk) || mk === 'blocked') { ctx.fillStyle = shadow; ctx.fill(p); }
     if (hx.id === state.hover && mk && mk !== 'blocked') { ctx.fillStyle = 'rgba(255,255,255,.16)'; ctx.fill(p); }
     ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(0,0,0,.3)'; ctx.stroke(p);
   }
-  for (const hx of g.hexes) { // borders: a team's colour wherever its land meets anything else
+  for (const key of [true, false]) for (const hx of g.hexes) { // borders: a team's colour wherever its land meets anything else, on a dark keyline (E: water, yellow on sand)
     const o = g.owner[hx.id]; if (o < 0) continue;
     const [x, y] = L.at(hx.col, hx.row);
-    EDGE_NB[hx.row & 1].forEach(([dc, dr], i) => { const n = id.get((hx.col + dc) + ',' + (hx.row + dr)); if (n === undefined || g.owner[n] !== o) drawBorderEdge(x, y, r - 3.5, i, o); });
+    EDGE_NB[hx.row & 1].forEach(([dc, dr], i) => { const n = id.get((hx.col + dc) + ',' + (hx.row + dr)); if (n === undefined || g.owner[n] !== o) drawBorderEdge(x, y, r - 3.5, i, o, key); });
   }
+  // E: selection and aim are white on a dark keyline (white on yellow alone is 1.46:1, brass 1.64:1); brass stays for the interface
+  const mark = (p, w, dash) => { ctx.setLineDash(dash); ctx.lineDashOffset = -state.t * 20; for (const [c, lw] of [[KEYLINE, w + 4], ['#fff', w]]) { ctx.lineWidth = lw; ctx.strokeStyle = c; ctx.stroke(p); } ctx.setLineDash([]); };
   for (const hx of g.hexes) {
-    const [x, y] = L.at(hx.col, hx.row), mk = m[hx.id];
-    if (mk === 'pick') { ctx.lineWidth = 2 + 2 * pulse; ctx.strokeStyle = brass; ctx.stroke(hexPath(x, y, r - 9)); }
-    if (mk === 'from') { ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke(hexPath(x, y, r - 9)); }
-    if (mk === 'target') { ctx.setLineDash([7, 5]); ctx.lineDashOffset = -state.t * 20; ctx.lineWidth = 3; ctx.strokeStyle = state.phase === 'move' ? '#fff' : brass; ctx.stroke(hexPath(x, y, r - 9)); ctx.setLineDash([]); }
-    if (mk === 'aim') { ctx.lineWidth = 6; ctx.strokeStyle = state.phase === 'move' ? '#fff' : brass; ctx.stroke(hexPath(x, y, r - 9)); }
+    const [x, y] = L.at(hx.col, hx.row), mk = m[hx.id], p = hexPath(x, y, r - 9);
+    if (mk === 'pick') mark(p, 2 + 2 * pulse, []);
+    if (mk === 'from') mark(p, 5, []);
+    if (mk === 'target') mark(p, 3, [7, 5]);
+    if (mk === 'aim') mark(p, 6, [14, 7]); // the aimed hex: a thick marching dash, apart from the solid ring it is attacked from
   }
   const arrow = scene !== 'play' ? null : state.sel >= 0 && state.target >= 0 ? [state.sel, state.target] : state.duel && m[state.duel.to] ? [state.duel.from, state.duel.to] : null;
   if (arrow) { // an arrow from the chosen hex to its target
     const a = g.hexes[arrow[0]], b = g.hexes[arrow[1]], [x1, y1] = L.at(a.col, a.row), [x2, y2] = L.at(b.col, b.row);
     const ang = Math.atan2(y2 - y1, x2 - x1), ex = x2 - Math.cos(ang) * r * 0.45, ey = y2 - Math.sin(ang) * r * 0.45;
-    ctx.strokeStyle = ctx.fillStyle = state.phase === 'move' ? '#fff' : brass; ctx.lineWidth = 6; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(x1 + Math.cos(ang) * r * 0.35, y1 + Math.sin(ang) * r * 0.35); ctx.lineTo(ex - Math.cos(ang) * 10, ey - Math.sin(ang) * 10); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(ex + Math.cos(ang) * 6, ey + Math.sin(ang) * 6); ctx.lineTo(ex - Math.cos(ang - 0.6) * 16, ey - Math.sin(ang - 0.6) * 16); ctx.lineTo(ex - Math.cos(ang + 0.6) * 16, ey - Math.sin(ang + 0.6) * 16); ctx.closePath(); ctx.fill();
+    const shaft = new Path2D(), head = new Path2D(); ctx.lineCap = ctx.lineJoin = 'round';
+    shaft.moveTo(x1 + Math.cos(ang) * r * 0.35, y1 + Math.sin(ang) * r * 0.35); shaft.lineTo(ex - Math.cos(ang) * 10, ey - Math.sin(ang) * 10);
+    head.moveTo(ex + Math.cos(ang) * 6, ey + Math.sin(ang) * 6); head.lineTo(ex - Math.cos(ang - 0.6) * 16, ey - Math.sin(ang - 0.6) * 16); head.lineTo(ex - Math.cos(ang + 0.6) * 16, ey - Math.sin(ang + 0.6) * 16); head.closePath();
+    ctx.strokeStyle = KEYLINE; ctx.lineWidth = 10; ctx.stroke(shaft); ctx.lineWidth = 4; ctx.stroke(head); // E: white on a keyline, like the rings
+    ctx.strokeStyle = ctx.fillStyle = '#fff'; ctx.lineWidth = 6; ctx.stroke(shaft); ctx.fill(head);
   }
   for (const hx of g.hexes) { // figures on top: fortress or banner, and the battalion shield
     const [x, y] = L.at(hx.col, hx.row), o = g.owner[hx.id], cap = R.isCapital(g, hx.id), f = state.flood;
     if (cap) { drawFortress(x, y - r * 0.18, r * 0.82, o); drawEmblem(x - r * 0.55, y - r * 0.4, r * 0.34, o); }
     else if (o >= 0) drawBanner(x + r * 0.05, y + r * 0.08, r * 0.62, o, f && f.hx === hx.id ? clamp((state.t - f.t0) / tune.floodTime, 0, 1) : 1);
     const big = state.duel && state.duel.b && m[state.duel.to] && (hx.id === state.duel.from || hx.id === state.duel.to); // drawn large below instead
+    if (scene === 'results') continue; // F: no numbers behind the results headline and podium
     if (o >= 0 && !big) drawShield(x + (cap ? r * 0.42 : r * 0.36), y + r * 0.42, r * 0.42, o, g.bat[hx.id]);
     if (g.fort[hx.id] && !cap) drawFortress(x - r * 0.48, y - r * 0.4, r * 0.4, -1);  // a bought fort: a small keep
     if (g.fort[hx.id] && cap) { ctx.lineWidth = 3; ctx.strokeStyle = css('--brass'); ctx.stroke(hexPath(x, y, r - 12)); } // on a capital: a second wall
@@ -834,11 +882,15 @@ function drawMap() {
 // It sits on the title and results screens only, never during a round, and opens the family's page in a new tab.
 const FAMILY_URL = 'https://alghofaily.github.io/Musabaqat/';
 const FAMILY_MARK = '<svg aria-hidden="true" focusable="false" viewBox="0 0 686 256"><path fill="var(--mq-name)" transform="matrix(0.11905 0 0 0.11905 25.02 163.24)" d="M496 -332Q472 -332 455 -349Q438 -366 438 -390Q438 -414 455 -431Q472 -448 496 -448Q520 -448 537 -431Q554 -414 554 -390Q554 -366 537 -349Q520 -332 496 -332ZM323 -332Q299 -332 282 -349Q265 -366 265 -390Q265 -414 282 -431Q299 -448 323 -448Q347 -448 364 -431Q381 -414 381 -390Q381 -366 364 -349Q347 -332 323 -332ZM25 -0L109 -140L685 -140L685 -0L25 -0ZM605 -0L605 -140L685 -140L685 -309L825 -340L825 -23Q825 -11 815 -6Q805 -1 795 -0.5Q785 -0 785 -0L605 -0ZM915 -0Q915 -0 905 -0.5Q895 -1 885 -6Q875 -11 875 -23L875 -769L1015 -800L1015 -140L1095 -140L1095 -0L915 -0ZM1391 -542Q1367 -542 1350 -559Q1333 -576 1333 -600Q1333 -624 1350 -641Q1367 -658 1391 -658Q1415 -658 1432 -641Q1449 -624 1449 -600Q1449 -576 1432 -559Q1415 -542 1391 -542ZM1218 -542Q1194 -542 1177 -559Q1160 -576 1160 -600Q1160 -624 1177 -641Q1194 -658 1218 -658Q1242 -658 1259 -641Q1276 -624 1276 -600Q1276 -576 1259 -559Q1242 -542 1218 -542ZM1415 -0L1415 -140L1595 -140L1595 -0L1415 -0ZM1055 -0L1055 -140L1335 -140L1335 -268L1475 -340L1475 -23Q1475 -11 1465 -6Q1455 -1 1445 -0.5Q1435 -0 1435 -0L1055 -0ZM1306.3 -170Q1259.5 -170 1220.8 -193Q1182 -216 1158.5 -254.8Q1135 -293.6 1135 -339.8Q1135 -387 1158.5 -425.7Q1182 -464.4 1221 -487.2Q1260 -510 1306.5 -510Q1353 -510 1391 -487Q1429 -464 1452 -425.7Q1475 -387.3 1475 -340Q1475 -293 1452 -254.5Q1429 -216 1391 -193Q1353 -170 1306.3 -170ZM1306 -310Q1319 -310 1327 -318.7Q1335 -327.4 1335 -340Q1335 -352.6 1327 -361.3Q1319 -370 1306 -370Q1293 -370 1284 -361.3Q1275 -352.6 1275 -340Q1275 -327.4 1284 -318.7Q1293 -310 1306 -310ZM1658 208Q1634 208 1617 191Q1600 174 1600 150Q1600 126 1617 109Q1634 92 1658 92Q1682 92 1699 109Q1716 126 1716 150Q1716 174 1699 191Q1682 208 1658 208ZM1555 -0L1555 -140L1635 -140L1635 -309L1775 -340L1775 -23Q1775 -11 1765 -6Q1755 -1 1745 -0.5Q1735 -0 1735 -0L1555 -0ZM1865 -0Q1865 -0 1855 -0.5Q1845 -1 1835 -6Q1825 -11 1825 -23L1825 -769L1965 -800L1965 -140L2045 -140L2045 -0L1865 -0ZM2005 -0L2005 -140L2085 -140L2085 -309L2225 -340L2225 -140L2285 -140L2285 -359L2425 -390L2425 -140L2485 -140L2485 -409L2625 -440L2625 -140L2745 -140L2745 -0L2005 -0ZM2705 -0L2705 -140L2905 -140L2952 -0L2705 -0ZM2949.3 -0Q2902.5 -0 2863.8 -23Q2825 -46 2801.5 -84.8Q2778 -123.6 2778 -169.8Q2778 -217 2801.5 -255.7Q2825 -294.4 2864 -317.2Q2903 -340 2949.5 -340Q2996 -340 3034 -317Q3072 -294 3095 -255.7Q3118 -217.3 3118 -170Q3118 -123 3095 -84.5Q3072 -46 3034 -23Q2996 -0 2949.3 -0ZM2949 -140Q2962 -140 2970 -148.7Q2978 -157.4 2978 -170Q2978 -182.6 2970 -191.3Q2962 -200 2949 -200Q2936 -200 2927 -191.3Q2918 -182.6 2918 -170Q2918 -157.4 2927 -148.7Q2936 -140 2949 -140Z"/><g transform="translate(419.03 0)"><path fill="var(--mq-g)" d="M128 40.4L178.91 91.32L128 142.23L77.09 91.32Z"/><path fill="var(--mq-y)" d="M187.91 107.77L238.82 158.68L187.91 209.6L137 158.68Z"/><path fill="var(--mq-b)" d="M68.09 107.77L119 158.68L68.09 209.6L17.18 158.68Z"/></g></svg>';
-const familyLink = () => h('a', { class: 'family', href: FAMILY_URL, target: '_blank', rel: 'noopener noreferrer', title: 'ألعاب مسابقات',
+const familyLink = (at = '') => h('a', { class: at ? `family ${at}` : 'family', href: FAMILY_URL, target: '_blank', rel: 'noopener noreferrer', title: 'ألعاب مسابقات',
   'aria-label': 'ألعاب مسابقات: تفتح صفحة الألعاب في نافذة جديدة', html: FAMILY_MARK, onclick: e => e.currentTarget.blur() }); // blur: a later Enter goes back to the game
 function go(name) { scene = name; if (state) state.paused = false; ui.replaceChildren(); (scenes[name].enter || (() => {}))(); events.push({ scene: name }); }
 let refs = {};
-function renderAll() { if (scene !== 'play') return; renderHeader(); renderSide(); renderQuestion(); }
+function renderAll() {
+  if (scene !== 'play') return;
+  const wide = fullStage(); refs.side.classList.toggle('gone', wide); refs.side.inert = wide; // B: the side panel steps away for a battle
+  renderHeader(); renderSide(); renderQuestion();
+}
 function themeSeg(after) {
   return h('div', { class: 'seg' }, h('button', { class: theme === 'dark' ? 'on' : '', onclick: () => { setTheme('dark'); after(); } }, 'داكن'),
     h('button', { class: theme === 'light' ? 'on' : '', onclick: () => { setTheme('light'); after(); } }, 'فاتح'));
@@ -863,11 +915,11 @@ function vsBox(d) { // the forecast or the live battle: who fights with what, an
   const nA = d.b ? d.b.a : g.bat[from], nD = d.b ? d.b.d : g.bat[to];
   const gear = hx => [g.cannons[hx] ? `${g.cannons[hx]} مدفع` : '', g.fort[hx] ? 'حصن' : ''].filter(Boolean).join(' · ') || 'بلا مدافع';
   const sideA = h('div', { class: 'side' }, banner(state.duel ? d.a : state.cur, 34), h('b', {}, state.names[state.duel ? d.a : state.cur]), h('span', { class: 'n' }, N(nA)),
-    h('span', { class: 'muted' }, 'كتائب الهجوم'), neutral ? null : h('span', { class: 'muted', style: 'font-size:12px' }, gear(from), ' · ضربته ', N(R.hit(g.cannons[from], g.fort[to], P))));
+    h('span', { class: 'muted' }, 'كتائب الهجوم'), neutral ? null : h('span', { class: 'muted', style: 'font-size:16px' }, gear(from), ' · ضربته ', N(R.hit(g.cannons[from], g.fort[to], P))));
   const sideD = neutral ? h('div', { class: 'side' }, h('span', { html: shieldSVG(-1, 0, 28) }), h('b', {}, 'أرض محايدة'), h('span', { class: 'n' }, N(0)), h('span', { class: 'muted' }, 'إجابة صحيحة تأخذها'))
     : h('div', { class: 'side' }, cap ? h('span', { html: fortressSVG(g.owner[to], 38) }) : banner(g.owner[to], 34), h('b', {}, state.names[g.owner[to]]),
       h('span', { class: 'n' }, N(nD)), h('span', { class: 'muted' }, cap ? 'كتائب العاصمة' : 'كتائب الدفاع'),
-      h('span', { class: 'muted', style: 'font-size:12px' }, gear(to), ' · ضربته ', N(R.hit(g.cannons[to], g.fort[from], P))));
+      h('span', { class: 'muted', style: 'font-size:16px' }, gear(to), ' · ضربته ', N(R.hit(g.cannons[to], g.fort[from], P))));
   return h('div', { class: 'vs' }, sideA, h('span', { class: 'x' }, 'ضد'), sideD);
 }
 function renderSide() {
@@ -876,14 +928,15 @@ function renderSide() {
   const turn = h('div', { class: 'panel turn' },
     h('div', { class: 'who' }, banner(t, 46), h('div', {}, h('div', { class: 'muted', style: 'font-size:13px' }, 'الدور على'), h('b', {}, state.names[t]))),
     h('div', { class: 'stats' }, stat('المال', fmt(state.money[t]), 'brass'), stat(payoutIn() === 1 ? 'دفعة الجولة' : `دفعة بعد ${payoutIn()}`, '+' + fmt(income(t))), stat('الأراضي', R.hexCount(g, t)), stat('الكتائب', R.battalions(g, t))),
-    h('div', { class: 'steps' }, ...['السؤال', 'السوق', 'الهجوم', 'التحريك'].map((s, i) => h('span', { class: i === step ? 'on' : i < step ? 'done' : '' }, s))));
+    h('div', { class: 'steps' }, ...['السؤال', 'السوق', 'الهجوم', 'التحريك'].map((s, i) => { const at = p === 'reveal' ? step + 1 : step; // F: an answered question hands over to the market
+      return h('span', { class: p === 'reveal' ? (i < at ? 'done' : i === at ? 'next' : '') : i === step ? 'on' : i < step ? 'done' : '' }, s); })));
   const a = [], bottom = [];
   const msg = h('div', { class: 'msg ' + (state.msgGood ? 'ok' : 'bad') }, state.msg);
   if (p === 'ready') {
     a.push(h('div', { class: 'hint' }, 'سؤال الدور: الإجابة الصحيحة تضيف ', h('b', { class: 'brass' }, N(fmt(tune.turnReward))), ' إلى مال الفريق.'));
     bottom.push(B('اطرح سؤال الدور', 'pri', askTurnQuestion, { 'data-primary': '1' }));
   } else if (p === 'question' || p === 'reveal') {
-    a.push(h('div', { class: 'hint muted' }, 'السؤال معروض على الخريطة. أجب قبل انتهاء الوقت.'));
+    a.push(h('div', { class: 'hint muted' }, p === 'reveal' ? 'أُجيب السؤال. التالي: السوق.' : 'السؤال معروض على الخريطة. أجب قبل انتهاء الوقت.'));
   } else if (p === 'shop') {
     const pr = state.prices, hx = state.sel, small = 'padding:5px 10px;font-size:13px;min-height:32px';
     a.push(h('div', { class: 'hint' }, 'اختر أرضاً لك على الخريطة، ثم اشترِ أو بِع فيها. الأسعار تتغير كل جولة.'));
@@ -892,9 +945,9 @@ function renderSide() {
         h('b', { style: 'min-width:54px' }, { troop: 'كتائب', cannon: 'مدافع', fort: 'حصن' }[k]), h('span', { class: 'chip' }, N(k === 'fort' ? (g.fort[hx] ? 'نعم' : 'لا') : goodOf(k, hx))),
         B('شراء', 'good', () => trade(k, 1), { style: small }), k === 'troop' ? B(N('+10'), 'good', () => trade(k, 10), { style: small }) : null,
         B('بيع', '', () => trade(k, -1), { style: small }),
-        h('span', { class: 'muted', style: 'font-size:12px' }, 'شراء ', N(pr[k].buy), ' · بيع ', N(pr[k].sell)))));
+        h('span', { class: 'muted', style: 'font-size:16px' }, 'شراء ', N(pr[k].buy), ' · بيع ', N(pr[k].sell)))));
     const spent = state.shopScore0 - scoreOf(t); // G: buying costs more than goods sell for, and points count the sell price
-    if (spent > 0) a.push(h('div', { class: 'muted', style: 'font-size:13px;line-height:1.6' }, 'النقاط تحسب ما تملكه بسعر البيع، والشراء أغلى منه: نقص النقاط ', h('b', { class: 'bad' }, N('−' + fmt(spent))), ' هو فرق السعر، وقوة الجيش زادت.'));
+    if (spent > 0) a.push(h('div', { class: 'muted', style: 'font-size:16px;line-height:1.6' }, 'النقاط تحسب ما تملكه بسعر البيع، والشراء أغلى منه: نقص النقاط ', h('b', { class: 'bad' }, N('−' + fmt(spent))), ' هو فرق السعر، وقوة الجيش زادت.'));
     a.push(msg);
     bottom.push(B('إلى الهجوم', 'pri', openAttack, { 'data-primary': '1' }));
     if (state.buys.length) bottom.push(B('تراجع', '', undoBuy));
@@ -907,16 +960,13 @@ function renderSide() {
     else {
       a.push(vsBox({ from: state.sel, to: state.target }));
       if (!ok) a.push(h('div', { class: 'hint bad' }, `لا يكفي: تحتاج ${bats(tune.attackMin)} على الأقل، وأكثر من ضربة واحدة من مدافع الخصم (`, N(R.hit(g.cannons[state.target], g.fort[state.sel], RP())), ').'));
-      else a.push(h('div', { class: 'hint muted', style: 'font-size:14px' }, isNeutral(state.target) ? 'إجابة صحيحة تأخذ الأرض.'
+      else a.push(h('div', { class: 'hint muted' }, isNeutral(state.target) ? 'إجابة صحيحة تأخذ الأرض.'
         : 'تقاتل كل كتائب أرضك. يجيب الفريقان بالتناوب، المهاجم أولاً، وكل إجابة تُسقط ضربة. للمهاجم أن ينسحب بين الأسئلة.'));
       bottom.push(B('هاجم!', 'warn', startBattle, { 'data-primary': ok ? '1' : null, disabled: !ok }));
     }
     a.push(msg);
     if (state.sel >= 0) bottom.push(B('اختيار آخر', '', () => { state.sel = -1; state.target = -1; renderSide(); }));
     bottom.push(B('تخطي الهجوم', '', openMove, { 'data-primary': ok ? null : '1' }));
-  } else if (p === 'duel' || p === 'duelReveal') {
-    a.push(vsBox(state.duel));
-    if (!state.duel.neutral && !state.duel.b.over) a.push(h('div', { class: 'chip' }, 'يجيب الآن: ', state.names[answerer(state.duel)]));
   } else if (p === 'move') {
     if (state.movesLeft <= 0) a.push(h('div', { class: 'hint' }, 'انتهى التحريك لهذا الدور.'));
     else if (state.sel < 0) a.push(h('div', { class: 'hint' }, 'انقل كتائب من أرض إلى أرض أخرى لفريقك متصلة بها، لتقوية الحدود أو العاصمة. أو أنهِ الدور.'));
@@ -932,7 +982,7 @@ function renderSide() {
     bottom.push(B('إنهاء الدور', 'pri', endTurn, { 'data-primary': state.target >= 0 ? null : '1' }));
   } else if (p === 'over') {
     const w = R.aliveTeams(g)[0];
-    a.push(h('div', { style: 'display:flex;gap:12px;align-items:center' }, banner(w, 54), h('div', { class: 'verdict pop' }, 'انتصر ', state.names[w], '!')),
+    a.push(h('div', { style: 'display:flex;gap:12px;align-items:center' }, banner(w, 54), h('div', { class: 'verdict pop' }, 'الفوز لـ', state.names[w], '!')),
       h('div', { class: 'hint muted' }, 'سقطت كل العواصم الأخرى.'));
     bottom.push(B('النتائج', 'pri', endGame, { 'data-primary': '1' }));
   }
@@ -942,27 +992,38 @@ function renderSide() {
     ? h('div', { class: 'chip bad', style: 'font-size:15px;padding:8px 12px' }, h('span', { html: fortressSVG(-1, 22) }), `سقطت عاصمة ${state.names[fallen.fell]} وخرج من الحرب`) : null),
     bottom.length ? h('div', { class: 'bottom' }, ...bottom) : null);
   const order = [...Array(state.n).keys()].sort((x, y) => (g.alive[y] - g.alive[x]) || scoreOf(y) - scoreOf(x));
-  // A: while the host works the map, the standings shrink to banners and points
+  // A: while the host works the map, the standings shrink to banners, short names and points
   const board = ['shop', 'attack', 'duel', 'duelReveal', 'move'].includes(p)
     ? h('div', { class: 'panel mini', 'aria-label': 'الترتيب' }, ...order.map(i => h('div', { class: (i === t ? 'cur' : '') + (g.alive[i] ? '' : ' out'), title: state.names[i] },
-      banner(i, 22), g.alive[i] ? N(fmt(scoreOf(i))) : h('span', { style: 'font-size:14px' }, 'خرج'))))
+      banner(i, 26), h('span', { class: 'nm' }, state.names[i]), g.alive[i] ? N(fmt(scoreOf(i))) : h('span', { style: 'font-size:16px' }, 'خرج'))))
     : h('div', { class: 'panel', style: 'flex:none' }, h('table', { class: 'lb' }, h('tr', {}, ...['الفريق', 'أراضٍ', 'كتائب', 'مال', 'نقاط'].map(s => h('th', {}, s))),
     ...order.map(i => h('tr', { class: (i === t ? 'cur' : '') + (g.alive[i] ? '' : ' out') },
-      h('td', {}, h('span', { class: 'tn' }, banner(i, 20), state.names[i])), h('td', {}, N(R.hexCount(g, i))), h('td', {}, N(R.battalions(g, i))),
+      h('td', {}, teamName(i)), h('td', {}, N(R.hexCount(g, i))), h('td', {}, N(R.battalions(g, i))),
       h('td', {}, N(fmt(state.money[i]))), h('td', { style: 'font-weight:bold' }, g.alive[i] ? N(fmt(scoreOf(i))) : 'خرج')))));
   refs.side.replaceChildren(turn, act, board);
 }
 function renderQuestion() {
-  document.getElementById('qpanel')?.remove();
-  const p = state.phase;
+  const old = document.getElementById('qpanel'), p = state.phase;
+  if (old && p === 'capture') { // C: the panel sinks out of the way before the flood; its buttons no longer answer Enter
+    old.removeAttribute('id'); old.inert = true; old.querySelectorAll('[data-primary]').forEach(b => b.removeAttribute('data-primary'));
+    old.classList.add('leave'); setTimeout(() => old.remove(), 260);
+  } else old?.remove();
   if (!['question', 'reveal', 'duel', 'duelReveal'].includes(p)) return;
   const q = state.q, duel = p === 'duel' || p === 'duelReveal', d = state.duel, done = p === 'reveal' || p === 'duelReveal';
   const longest = Math.max(...q.choices.map(x => x.length));
   const size = q.text.length > 110 || longest > 45 ? 'l' : q.text.length > 70 || longest > 30 ? 'm' : '';
   const who = duel ? (done && d.last ? (d.neutral || d.last.side === 'a' ? d.a : d.d) : answerer(d)) : state.cur;
-  const title = !duel ? `سؤال ${state.names[state.cur]}` : d.neutral ? `${state.names[d.a]} يتقدم إلى أرض محايدة` : `معركة: يجيب ${state.names[who]}`;
-  const head = h('div', { class: 'ph' }, h('span', { style: 'display:flex;gap:10px;align-items:center;font-size:18px' }, banner(who, 30), title),
-    duel && !d.neutral ? h('span', { class: 'chip' }, state.names[d.a], ' ', N(d.b.a), ' · ', state.names[d.d], ' ', N(d.b.d)) : h('span', { class: 'chip muted' }, q.cat));
+  let head;
+  if (!duel) head = h('div', { class: 'ph' }, h('span', { style: 'display:flex;gap:10px;align-items:center;font-size:18px' }, banner(who, 30), `سؤال ${state.names[state.cur]}`), h('span', { class: 'chip muted' }, q.cat));
+  else { // A: who answers now, at the size of the room; in the reveal, who just answered (the next team shows after "السؤال التالي")
+    const g = state.g, P = RP();
+    const side = (t, k, hx, opp) => h('span', {}, banner(t, 26), h('span', { class: 'nm', title: state.names[t] }, state.names[t]), h('span', { class: 'n' }, N(d.b[k])),
+      h('span', { class: 'muted' }, 'ضربته ', N(R.hit(g.cannons[hx], g.fort[opp], P))));
+    head = h('div', { class: 'ph' }, h('div', { class: 'answering' }, banner(who, 54), h('div', { style: 'min-width:0' },
+      h('small', {}, done ? 'أجاب' : 'يجيب الآن', d.neutral ? ' · أرض محايدة' : ''), h('b', { title: state.names[who] }, state.names[who]))),
+      d.neutral ? h('span', { class: 'chip muted' }, q.cat)
+        : h('div', { class: 'sides' }, side(d.a, 'a', d.from, d.to), h('span', { class: 'x' }, 'ضد'), side(d.d, 'd', d.to, d.from)));
+  }
   const timer = done ? null : h('div', { class: 'ring', style: 'width:96px;height:96px' }, h('span', { id: 'ringsvg', html: ring(state.timer, settings.answerTime) }), h('b', { id: 'ringnum' }, N(Math.ceil(state.timer))));
   const parts = [h('div', { style: 'display:flex;gap:16px;align-items:center' }, timer, h('div', { class: 'q', style: 'flex:1' }, q.text))];
   const canPick = !done && settings.qmode === 'choices';
@@ -996,11 +1057,13 @@ function renderQuestion() {
       next = [B('إلى الخريطة', 'pri', finishBattle, { 'data-primary': '1' })];
     } else {
       const L = d.last, loserTeam = L.loser === 'a' ? d.a : d.d;
-      verdict = h('div', { class: 'verdict pop ' + (L.right ? 'ok' : 'bad') }, L.right ? 'إجابة صحيحة' : missed);
-      const end = { win: R.isCapital(state.g, d.to) ? 'سقطت العاصمة!' : 'سقطت الأرض!', fail: 'توقف الهجوم: لا يتحمل المهاجم ضربة أخرى' }[d.outcome] || '';
-      // F: the loss is the largest number on screen
-      note = h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('div', { class: 'loss pop' }, N('−' + L.loss)),
-        h('div', { class: 'lossnote' }, h('b', {}, `${state.names[loserTeam]} يخسر ${bats(L.loss)}`), end ? h('span', {}, end) : null));
+      // C: a taken capital leads with its fall, in the display face; a plain hit leads with the answer
+      verdict = d.outcome === 'win' ? h('div', { class: 'fallen pop' }, R.isCapital(state.g, d.to) ? 'سقطت العاصمة!' : 'سقطت الأرض!')
+        : h('div', { class: 'verdict pop ' + (L.right ? 'ok' : 'bad') }, L.right ? 'إجابة صحيحة' : missed);
+      const end = d.outcome === 'fail' ? 'توقف الهجوم: لا يتحمل المهاجم ضربة أخرى' : '';
+      // F: the loss is the largest number on screen; C: the loser's banner and name say whose it is
+      note = h('div', { style: 'display:flex;align-items:center;gap:12px' }, banner(loserTeam, 54), h('div', { class: 'loss pop' }, N('−' + L.loss)),
+        h('div', { class: 'lossnote', style: 'min-width:0' }, h('b', { class: 'nm', title: state.names[loserTeam] }, `من كتائب ${state.names[loserTeam]}`), end ? h('span', {}, end) : null));
       next = d.outcome ? [B('إلى الخريطة', 'pri', finishBattle, { 'data-primary': '1' })]
         : [B('السؤال التالي', 'pri', nextBattleQuestion, { 'data-primary': '1' }), B('انسحاب', '', withdraw)];
     }
@@ -1009,7 +1072,7 @@ function renderQuestion() {
     verdict.style.whiteSpace = 'nowrap'; next.forEach(b => { b.style.whiteSpace = 'nowrap'; });
     parts.push(h('div', { style: 'display:flex;align-items:center;gap:14px;margin-top:auto' }, verdict, h('div', { class: 'muted', style: 'flex:1;min-width:0;font-size:16px' }, note), ...next));
   }
-  ui.append(h('section', { id: 'qpanel', class: 'panel', 'data-size': size }, head, h('div', { class: 'body' }, ...parts)));
+  ui.append(h('section', { id: 'qpanel', class: duel ? 'panel battle' : 'panel', 'data-size': size, style: `width:${MAP.w}px` + (duel ? `;border-color:${TEAMS[who].c}` : '') }, head, h('div', { class: 'body' }, ...parts))); // A: edged in the answerer's colour
 }
 let peekPtr = false;
 const MARK_OK = '<svg width="30" height="30" viewBox="0 0 24 24" role="img" aria-label="صحيحة"><path d="M4 12.5 L9.5 18 L20 6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -1026,7 +1089,7 @@ const HELP_FIG = { // the help's drawings, from the game's own figures
   capital: () => `<div style="display:flex;gap:16px;align-items:center;justify-content:center">${fortressSVG(1, 80)}<b class="bad" style="font-size:40px">←</b>${fortressSVG(0, 80)}</div>`,
   end: () => `<div style="display:flex;justify-content:center">${TROPHY}</div>`,
 };
-const HELP_AT = { ready: 1, question: 1, reveal: 1, shop: 2, attack: 3, duel: 3, duelReveal: 3, move: 4, over: 5 }; // H: help opens on the step in play
+const HELP_AT = { ready: 1, question: 1, reveal: 1, shop: 2, attack: 3, duel: 3, duelReveal: 3, capture: 3, move: 4, over: 5 }; // H: help opens on the step in play
 const HELP = [
   ['setup', 'الإعداد', 'يختار المقدّم عدد الفرق وأسماءها، وطريقة عرض الأسئلة، ومتى تنتهي الحرب. لكل فريق عاصمة وأراضٍ حولها على خريطة جديدة كل مرة.'],
   ['question', 'سؤال الدور', `يبدأ كل دور بسؤال للفريق. الإجابة الصحيحة تضيف ${fmt(tune.turnReward)} إلى ماله. وكل ${tune.payoutEvery} جولات تصل إلى كل عاصمة ${bats(tune.payoutPerHex)} عن كل أرض يملكها فريقها.`],
@@ -1144,6 +1207,7 @@ const scenes = {
       mapbox.addEventListener('pointermove', e => { state.hover = hexAt(...mapPoint(e)); });
       mapbox.addEventListener('pointerleave', () => { state.hover = -1; });
       ui.append(refs.header, mapbox, refs.side);
+      MAP.w = fullStage() ? MAP_WIDE : MAP_W;
       renderAll();
     },
     update(dt) {
@@ -1153,6 +1217,8 @@ const scenes = {
         if (!state.lastCall && state.elapsed >= settings.minutes * 60) { state.lastCall = true; if (state.phase === 'ready') return endGame(); renderHeader(); }
       }
       state.camY += (camTarget() - state.camY) * (REDUCED.matches ? 1 : 0.12);
+      const mw = fullStage() ? MAP_WIDE : MAP_W; MAP.w = REDUCED.matches || Math.abs(mw - MAP.w) < 0.5 ? mw : MAP.w + (mw - MAP.w) * 0.12;
+      if (state.phase === 'capture' && state.t >= state.capture.until) return afterBattle(state.capture.fell, state.capture.by);
       const d = state.duel;
       if (d && d.b) { d.shown ??= { a: d.b.a, d: d.b.d }; for (const s of ['a', 'd']) { const gap = d.b[s] - d.shown[s]; d.shown[s] = REDUCED.matches || Math.abs(gap) < 0.5 ? d.b[s] : d.shown[s] + gap * 0.08; } }
       if (state.phase === 'question' || state.phase === 'duel') {
@@ -1168,6 +1234,7 @@ const scenes = {
     },
     draw() {
       backdrop(false); drawMap();
+      for (const id of ['mapbox', 'qpanel']) { const el = document.getElementById(id); if (el) el.style.width = MAP.w + 'px'; }
       const rs = document.getElementById('ringsvg');
       if (rs) { rs.innerHTML = ring(state.timer, settings.answerTime); document.getElementById('ringnum').textContent = Math.ceil(state.timer); }
       const pk = document.getElementById('peek');
@@ -1183,7 +1250,7 @@ const scenes = {
   },
   results: {
     enter() {
-      ui.append(familyLink());
+      ui.append(familyLink('end')); // bottom-left: the winner headline owns the top row
       if (!state.final) endGameValues();
       state.camY = 0;
       // G: equal results share a rank (labelled تعادل); the standing teams by points, the fallen by when they fell
@@ -1196,7 +1263,7 @@ const scenes = {
       ui.append(h('div', { class: 'screen', style: 'align-items:center;gap:14px;padding-top:14px' },
         h('div', { class: 'winhead', style: shade }, ...(firsts.length > 1
           ? ['تعادل: ', firsts.map(e => state.names[e.t]).join(' و')]
-          : [banner(f[0].t, 72), `انتصر ${state.names[f[0].t]}`])),
+          : [banner(f[0].t, 72), `الفوز لـ${state.names[f[0].t]}`])),
         h('div', { style: 'display:flex;gap:28px;align-items:flex-end;width:100%;justify-content:center;flex:1;min-height:0' },
           h('div', { style: 'display:flex;align-items:flex-end;gap:14px' }, ...podium.map(r => { const e = f[r], top = e.rank === 1;
             return h('div', { class: 'place', style: `animation-delay:${delay[r]}s;display:flex;flex-direction:column;align-items:center;gap:6px;width:180px;${shade}` },
@@ -1205,17 +1272,17 @@ const scenes = {
               h('div', { style: `width:100%;height:${heights[Math.min(e.rank, 3)]}px;border-radius:10px 10px 0 0;background:${medal[Math.min(e.rank, 3)]};display:grid;place-items:center;font-size:52px;font-weight:bold;color:#1b1406` }, N(e.rank))); })),
           h('div', { class: 'panel', style: 'width:600px;flex:none' }, h('table', { class: 'lb' },
             h('tr', {}, ...['المركز', 'الفريق', 'الأراضي', 'الكتائب', 'المال', 'النقاط', 'الحالة'].map(s => h('th', {}, s))),
-            ...f.map(e => h('tr', {}, h('td', {}, N(e.rank), tied(e) ? tie() : null), h('td', {}, h('span', { class: 'tn' }, banner(e.t, 20), state.names[e.t])),
+            ...f.map(e => h('tr', {}, h('td', {}, N(e.rank), tied(e) ? tie() : null), h('td', {}, teamName(e.t)),
               h('td', {}, N(e.hexes)), h('td', {}, N(e.bat)), h('td', {}, N(fmt(e.money))), h('td', { style: 'font-weight:bold' }, e.alive ? N(fmt(e.score)) : '—'),
               h('td', { class: e.alive ? 'ok' : 'bad', style: 'font-size:15px' }, e.alive ? 'صامد' : 'سقطت عاصمته')))))),
-        h('div', { class: 'panel', style: 'padding:6px 12px;font-size:13px;color:var(--muted)' }, `النقاط: كل أرض ${tune.hexWorth} ضعف سعر الكتيبة، والمال، وقيمة الكتائب والمدافع والحصون بسعر البيع. من سقطت عاصمته يأتي بعد الصامدين.`),
+        h('div', { class: 'panel', style: 'padding:6px 12px;font-size:16px;color:var(--muted)' }, `النقاط: كل أرض ${tune.hexWorth} ضعف سعر الكتيبة، والمال، وقيمة الكتائب والمدافع والحصون بسعر البيع. من سقطت عاصمته يأتي بعد الصامدين.`),
         h('div', { style: 'display:flex;gap:12px' }, B('حرب جديدة بنفس الإعدادات', 'pri', () => { reset(); go('play'); }, { 'data-primary': '1' }), B('الشاشة الرئيسية', '', () => go('title')))));
       confetti = Array.from({ length: CHEAP ? 0 : 120 }, () => ({ x: vrng() * W, y: -vrng() * H, v: 60 + vrng() * 90, s: 5 + vrng() * 5, c: TEAMS[(vrng() * state.n) | 0].c, a: vrng() * 6, w: 1 + vrng() * 3 }));
     },
     update(dt) { for (const p of confetti) { p.y += p.v * dt; p.a += p.w * dt; if (p.y > H + 10) p.y = -10; } },
     draw() { // G: the final map behind the results, the winner's land in full colour
       backdrop(false);
-      const k = Math.max(W / MAP.w, H / MAP.h); ctx.save(); ctx.translate(W / 2, H / 2); ctx.scale(k, k); ctx.translate(-(MAP.x + MAP.w / 2), -(MAP.y + MAP.h / 2)); drawMap(); ctx.restore();
+      const keep = { ...MAP }; Object.assign(MAP, { x: 0, y: 0, w: W, h: H }); drawMap(); Object.assign(MAP, keep); // F: fitted to the stage, so no capital is cropped
       ctx.globalAlpha = 0.5; ctx.fillStyle = css('--bg'); ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
       for (const p of confetti) { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore(); }
     },
