@@ -31,7 +31,7 @@ Setup on one screen: teams (2–6, named), cash, share price, answer and trading
 Trades move prices (Ma3aliSahmuk's impact rule), so others' buys lift your holdings. From turn 2, a 20% chance of breaking news moves a whole sector ±8–25% (*provisional*). Every round the market drifts ±0–3%. A wrong answer skips the turn.
 
 ## Core loop
-- The team on turn gets a question from the bank (4 choices, or host-judged with the answer revealed) on the answer timer.
+- A question from the bank (4 choices, or host-judged with the answer revealed) on the answer timer. Play mode: sequential (the team on turn answers) or fastest (the question is for everyone and the host picks the team that answered first).
 - Right: reward of 1.25–5% of cash → maybe a news event → trade window: up to 2 buys and 2 sells, with live price impact.
 - Next team; after each full round, a market tick (drift, sparkline point). Ends manually, on the timer, or after N rounds → results podium.
 
@@ -39,14 +39,15 @@ Trades move prices (Ma3aliSahmuk's impact rule), so others' buys lift your holdi
 - Highest net worth (cash + shares at market) when the game ends wins: a podium for the top 3 and a full table. No elimination.
 
 ## Features
-- [x] Setup screen: teams, cash, price, timers, question mode, end mode (manual / timed minutes / rounds), theme light/dark
+- [x] Setup screen: teams, cash, price, timers, question mode, play mode (sequential / fastest), end mode (manual / timed minutes / rounds), theme light/dark
 - [x] Question bank: 60 starter Arabic questions in categories; the host can add, delete and reset in a bank editor, saved in the browser
 - [x] Two question modes: 4 choices (teams answer on screen), or the question alone with right/wrong buttons and the answer revealed
 - [x] Market watch: 10 fictional companies in 5 sectors, with sparkline, price, change % and flashes
 - [x] Trade panel: buy/sell with a quantity, 2+2 limit, price impact, trading countdown
 - [x] Twists (my pick): sector news (±8–25% to every company in a sector), dividend day (cash per share held), trading halt for that team
 - [x] CSV upload in the bank screen: Arabic column headers السؤال، الخيار 1 (الإجابة)، الخيار 2، الخيار 3، الخيار 4; one import button, then the host is asked to add to the existing questions or replace them; template download; bad rows reported by line
-- [ ] Results podium (top 3) + standings; sounds with mute
+- [x] Results podium (top 3) + standings; sounds with mute
+- [x] Logo intro on load, the Musabaqat family link (title and results screens), undo after a verdict or a deleted question
 
 ## Your systems
 - question bank · in the slice

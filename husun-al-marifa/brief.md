@@ -6,11 +6,11 @@ Scope: War game only
 Map: Abstract hex map
 1–7. for now, do the usual options
 
-**Pitch:** A host-run team quiz on a hex war map: every attack is a question that both teams answer, right answers pay for battalions, and losing your capital knocks you out.
+**Pitch:** A host-run team quiz on a hex war map: every attack is a battle of questions the two teams answer in turn, right answers pay for battalions, and losing your capital knocks you out.
 **Genre:** trivia-quiz × turn-based-strategy (host-run party game)
 **Controls:** mouse or touch (the host runs it); 1–4 pick an answer in 4-choice mode.
 **Question:** is a quiz that decides who takes land more tense than plain points?
-**Hooks:** knowledge becomes territory, and every question is a duel between two teams.
+**Hooks:** knowledge becomes territory, and every answer in a battle knocks battalions off one side.
 **Intent:** needs 2–6 teams (you said)
 
 ## Look and references
@@ -19,17 +19,17 @@ Map: Abstract hex map
 - View: 2D · Camera: static, one map that fits the screen *(provisional)*
 
 ## First minute
-Setup on one screen: teams (2–6, named), question style, how it ends, timers, theme → Start → the map with every team's capital and a few battalions; team 1 is highlighted, with money and income in its panel → a question for team 1 (right = money) → the shop: buy 2 battalions and place them next to an enemy hex → attack: the defending team is named, both answer one question, the host marks each right or wrong → only the attacker is right, so the hex floods with their colour and the banner plants. The hook pays off.
+Setup on one screen: teams (2–6, named), question style, how it ends, timers, theme → Start → the map with every team's capital and a few battalions; team 1 is highlighted, with money and income in its panel → a question for team 1 (right = money) → the shop: buy 2 battalions and place them next to an enemy hex → attack: the defending team is named and a forecast shows both sides' battalions and hits → the teams answer in turn, attacker first, and the host marks each right or wrong → each answer knocks a hit off one side until the defenders fall, so the hex floods with their colour and the banner plants. The hook pays off.
 
 ## Challenge
-From round 2, neighbours touch borders, so every attack risks a counterattack. A capital is defended with a bonus (+1 battalion counted). A failed attack costs the attacker 1 battalion; a taken hex costs the defender all its battalions there. Income grows with land, so a team that falls behind can still return by answering well. *(provisional)*
+From round 2, neighbours touch borders, so every attack risks a counterattack. A capital has no extra defence, but the team is out when it falls. In a battle each answer costs one side a hit (3 + 3 per cannon, halved by a fort; the full table is in README.md, the values in config.js); the attacker can withdraw between questions. Every 4 rounds each team gets 20 battalions per hex it holds, into its capital, so land is income and a team that falls behind can still return by answering well. *(provisional)*
 
 ## Core loop
 - The team on turn gets a question (right = money).
-- The shop: buy battalions with money and place them on its own hexes.
-- One attack on a neighbouring enemy or empty hex: one question to both teams; only one right wins, both right → a tie-breaker, both wrong → the defender holds. Empty hexes are taken by answering right.
+- The shop: buy battalions, cannons and forts with money (prices re-roll each round) and place them on its own hexes.
+- One attack on a neighbouring enemy or empty hex: a battle where the teams answer in turn, attacker first. Attacker right: the defender loses a hit; attacker wrong or defender right: the attacker loses a hit; defender wrong: the defender loses 3. It ends when the defenders fall, the attacker can't take another hit or has fewer than 4 battalions, or the attacker withdraws. Empty hexes are taken by answering right.
 - One move: battalions from one hex to a connected hex the team owns.
-- Next team; after each full round, income per hex. The game ends on the chosen mode → podium.
+- Next team; every 4 rounds, battalions per hex held go into each capital. The game ends on the chosen mode → podium.
 - Leads: strategy leads the map, turns and economy; the quiz leads questions, answers and the reveal.
 
 ## Goal & fail state
@@ -39,9 +39,9 @@ From round 2, neighbours touch borders, so every attack risks a counterattack. A
 - [x] Setup screen: 2–6 named teams, question style (4 choices / host judges), end mode (last capital / timed minutes / rounds), answer timer, light/dark theme
 - [x] A generated ~40-hex map with fair, spread-out starting capitals
 - [x] Turns: question → shop → attack → move, with a clear step bar
-- [x] Attack duel: one question to both teams, the host marks each; tie-breaker when both are right; a forecast before attacking (battalions both sides)
-- [x] Money: a correct answer pays, plus per-round income per hex shown in the team panel
-- [x] Capitals: a fortress, a defence bonus, and the team is out when it falls
+- [x] Attack battle: the teams answer in turn, the host marks each, hits by cannons and forts, withdraw between questions; a forecast before attacking (battalions and hits both sides)
+- [x] Money: a correct answer pays; every 4 rounds, battalions per hex held go into the capital
+- [x] Capitals: a fortress, and the team is out when it falls
 - [x] Question bank: starter Arabic questions, a bank editor, CSV upload with Arabic headers (السؤال، الخيار 1 (الإجابة)، الخيار 2، الخيار 3، الخيار 4), add to or replace the existing questions, a template download, bad rows reported by line
 - [x] Answer timer ring, answer reveal, sounds for right and wrong answers with a mute button
 - [x] In-game help screens, like the other games
@@ -61,11 +61,11 @@ From round 2, neighbours touch borders, so every attack risks a counterattack. A
 - Phone buzzers for teams: needs a server
 
 ## Build order
-1. The slice: setup → map → turns (question, shop, attack duel, move) → elimination → end by the chosen mode → podium.
+1. The slice: setup → map → turns (question, shop, attack battle, move) → elimination → end by the chosen mode → podium.
 
 ## Keep
 
 ---
-**Kill condition:** if a duel per attack makes rounds drag so a 6-team game feels slow after two tuning rounds.
+**Kill condition:** if a battle of several answers per attack makes rounds drag so a 6-team game feels slow after two tuning rounds.
 **Who it's for / what they feel:** a host running school, family or company competitions; the excitement of defending your capital.
 **Games you love / don't:** souq-al-marifa and waraqat-al-hazz (the host flow).

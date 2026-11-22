@@ -28,7 +28,7 @@ After play: redo both games ui/ux
 Setup on one screen, then the stage with each team's podium and score. Team 1 picks a level: easy 25, medium 50 or hard 100. The question appears with a 30-second ring. A right answer adds the level's points; twelve golden cards are dealt face down; the team picks one and it flips: "+1000", or البرق, and the team picks a rival for a lightning strike of −200. The hook pays off.
 
 ## Challenge
-Harder levels pay four times the easy ones, but a wrong answer earns nothing and passes the turn *(provisional)*. From the first flip, cards can cost −10 to −1000, and rivals can strike with lightning, fire, a bomb, or a stop sign that benches a team for 2 turns; a dove blocks one strike.
+Harder levels pay four times the easy ones, but a wrong answer earns nothing and passes the turn *(provisional)*. From the first flip, cards can cost −10 to −1000, and rivals can strike with lightning, fire, a bomb, or a stop sign that benches a team for 2 turns; a dove blocks one lightning, fire or bomb strike (its holder chooses at each strike whether to spend it), never a stop sign.
 
 ## Core loop
 - Pick a level → answer on the clock (4 choices, or host judges).
@@ -46,7 +46,8 @@ Harder levels pay four times the easy ones, but a wrong answer earns nothing and
 - [x] Attack cards used now or kept; kept cards and doves shown on each team's podium and usable on that team's turn
 - [x] Question bank: 60 starter questions (20 per level) written for this game; add, delete, reset
 - [x] CSV import with Arabic headers السؤال، الخيار 1 (الإجابة)، الخيار 2، الخيار 3، الخيار 4، المستوى; a blank or wrong المستوى rejects the whole file with its lines; then add or replace
-- [ ] Podium and standings; sounds with mute
+- [x] Podium and standings; sounds with mute
+- [x] Logo intro on load, the Musabaqat family link (title and results screens), undo after a verdict or a deleted question
 - [x] Arabic README, and a row in the games repo's main README
 
 ## Your systems
