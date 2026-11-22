@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!-- PROTOTYPE - NOT FOR PRODUCTION
+     Question: is a quiz that decides who takes land more tense than plain points?
+     Date: 2026-11-22
+     The host window (setup: شاشة المقدّم → نافذة على هذا الحاسوب, projector set to Extend). index.html
+     opens it; it stays on the laptop screen, shows the answer, and its buttons and keys send the same
+     actions as the game's own keyboard. The game window holds the whole game; closing this changes nothing. -->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>شاشة المقدّم — حصون المعرفة</title>
+<style>
+  @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-arabic-500.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-arabic-700.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-latin-500.woff2) format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+  @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-latin-700.woff2) format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+  :root { --bg: #0e1624; --panel: #162133; --panel2: #1d2a40; --line: #26344d; --text: #e8e6df; --muted: #96a2b6; --brass: #c9a24a; --ok: #4de8c8; --bad: #ff8a8f; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 500 20px/1.5 'Plex', Tahoma, 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); font-variant-numeric: tabular-nums; }
+  header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px 22px; background: var(--panel); border-bottom: 2px solid var(--brass); }
+  header b { color: var(--brass); }
+  .light { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--bad); margin-inline-end: 8px; }
+  .light.on { background: var(--ok); }
+  main { padding: 22px 26px; display: grid; gap: 14px; }
+  .who { color: var(--muted); font-size: 18px; }
+  .who b { color: var(--text); }
+  .row { display: flex; gap: 18px; align-items: flex-start; }
+  .n { flex: none; min-width: 96px; text-align: center; border-inline-end: 1px solid var(--line); padding-inline-end: 16px; }
+  .n small { display: block; color: var(--muted); font-size: 15px; font-weight: 700; }
+  .n b { font-size: 56px; line-height: 1.05; color: var(--brass); direction: ltr; display: inline-block; }
+  .q { font-size: 24px; font-weight: 700; line-height: 1.45; }
+  .ans { background: var(--panel); border: 1px solid var(--line); border-inline-start: 6px solid var(--ok); border-radius: 10px; padding: 12px 18px; }
+  .ans small { color: var(--muted); font-size: 15px; font-weight: 700; }
+  .ans b { display: block; font-size: 36px; color: var(--ok); line-height: 1.3; }
+  .ans .k { color: var(--text); font-size: 18px; }
+  .btns { display: flex; flex-wrap: wrap; gap: 10px; }
+  button { font-family: inherit; font-weight: 700; font-size: 19px; line-height: 1.3; padding: 12px 20px; min-height: 48px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); cursor: pointer; }
+  button:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
+  button.pri { background: var(--brass); color: var(--bg); border-color: var(--brass); }
+  button.good { background: #12483f; border-color: var(--ok); }
+  button.bad { background: #4a1f25; border-color: var(--bad); }
+  button.choice { flex: 1 1 40%; text-align: start; display: flex; gap: 10px; align-items: center; }
+  button.choice .k { background: var(--bg); border-radius: 6px; padding: 0 10px; direction: ltr; }
+  button.choice.right { border-color: var(--ok); }
+  .note { color: var(--muted); font-size: 17px; }
+  .timer { color: var(--brass); font-weight: 700; direction: ltr; display: inline-block; }
+</style>
+</head>
+<body>
+<header>
+  <span><b>للمقدّم فقط</b> · لا تعرض هذه النافذة على جهاز العرض</span>
+  <span id="round"></span>
+  <span><span class="light" id="light"></span><span id="status">غير متصلة</span></span>
+</header>
+<main id="main"><p class="note">افتح هذه النافذة من «ابدأ الحرب» أو من زر «افتح شاشة المقدّم» في اللعبة.</p></main>
+<script>
+  const game = window.opener, main = document.getElementById('main');
+  const PHASE = { ready: 'بداية الدور', shop: 'السوق', attack: 'الهجوم', move: 'التحريك', capture: 'سقوط الأرض', over: 'نهاية الدور' };
+  const h = (tag, props = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(props)) if (k.startsWith('on')) e[k] = v; else if (k === 'class') e.className = v; else e.setAttribute(k, v);
+    e.append(...kids.filter(x => x != null && x !== false)); return e; }; // text only, never HTML: questions can come from the host's CSV
+  const send = m => { if (game && !game.closed) game.postMessage(Object.assign({ type: 'cmd' }, m), '*'); };
+  let last = 0, snap = null;
+
+  function render(s) {
+    document.getElementById('round').textContent = s.scene === 'play' && s.round ? `الجولة ${s.round}` : '';
+    if (s.scene !== 'play') { main.replaceChildren(h('p', { class: 'note' }, s.scene === 'results' ? 'انتهت الحرب. النتائج على جهاز العرض.' : 'الحرب لم تبدأ بعد.')); return; }
+    if (s.paused) { main.replaceChildren(h('p', { class: 'note' }, 'اللعبة متوقفة مؤقتاً. تابعها من نافذة اللعبة.')); return; }
+    const parts = [];
+    const enter = s.primary && !s.judge ? h('button', { class: 'pri', onclick: () => send({ cmd: 'enter' }) }, s.primary, ' (Enter)') : null;
+    if (s.q) {
+      parts.push(h('div', { class: 'who' }, s.done ? 'أجاب: ' : 'يجيب الآن: ', h('b', {}, s.answering), s.timer != null && !s.done ? h('span', {}, ' · الوقت ', h('span', { class: 'timer' }, String(s.timer))) : null));
+      parts.push(h('div', { class: 'row' }, h('div', { class: 'n' }, h('small', {}, 'سؤال'), h('b', {}, String(s.q.n))), h('div', { class: 'q' }, s.q.text)));
+      parts.push(h('div', { class: 'ans' }, h('small', {}, 'الإجابة الصحيحة'), h('b', {}, s.q.answer),
+        s.qmode === 'choices' ? h('span', { class: 'k' }, `الخيار ${s.q.right} على الشاشة`) : null));
+      if (!s.done && s.qmode === 'choices') {
+        parts.push(h('div', { class: 'note' }, 'اضغط الخيار الذي اختاره الفريق (أو 1–4):'));
+        parts.push(h('div', { class: 'btns' }, ...s.q.choices.map((c, i) => h('button', { class: 'choice' + (i + 1 === s.q.right ? ' right' : ''), onclick: () => send({ cmd: 'choice', k: i + 1 }) },
+          h('span', { class: 'k' }, String(i + 1)), c))));
+      }
+      if (!s.done && s.judge) parts.push(h('div', { class: 'btns' },
+        h('button', { class: 'good', onclick: () => send({ cmd: 'judge', v: 'right' }) }, 'إجابة صحيحة (Enter)'),
+        h('button', { class: 'bad', onclick: () => send({ cmd: 'judge', v: 'wrong' }) }, 'إجابة خاطئة')));
+    } else {
+      parts.push(h('div', { class: 'who' }, 'الدور على: ', h('b', {}, s.team), ' · ', PHASE[s.phase] || ''));
+      parts.push(h('p', { class: 'note' }, 'السوق والهجوم والتحريك من نافذة اللعبة على جهاز العرض. السؤال التالي يظهر هنا مع إجابته.'));
+    }
+    if (enter) parts.push(h('div', { class: 'btns' }, enter));
+    main.replaceChildren(...parts);
+  }
+
+  if (game) {
+    addEventListener('message', e => {
+      if (e.source !== game) return; // only the game that opened this window
+      const m = e.data || {};
+      if (m.type !== 'state') return;
+      last = Date.now();
+      const key = JSON.stringify(m); if (key !== snap) { snap = key; render(m); } // the timer ticks every second: redraw only on change
+    });
+    // this window usually has the focus, so the host's keys come here: pass the game's own shortcuts on
+    addEventListener('keydown', e => {
+      if (e.repeat) return;
+      if (e.code === 'Enter' || e.code === 'NumpadEnter') { if (!(e.target instanceof Element && e.target.closest('button'))) send({ cmd: 'enter' }); }
+      else { const k = /^(Digit|Numpad)([1-4])$/.exec(e.code); if (k) send({ cmd: 'choice', k: +k[2] }); }
+    });
+    game.postMessage({ type: 'hello' }, '*');
+    setInterval(() => {
+      const on = !game.closed && Date.now() - last < 2500;
+      document.getElementById('light').classList.toggle('on', on);
+      document.getElementById('status').textContent = on ? 'متصلة باللعبة' : 'انقطع الاتصال: تابع من نافذة اللعبة';
+    }, 500);
+  }
+</script>
+</body>
+</html>

@@ -660,3 +660,11 @@
   licence: {id: OFL-1.1}  # licence text: assets/logo/OFL.txt
   date: 2026-11-21
   ships: true
+
+- path: vendor/qrcode.js
+  origin: licensed
+  tool: "npm pack qrcode-generator@2.0.4, dist/qrcode.js unchanged (md5 fbb6b69bce6abf116d6eb147ad5484a5); read for network, eval and storage calls: none"
+  source: {vendor: "Kazuhiko Arase", product: "qrcode-generator 2.0.4", url: "https://github.com/kazuhikoarase/qrcode-generator"}
+  licence: {id: MIT}  # licence text: the header of vendor/qrcode.js
+  date: 2026-11-22
+  ships: true

@@ -54,5 +54,12 @@ window.CONFIG = {
   floodTime: { value: 0.7, min: 0.1, max: 3, step: 0.1 },        // seconds a taken hex takes to fill with its new colour
   undoSeconds: { value: 5, min: 0, max: 30, step: 1 },           // how long "تراجع (Z)" stays after a verdict, and after deleting a bank question
   fallBeat: { value: 3, min: 1.5, max: 10, step: 0.5 },          // seconds the fallen-capital beat holds the stage (Enter moves on once the banner is planted)
+
+  // The host's answer key on a phone (setup: شاشة المقدّم → على جوالي). One QR code carries as many
+  // questions as fit; a phone read the largest code (version 40) from a screen in the spike.
+  keyQuestionChars: { value: 30, min: 0, max: 80, step: 5 },     // start of each question on the key (0: number and answer only)
+  keyAnswerChars: { value: 30, min: 10, max: 80, step: 5 },      // the answer, cut with … past this
+  keyMaxVersion: { value: 40, min: 10, max: 40, step: 1 },       // biggest QR code (40: 177x177 squares); lower for older phones
+  keyReserve: { value: 30, min: 5, max: 120, step: 5 },          // a turn starts with a new key when fewer questions than this are left, so a long battle never runs out
   floodHold: { value: 0.6, min: 0, max: 3, step: 0.1 },          // seconds the full stage stays on a freshly flooded hex before the side panel returns
 };

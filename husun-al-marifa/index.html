@@ -92,6 +92,8 @@
   .stepper { display: inline-flex; align-items: center; gap: 6px; }
   .stepper button { width: 44px; height: 44px; font-size: 22px; font-weight: 700; background: var(--panel2); border: 1px solid var(--line); }
   .stepper b { min-width: 46px; text-align: center; font-size: 24px; }
+  .stepper .stepn { width: 72px; height: 44px; text-align: center; font: inherit; font-size: 24px; font-weight: 700; direction: ltr; background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 6px; }
+  .stepper .stepn:focus-visible { outline: 3px solid var(--brass); outline-offset: 1px; }
   table.lb { width: 100%; border-collapse: collapse; font-size: 18px; }
   table.lb th { color: var(--muted); font-weight: 500; font-size: 16px; text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--line); }
   table.lb td { padding: 0 8px; height: 36px; border-bottom: 1px solid var(--line); }
@@ -123,6 +125,19 @@
   .sides .n { font-size: 26px; } .sides .x { color: var(--brass); } .sides .muted { font-weight: 500; }
   #qpanel .body { flex: 1; padding: 12px 20px 14px; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
   .q { font-size: 27px; font-weight: 700; line-height: 1.4; text-wrap: balance; }
+  .qno { flex: none; min-width: 72px; display: grid; justify-items: center; padding-inline-start: 14px; border-inline-start: 1px solid var(--line); }
+  .qno small { font-size: 14px; color: var(--muted); font-weight: 700; }
+  .qno b { font-size: 40px; line-height: 1.1; color: var(--brass); }
+  .keymodal { width: 760px; justify-items: center; }
+  .keywarn { font-size: 19px; font-weight: 700; color: var(--bad); line-height: 1.6; max-width: 640px; }
+  .qrbox { background: #fff; padding: 10px; border-radius: 8px; line-height: 0; width: 400px; height: 400px; display: grid; place-items: center; overflow: hidden; }
+  .qrbox svg { width: 100%; height: 100%; transition: filter .25s ease-out; }
+  .qrbox.veiled svg { filter: blur(16px); } /* unreadable by any camera until the host says the projector is hidden */
+  .keybtns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .chip.keychip { font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: default; }
+  .chip.keychip:not([disabled]) { cursor: pointer; } .chip.keychip:not([disabled]):hover { color: var(--text); border-color: var(--brass); }
+  .chip.keychip b { color: var(--text); letter-spacing: 1px; }
+  .chip.keychip.near { border-color: var(--brass); color: var(--brass); }
   .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; max-height: 150px; grid-auto-rows: 1fr; }
   .choice { display: flex; align-items: center; gap: 12px; padding: 8px 14px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; font-weight: 700; font-size: 21px; text-align: right; min-height: 56px; }
   .choice .mark { margin-inline-start: auto; flex: none; }
@@ -220,6 +235,8 @@
 <script src="questions.js"></script>
 <script src="csv.js"></script>
 <script src="rules.js"></script>
+<script src="pack.js"></script>
+<script src="vendor/qrcode.js"></script>
 <script>
 'use strict';
 // حصون المعرفة: a host-run team quiz on a hex war map. Each turn a team answers for money, trades at
@@ -442,7 +459,7 @@ function downloadTemplate() {
 }
 function defaults() {
   return { teams: tune.teams, names: Array.from({ length: 6 }, (_, i) => `الفريق ${i + 1}`), answerTime: tune.answerTime,
-    qmode: 'choices', end: 'capital', rounds: tune.rounds, minutes: tune.minutes };
+    qmode: 'choices', end: 'capital', rounds: tune.rounds, minutes: tune.minutes, hostScreen: 'none' };
 }
 function loadSettings() { // saved settings, each value checked against its limits
   const s = Object.assign(defaults(), store.get('husun.settings', {}));
@@ -450,6 +467,7 @@ function loadSettings() { // saved settings, each value checked against its limi
   for (const [k, c] of Object.entries(lim)) s[k] = clamp(Number(s[k]) || c.value, c.min, c.max);
   if (!['choices', 'judge'].includes(s.qmode)) s.qmode = 'choices';
   if (!['capital', 'timed', 'rounds'].includes(s.end)) s.end = 'capital';
+  if (!['none', 'phone', 'window'].includes(s.hostScreen)) s.hostScreen = 'none';
   s.names = Array.from({ length: 6 }, (_, i) => (Array.isArray(s.names) && typeof s.names[i] === 'string' && s.names[i].trim()) || `الفريق ${i + 1}`);
   return s;
 }
@@ -464,14 +482,17 @@ const PHASE_STEP = { ready: 0, question: 0, reveal: 0, shop: 1, attack: 2, duel:
 const fullStage = () => ['duel', 'duelReveal', 'capture'].includes(state.phase); // B: a battle, and the flood after it, own the whole stage
 function reset() {
   seed = Number(params.get('seed')) || CONFIG.seed || (Date.now() | 0); // seed 0: a new map every game
-  const n = settings.teams, cols = tune.mapCols, rows = tune.mapRows, mapSeed = seed;
+  const n = settings.teams, cols = tune.mapCols, rows = tune.mapRows, mapSeed = seed, seed0 = seed;
   const hexes = R.makeMap(cols, rows, tune.mapLakes, rng);
   const g = R.placeTeams(hexes, n, tune.startHexes, tune.startCapitalBattalions, tune.startOtherBattalions, rng);
   state = {
     t: 0, score: 0, gained: '', paused: false,
     n, names: settings.names.slice(0, n), g, cols, rows, money: Array(n).fill(tune.startMoney), fellAt: Array(n).fill(-1), prices: R.rollPrices(rng, PP()),
     cur: 0, turns: 0, round: 1, elapsed: 0, lastCall: false,
-    phase: 'ready', timer: 0, ticked: -1, q: null, deck: [],
+    phase: 'ready', timer: 0, ticked: -1, q: null,
+    deck: R.questionDeck(bank.length, seed0), qi: 0, seed0, code: R.matchCode(bank, seed0), // the question order, fixed now (see drawQuestion)
+    keyTo: 0, keyAsk: settings.hostScreen === 'phone' ? { from: 0, step: 1 } : null, // the phone key: questions before keyTo are on it; keyAsk: the key screen is up
+    keyOff: false, keySnooze: -1, // keyOff: the host went on without a key; keySnooze: the turn the host chose "later" on
     picked: null, result: null, reward: 0, reveal: false,     // the team's own question
     buys: [], sel: -1, target: -1, moveN: 1, movesLeft: 0, msg: '', msgGood: false, // market, attack and move
     duel: null,                                                // { from, to, a, d, neutral, b: battle | null, last, outcome }
@@ -480,11 +501,16 @@ function reset() {
     terrain: makeTerrain(hexes, mapSeed),
   };
 }
-function drawQuestion() { // no question repeats until the whole bank has been asked
-  if (!state.deck.length) { state.deck = bank.map((_, i) => i); for (let i = state.deck.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [state.deck[i], state.deck[j]] = [state.deck[j], state.deck[i]]; } }
-  const row = bank[state.deck.pop() % bank.length];
+// Questions come in the order fixed at Start (rules.js questionDeck, its own stream), so a host's answer
+// key made then stays right however the battles go; state.qi is in every undo snapshot. No question
+// repeats until the whole bank has been asked; then the next pass is fixed by the seed too.
+function drawQuestion() {
+  const n = bank.length, k = state.qi++;
+  if (phoneKey() && k >= state.keyTo && !state.keyAsk) state.keyAsk = { from: k, step: 1 }; // last resort: the reserve normally prevents this
+  if (k > 0 && k % n === 0) state.deck = R.questionDeck(n, state.seed0 + k / n);
+  const row = bank[state.deck[k % n]];
   const order = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
-  return { cat: row[0], text: row[1], choices: order.map(k => row[2 + k]), right: order.indexOf(0) };
+  return { n: k + 1, cat: row[0], text: row[1], choices: order.map(k => row[2 + k]), right: order.indexOf(0) };
 }
 const RP = () => ({ hitBase: tune.hitBase, hitPerCannon: tune.hitPerCannon, attackMin: tune.attackMin, defenderWrongLoss: tune.defenderWrongLoss });
 const PP = () => ({ priceRoll: tune.priceRoll, troopBase: tune.troopBase, cannonBase: tune.cannonBase, fortBase: tune.fortBase,
@@ -493,7 +519,8 @@ const income = t => R.hexCount(state.g, t) * tune.payoutPerHex;               //
 const payoutIn = () => tune.payoutEvery - ((state.round - 1) % tune.payoutEvery); // rounds until it comes
 const scoreOf = t => R.score(state.g, t, state.money[t], state.prices, tune.hexWorth);
 const isNeutral = hx => state.g.owner[hx] === -1;
-function setPhase(p) { state.phase = p; state.msg = ''; if (p !== 'reveal' && p !== 'duelReveal') verdictUndo = null; events.push({ phase: p }); renderAll(); }
+function setPhase(p) { state.phase = p; state.msg = '';
+  if (p === 'ready' && phoneKey() && !state.keyAsk && state.keySnooze !== state.turns && state.keyTo - state.qi < tune.keyReserve) state.keyAsk = { from: state.qi, step: 1 }; if (p !== 'reveal' && p !== 'duelReveal') verdictUndo = null; events.push({ phase: p }); renderAll(); }
 // D: every verdict can be taken back for undoSeconds: a copy of the whole game from just before it lands.
 let verdictUndo = null; // { snap, until } on the state.t clock
 function snapVerdict() { verdictUndo = tune.undoSeconds > 0 ? { snap: structuredClone(state), until: state.t + tune.undoSeconds } : null; }
@@ -889,7 +916,7 @@ let refs = {};
 function renderAll() {
   if (scene !== 'play') return;
   const wide = fullStage(); refs.side.classList.toggle('gone', wide); refs.side.inert = wide; // B: the side panel steps away for a battle
-  renderHeader(); renderSide(); renderQuestion();
+  renderHeader(); renderSide(); renderQuestion(); renderHostKey(); tellPresenter();
 }
 function themeSeg(after) {
   return h('div', { class: 'seg' }, h('button', { class: theme === 'dark' ? 'on' : '', onclick: () => { setTheme('dark'); after(); } }, 'داكن'),
@@ -902,8 +929,10 @@ function renderHeader() {
   refs.header.replaceChildren(...[h('span', { html: LOGO(0.85) }), h('b', { style: 'font-size:20px' }, TITLE), end,
     h('span', { class: 'chip muted' }, settings.qmode === 'choices' ? 'أربعة خيارات' : 'المقدّم يحكم'),
     state.lastCall ? h('span', { class: 'chip bad' }, 'انتهى الوقت · آخر دور') : null,
+    phoneKey() ? keyChip() : null,
     h('span', { class: 'sp' }), themeSeg(renderAll),
     h('span', { class: 'hgroup' },
+      settings.hostScreen === 'window' ? B(presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم', 'ghost', openPresenter) : null,
       B('شرح اللعبة', 'ghost', () => showHelp(HELP_AT[state.phase] ?? 0)),
       B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', 'ghost', () => setMuted(!muted)),
       B(state.paused ? 'متابعة' : 'إيقاف مؤقت', 'ghost', () => { state.paused = !state.paused; renderHeader(); }),
@@ -974,7 +1003,13 @@ function renderSide() {
     else {
       const max = g.bat[state.sel] - 1; state.moveN = clamp(state.moveN, 1, max);
       a.push(h('div', { class: 'row' }, h('span', { class: 'hint' }, 'عدد الكتائب'), h('span', { class: 'stepper' },
-        h('button', { onclick: () => { state.moveN = clamp(state.moveN - 1, 1, max); renderSide(); } }, '−'), h('b', {}, N(state.moveN)),
+        h('button', { onclick: () => { state.moveN = clamp(state.moveN - 1, 1, max); renderSide(); } }, '−'),
+        // the count can be typed (Arabic or Latin digits); Enter moves, like the move button
+        h('input', { class: 'stepn', value: String(state.moveN), inputmode: 'numeric', 'aria-label': `عدد الكتائب، من 1 إلى ${max}`,
+          onfocus: e => e.target.select(),
+          oninput: e => { const v = toNum(e.target.value); if (v >= 1) state.moveN = clamp(v, 1, max); },
+          onchange: e => { e.target.value = String(state.moveN); },
+          onkeydown: e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); doMove(); } else if (e.key === 'Escape') e.target.blur(); } }),
         h('button', { onclick: () => { state.moveN = clamp(state.moveN + 1, 1, max); renderSide(); } }, '+'))),
         h('div', { class: 'row' }, B('انقل', 'good', doMove, { 'data-primary': '1' }), B('اختيار آخر', '', () => { state.sel = -1; state.target = -1; renderSide(); })));
     }
@@ -1025,7 +1060,8 @@ function renderQuestion() {
         : h('div', { class: 'sides' }, side(d.a, 'a', d.from, d.to), h('span', { class: 'x' }, 'ضد'), side(d.d, 'd', d.to, d.from)));
   }
   const timer = done ? null : h('div', { class: 'ring', style: 'width:96px;height:96px' }, h('span', { id: 'ringsvg', html: ring(state.timer, settings.answerTime) }), h('b', { id: 'ringnum' }, N(Math.ceil(state.timer))));
-  const parts = [h('div', { style: 'display:flex;gap:16px;align-items:center' }, timer, h('div', { class: 'q', style: 'flex:1' }, q.text))];
+  const qno = h('div', { class: 'qno' }, h('small', {}, 'سؤال'), h('b', {}, N(q.n)));
+  const parts = [h('div', { style: 'display:flex;gap:16px;align-items:center' }, timer, h('div', { class: 'q', style: 'flex:1' }, q.text), qno)];
   const canPick = !done && settings.qmode === 'choices';
   const answer = (right, k = null) => duel ? answerBattle(right, k) : answerTurn(right, k);
   if (settings.qmode === 'choices') {
@@ -1041,8 +1077,8 @@ function renderQuestion() {
       h('div', { class: 'answer', id: 'peek', hidden: true }, 'الإجابة الصحيحة: ', q.choices[q.right]));
   }
   if (settings.qmode === 'judge' && !done) parts.push(h('div', { style: 'display:flex;gap:10px' },
-    B('إجابة صحيحة', 'good', () => answer(true), { 'data-primary': '1', style: 'flex:1;font-size:20px' }),
-    B('إجابة خاطئة', 'warn', () => answer(false), { style: 'flex:1;font-size:20px' })));
+    B('إجابة صحيحة', 'good', () => answer(true), { 'data-primary': '1', 'data-judge': 'right', style: 'flex:1;font-size:20px' }),
+    B('إجابة خاطئة', 'warn', () => answer(false), { 'data-judge': 'wrong', style: 'flex:1;font-size:20px' })));
   if (done) {
     let verdict, note, next = [];
     const missed = state.result === 'time' ? 'انتهى الوقت' : 'إجابة خاطئة';
@@ -1144,7 +1180,7 @@ const scenes = {
         h('input', { value: s.names[i], maxlength: '18', oninput: e => { s.names[i] = e.target.value.trim() || `الفريق ${i + 1}`; } }))));
       ui.append(h('div', { class: 'screen' },
         h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('span', { html: LOGO(1) }), h('b', { style: 'font-size:26px' }, 'إعداد الحرب'), h('span', { style: 'flex:1' }),
-          B('رجوع', '', () => go('title')), B('ابدأ الحرب', 'pri', () => { store.set('husun.settings', s); reset(); go('play'); }, { 'data-primary': '1', style: 'padding:12px 30px;font-size:18px' })),
+          B('رجوع', '', () => go('title')), B('ابدأ الحرب', 'pri', () => { store.set('husun.settings', s); if (s.hostScreen === 'window') openPresenter(); reset(); go('play'); }, { 'data-primary': '1', style: 'padding:12px 30px;font-size:18px' })),
         h('div', { class: 'grid2', style: 'flex:1;min-height:0' },
           h('div', { style: 'display:grid;gap:14px;align-content:start' },
             h('div', { class: 'panel box' }, h('h3', {}, 'الفرق'), h('div', { style: 'display:flex;gap:10px;align-items:center' }, 'عدد الفرق',
@@ -1158,7 +1194,12 @@ const scenes = {
               s.end === 'timed' ? numF('مدة الحرب', 'minutes', CONFIG.minutes, 'دقيقة') : s.end === 'rounds' ? numF('عدد الجولات', 'rounds', CONFIG.rounds, 'جولة')
                 : h('div', { class: 'muted', style: 'font-size:12px' }, 'تستمر الحرب حتى تبقى عاصمة واحدة. يستطيع المقدّم إنهاءها متى شاء، فتُحسب النقاط.')),
             h('div', { class: 'panel box' }, h('h3', {}, 'البداية'), h('div', { class: 'muted', style: 'font-size:13px;line-height:1.7' },
-              `خريطة جديدة كل مرة من ${tune.mapCols * tune.mapRows - tune.mapLakes} أرضاً. لكل فريق عاصمة فيها ${bats(tune.startCapitalBattalions)}${tune.startHexes > 1 ? ` و${tune.startHexes - 1} أراضٍ حولها` : ''}، و${fmt(tune.startMoney)} من المال.`))))));
+              `خريطة جديدة كل مرة من ${tune.mapCols * tune.mapRows - tune.mapLakes} أرضاً. لكل فريق عاصمة فيها ${bats(tune.startCapitalBattalions)}${tune.startHexes > 1 ? ` و${tune.startHexes - 1} أراضٍ حولها` : ''}، و${fmt(tune.startMoney)} من المال.`)),
+            h('div', { class: 'panel box' }, h('h3', {}, 'شاشة المقدّم'), seg('hostScreen', [['none', 'بدون'], ['phone', 'على جوالي'], ['window', 'نافذة على هذا الحاسوب']]),
+              h('div', { class: 'muted', style: 'font-size:12px' }, s.hostScreen === 'window'
+                ? 'اضبط العرض على «توسيع» (Win+P). تفتح نافذة للمقدّم فيها الإجابة: أبقها على شاشة الحاسوب، واسحب اللعبة إلى جهاز العرض.'
+                : s.hostScreen === 'phone' ? 'جهاز العرض يكرر شاشة الحاسوب. عند البدء، وحين تقترب الأسئلة من النهاية، يظهر رمز تصوّره بجوالك فترى الإجابات. أخفِ جهاز العرض قبل إظهار الرمز.'
+                : 'المقدّم يرى ما يراه الجمهور.'))))));
     },
     update() {}, draw() { backdrop(false); },
   },
@@ -1211,7 +1252,7 @@ const scenes = {
       renderAll();
     },
     update(dt) {
-      if (state.paused) return;
+      if (state.paused || state.keyAsk) return; // the key screen holds the clock too
       if (settings.end === 'timed') {
         state.elapsed += dt;
         if (!state.lastCall && state.elapsed >= settings.minutes * 60) { state.lastCall = true; if (state.phase === 'ready') return endGame(); renderHeader(); }
@@ -1329,10 +1370,11 @@ function step() {
   if (pressed('KeyP') && !typing() && scene === 'play') { state.paused = !state.paused; renderHeader(); }
   if (pressed('KeyZ') && !typing() && verdictUndo) undoVerdict();
   if ((pressed('Enter') || pressed('NumpadEnter')) && !typing() && !document.getElementById('confirm')) { // Enter: the screen's main button
-    const p = (document.getElementById('fallbeat') || document.getElementById('importask') || document.getElementById('help') || ui).querySelector('[data-primary]:not([disabled])');
+    const p = (document.getElementById('fallbeat') || document.getElementById('hostkey') || document.getElementById('importask') || document.getElementById('help') || ui).querySelector('[data-primary]:not([disabled])');
     if (p) p.click();
   }
-  if (pressed('Escape')) { document.getElementById('confirm')?.remove(); document.getElementById('importask')?.remove(); if (document.getElementById('help')) { document.getElementById('help').remove(); if (scene === 'play') state.paused = false; } }
+  if (pressed('Escape') && state && state.keyAsk && state.keyAsk.step === 2 && document.getElementById('hostkey')) { state.keyAsk.step = 1; renderAll(); }
+  else if (pressed('Escape')) { document.getElementById('confirm')?.remove(); document.getElementById('importask')?.remove(); if (document.getElementById('help')) { document.getElementById('help').remove(); if (scene === 'play') state.paused = false; } }
   state.t += STEP;
   scenes[scene].update(STEP); hit.clear();
 }
@@ -1346,6 +1388,118 @@ function tick() {
 function drawFrame() { scenes[scene].draw(); }
 function frame() { tick(); requestAnimationFrame(frame); }
 function timer() { if (document.visibilityState === 'visible' && clock.now() - last > 0.1) tick(); }
+
+// ---- The host's answer key on a phone (setup: شاشة المقدّم → على جوالي; projector duplicates the laptop) ----
+// The key screen comes at Start, at the start of a turn when fewer than keyReserve questions are left
+// on the key (so no battle is cut), and, as a last resort, before a question past the key. Step 1 asks
+// the host to hide the projector; step 2 shows one QR code of key.html with the next questions and
+// answers in its #hash (pack.js), as many as fit the biggest code allowed; "done scanning" resumes.
+// Running from a flash drive (file://), the code points at the published key.html; ?keybase= overrides.
+const KEY_PAGE = params.get('keybase') || (location.protocol.startsWith('http') ? new URL('key.html', location.href).href
+  : 'https://alghofaily.github.io/Musabaqat/husun-al-marifa/key.html');
+let keyBuilt = null; // { from, count, svg } for the key screen now up
+function keyRows(from, count) { // the questions the game will ask from position `from`, in its order (rules.js questionOrder)
+  return R.questionOrder(bank.length, state.seed0, from, count).map((bi, i) =>
+    [from + i + 1, HusunKey.cut(bank[bi][1], tune.keyQuestionChars), HusunKey.cut(bank[bi][2], tune.keyAnswerChars)]);
+}
+async function buildKey(from, cap = 400) { // the most questions (up to cap) that fit one code of keyMaxVersion, then the smallest code that holds them
+  const fits = async n => { const url = KEY_PAGE + '#' + await HusunKey.pack({ code: state.code, rows: keyRows(from, n) });
+    try { const q = qrcode(tune.keyMaxVersion, 'L'); q.addData(url, 'Byte'); q.make(); return url; } catch (e) { return null; } };
+  let lo = 0, hi = cap, url = null;
+  while (lo < hi) { const m = (lo + hi + 1) >> 1; const u = await fits(m); if (u) { lo = m; url = u; } else hi = m - 1; }
+  if (!url) return null;
+  for (let t = 1; t <= tune.keyMaxVersion; t++) { try { const q = qrcode(t, 'L'); q.addData(url, 'Byte'); q.make(); return { from, count: lo, svg: q.createSvgTag({ cellSize: 4, margin: 4, scalable: true }) }; } catch (e) { /* too long for t */ } }
+  return null;
+}
+const phoneKey = () => settings.hostScreen === 'phone' && state && !state.keyOff;
+function keyChip() { // header: the match code and how far the key reaches; brass when the reserve is near
+  const left = state.keyTo - state.qi, near = state.keyTo > 0 && left <= tune.keyReserve + 10;
+  const early = state.phase === 'ready' && !state.keyAsk && state.keyTo > 0; // between turns only, so no battle is cut
+  return h('button', { class: 'chip keychip' + (near ? ' near' : ''), disabled: !early,
+    title: early ? 'خذ مفتاح الأسئلة التالية الآن' : 'يطابق الرمز على جوال المقدّم',
+    onclick: () => { state.keyAsk = { from: state.qi, step: 1 }; renderAll(); } },
+    'رمز المطابقة ', h('b', { class: 'num' }, state.code), state.keyTo > 0 ? [' · المفتاح حتى ', h('b', { class: 'num' }, state.keyTo)] : null);
+}
+function renderHostKey() {
+  const ask = state.keyAsk, old = document.getElementById('hostkey');
+  if (!ask) { old?.remove(); keyBuilt = null; return; }
+  if (old && old.dataset.step === String(ask.step) && old.dataset.from === String(ask.from) && old.dataset.cap === String(ask.cap || 0)) return;
+  old?.remove();
+  const first = ask.from === 0, remain = state.keyTo - state.qi;
+  const close = () => { state.keyAsk = null; renderAll(); };
+  const box = h('div', { class: 'qrbox' + (ask.step === 1 ? ' veiled' : '') }, h('span', { class: 'muted' }, 'جارٍ تجهيز الرمز…'));
+  const show = B('جهاز العرض مخفي: أظهر الرمز', 'pri', () => { state.keyAsk.step = 2; renderAll(); }, { 'data-primary': '1', disabled: true });
+  const modal = h('div', { class: 'modal keymodal' });
+  if (ask.step === 1) {
+    modal.append(h('b', { style: 'font-size:24px' }, first ? 'مفتاح الإجابات للمقدّم' : 'مفتاح الأسئلة التالية'),
+      h('div', { class: 'keywarn' }, 'أخفِ شاشة العرض أولاً: زر الإخفاء في جهاز العرض، أو Win+P ثم «شاشة الكمبيوتر فقط». في الرمز إجابات الأسئلة القادمة، ومن يصوّره من الجمهور يراها.'),
+      box,
+      h('div', { class: 'keybtns' }, show,
+        remain > 0 ? B(`لاحقاً (بقي ${remain} في المفتاح)`, '', () => { state.keySnooze = state.turns; close(); }) : null,
+        B('متابعة بدون مفتاح', 'ghost', () => { state.keyOff = true; close(); })));
+  } else {
+    modal.append(h('div', { style: 'font-size:18px', id: 'keyrange' }, 'جارٍ تجهيز الرمز…'), box,
+      h('div', { class: 'keybtns' },
+        B('تم المسح: أكمل الحرب', 'pri', () => { state.keyTo = ask.from + keyBuilt.count; close(); }, { 'data-primary': '1', disabled: true, id: 'keydone' }),
+        B('رمز أصغر', '', () => { state.keyAsk.cap = Math.max(5, Math.floor((keyBuilt?.count || 20) / 2)); keyBuilt = null; renderAll(); }, { id: 'keysmaller', disabled: true }),
+        B('رجوع (Esc)', 'ghost', () => { state.keyAsk.step = 1; renderAll(); })));
+  }
+  const cap = ask.cap || 400;
+  (keyBuilt && keyBuilt.from === ask.from && keyBuilt.cap === cap ? Promise.resolve(keyBuilt) : buildKey(ask.from, cap)).then(k => {
+    if (state.keyAsk !== ask || !modal.isConnected) return;
+    if (!k) { box.replaceChildren(h('b', { style: 'color:var(--bg)' }, 'تعذّر صنع الرمز. ارفع «أكبر رمز» في الإعدادات.')); return; }
+    keyBuilt = Object.assign(k, { cap });
+    box.innerHTML = k.svg;
+    if (ask.step === 1) { show.disabled = false; return; }
+    document.getElementById('keyrange').replaceChildren(`امسح الرمز بجوالك: الأسئلة ${ask.from + 1} إلى ${ask.from + k.count} · رمز المطابقة `, h('b', { class: 'num', style: 'letter-spacing:3px' }, state.code));
+    document.getElementById('keydone').disabled = false;
+    document.getElementById('keysmaller').disabled = k.count <= 10;
+  });
+  ui.append(h('div', { class: 'ov', id: 'hostkey', 'data-step': String(ask.step), 'data-from': String(ask.from), 'data-cap': String(ask.cap || 0), role: 'dialog', 'aria-label': 'مفتاح الإجابات للمقدّم' }, modal));
+}
+
+// ---- The host window (setup: شاشة المقدّم → نافذة على هذا الحاسوب; projector set to Extend) ----
+// presenter.html stays on the laptop screen and shows the answer; this window, on the projector, is
+// the only holder of the game. It sends a full snapshot on every render and every second; the host
+// window sends back the same actions as the keyboard (Enter, 1–4) or the judge buttons, so each one
+// works only where it already would. window.open + postMessage also work from file:// (a flash drive).
+let presenter = null;
+const presenterOpen = () => !!presenter && !presenter.closed;
+function openPresenter() { // from a click only: browsers block pop-ups opened any other way
+  if (presenterOpen()) { presenter.focus(); return; }
+  presenter = window.open('presenter.html', 'husun-presenter', 'popup,width=960,height=720');
+  if (!presenter) setTimeout(() => { if (scene === 'play') { state.msg = 'منع المتصفح نافذة المقدّم. اسمح بالنوافذ المنبثقة لهذه الصفحة، ثم اضغط «افتح شاشة المقدّم» في الأعلى.'; state.msgGood = false; renderAll(); } }, 0);
+  else if (scene === 'play') renderHeader();
+}
+function tellPresenter() {
+  if (!presenterOpen()) return;
+  const playing = scene === 'play' && state, q = playing && state.q, p = playing ? state.phase : '';
+  const asking = ['question', 'reveal', 'duel', 'duelReveal'].includes(p) && q;
+  const d = state && state.duel, duel = p === 'duel' || p === 'duelReveal';
+  const who = !asking ? null : duel ? (p === 'duelReveal' && d.last ? (d.neutral || d.last.side === 'a' ? d.a : d.d) : answerer(d)) : state.cur;
+  const primary = (document.getElementById('fallbeat') || ui).querySelector('[data-primary]:not([disabled])');
+  presenter.postMessage({ type: 'state', scene, phase: p, paused: playing ? state.paused : false,
+    round: playing ? state.round : 0, team: playing ? state.names[state.cur] : '', answering: who == null ? '' : state.names[who],
+    q: asking ? { n: q.n, text: q.text, answer: q.choices[q.right], right: q.right + 1, choices: q.choices } : null,
+    qmode: settings.qmode, done: p === 'reveal' || p === 'duelReveal', timer: asking ? Math.ceil(state.timer) : null,
+    primary: primary ? primary.textContent.trim() : '', judge: !!document.querySelector('#qpanel [data-judge]') }, '*');
+}
+setInterval(() => { // the snapshot's timer, and the header's "connected" label when the host window opens or closes
+  tellPresenter();
+  if (scene === 'play' && settings.hostScreen === 'window') {
+    const b = [...(refs.header?.querySelectorAll('button') || [])].find(x => x.textContent.includes('شاشة المقدّم'));
+    if (b && b.textContent !== (presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم')) renderHeader();
+  }
+}, 1000);
+addEventListener('message', e => {
+  if (!presenterOpen() || e.source !== presenter) return; // only the window this game opened
+  const m = e.data || {};
+  if (m.type === 'hello') return tellPresenter();
+  if (m.type !== 'cmd' || scene !== 'play' || state.paused) return;
+  if (m.cmd === 'enter') hit.add('Enter');
+  else if (m.cmd === 'choice' && m.k >= 1 && m.k <= 4) hit.add('Digit' + m.k);
+  else if (m.cmd === 'judge' && (m.v === 'right' || m.v === 'wrong')) document.querySelector(`#qpanel [data-judge="${m.v}"]`)?.click();
+});
 
 // ---- What a check can read and drive (?manual=1 stops the loop; players never see it) ----
 window.game = {

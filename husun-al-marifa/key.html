@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!-- PROTOTYPE - NOT FOR PRODUCTION
+     Question: is a quiz that decides who takes land more tense than plain points?
+     Date: 2026-11-22
+     The host's answer key on a phone (setup: شاشة المقدّم → على جوالي). The game shows a QR code of this
+     page's address; the questions and answers ride in the #hash, which the browser never sends to the
+     server, and are unpacked here. Nothing is stored. -->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>مفتاح الإجابات — للمقدّم فقط</title>
+<style>
+  @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-arabic-500.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-arabic-700.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-latin-500.woff2) format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+  @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-latin-700.woff2) format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+  :root { --bg: #0e1624; --panel: #162133; --line: #26344d; --text: #e8e6df; --muted: #96a2b6; --brass: #c9a24a; --ok: #4de8c8; }
+  body { margin: 0; font: 500 17px/1.5 'Plex', Tahoma, 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); font-variant-numeric: tabular-nums; }
+  header { position: sticky; top: 0; z-index: 1; background: var(--panel); border-bottom: 2px solid var(--brass); padding: 10px 16px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; }
+  .go { flex-basis: 100%; display: flex; gap: 8px; align-items: center; font-size: 15px; color: var(--muted); }
+  .go input { font: inherit; font-size: 22px; font-weight: 700; width: 5.5ch; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text); direction: ltr; text-align: center; }
+  .go input:focus-visible { outline: 3px solid var(--brass); outline-offset: 1px; }
+  header b { color: var(--brass); }
+  .code { font-size: 24px; letter-spacing: 4px; direction: ltr; display: inline-block; color: var(--brass); font-weight: 700; }
+  .range { padding: 10px 16px 0; color: var(--muted); font-size: 15px; }
+  ol { list-style: none; margin: 0; padding: 6px 12px 48px; }
+  li { display: grid; grid-template-columns: 4ch 1fr; gap: 2px 10px; padding: 10px 4px; border-bottom: 1px solid var(--line); scroll-margin-top: 140px; }
+  li.ten { border-bottom: 2px solid var(--brass); } /* a rule every ten questions, to keep one's place */
+  li.hit { background: var(--panel); border-radius: 8px; outline: 2px solid var(--brass); }
+  .n { font-size: 22px; font-weight: 700; color: var(--brass); grid-row: span 2; direction: ltr; text-align: center; }
+  .q { color: var(--muted); font-size: 14px; }
+  .a { font-size: 20px; font-weight: 700; color: var(--ok); }
+  .msg { padding: 24px 16px; }
+</style>
+</head>
+<body>
+<header><b>للمقدّم فقط</b><span>رمز المطابقة <span class="code" id="code">----</span></span>
+  <label class="go">اذهب إلى سؤال <input id="go" type="number" inputmode="numeric" min="1" aria-label="رقم السؤال على شاشة اللعبة"></label></header>
+<p class="range" id="range"></p>
+<main id="main"><p class="msg">جارٍ فتح المفتاح…</p></main>
+<script src="pack.js"></script>
+<script>
+  (async () => {
+    const main = document.getElementById('main');
+    try {
+      const key = await HusunKey.unpack(location.hash.slice(1));
+      document.getElementById('code').textContent = key.code;
+      if (key.rows.length) {
+        const range = `الأسئلة ${key.rows[0][0]} إلى ${key.rows.at(-1)[0]}`;
+        document.getElementById('range').textContent = range + '. طابق رمز المطابقة مع الرمز على شاشة اللعبة.';
+        document.title = 'مفتاح ' + range;
+      }
+      const ol = document.createElement('ol');
+      for (const [n, q, a] of key.rows) {
+        const li = document.createElement('li'); li.id = 'q' + n; if (n % 10 === 0) li.className = 'ten';
+        for (const [cls, text] of [['n', n], ['q', q], ['a', a]]) { const s = document.createElement('span'); s.className = cls; s.textContent = text; li.append(s); } // text, never HTML: CSV rows are untrusted
+        ol.append(li);
+      }
+      main.replaceChildren(ol);
+      // the host types the number on the stage; that line comes to the middle and is marked
+      document.getElementById('go').addEventListener('input', e => {
+        document.querySelector('li.hit')?.classList.remove('hit');
+        const li = document.getElementById('q' + e.target.value);
+        if (li) { li.classList.add('hit'); li.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+      });
+    } catch (e) {
+      main.innerHTML = '<p class="msg">هذا الرابط لا يحمل مفتاحاً صالحاً. صوّر الرمز من شاشة اللعبة مرة أخرى.</p>';
+    }
+  })();
+</script>
+</body>
+</html>

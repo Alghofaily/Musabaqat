@@ -133,3 +133,27 @@ test('moves reach only through the team’s own land', () => {
   g.owner[2] = 0; g.owner[3] = 0;
   assert.deepStrictEqual([...R.reachable(g, 0)].sort(), [1, 2, 3]);
 });
+
+test('the question order is fixed by the seed, holds every question once, and no other dice move it', () => {
+  const a = R.questionDeck(200, 42);
+  assert.deepStrictEqual([...a].sort((x, y) => x - y), [...Array(200).keys()]);
+  const r = seeded(42); for (let i = 0; i < 1000; i++) r(); // battles and prices roll the game's own dice
+  assert.deepStrictEqual(R.questionDeck(200, 42), a);         // the order has its own stream
+  assert.notDeepStrictEqual(R.questionDeck(200, 43), a);
+});
+
+test('the match code changes with the bank or the seed', () => {
+  const bank = [['قرآن', 'ما آخر سورة نزلت؟', 'النصر', 'الفاتحة', 'الناس', 'العصر'], ['علوم', 'كم رجل للعنكبوت؟', '8', '6', '10', '4']];
+  const code = R.matchCode(bank, 7);
+  assert.match(code, /^[2-9A-HJKMNP-Z]{4}$/);
+  assert.strictEqual(R.matchCode(bank, 7), code);
+  assert.notStrictEqual(R.matchCode(bank, 8), code);
+  assert.notStrictEqual(R.matchCode(bank.slice(1), 7), code);
+});
+
+test('the key\'s order is the game\'s order, across passes through the bank', () => {
+  const n = 7, seed = 11;
+  const game = [...R.questionDeck(n, seed), ...R.questionDeck(n, seed + 1), ...R.questionDeck(n, seed + 2)]; // drawQuestion's passes
+  assert.deepStrictEqual(R.questionOrder(n, seed, 0, 3 * n), game);
+  assert.deepStrictEqual(R.questionOrder(n, seed, 5, 6), game.slice(5, 11)); // a later key starts mid-pass
+});
