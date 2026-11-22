@@ -126,8 +126,9 @@
   #qpanel .body { flex: 1; padding: 12px 20px 14px; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
   .q { font-size: 27px; font-weight: 700; line-height: 1.4; text-wrap: balance; }
   .qno { flex: none; min-width: 72px; display: grid; justify-items: center; padding-inline-start: 14px; border-inline-start: 1px solid var(--line); }
-  .qno small { font-size: 14px; color: var(--muted); font-weight: 700; }
-  .qno b { font-size: 40px; line-height: 1.1; color: var(--brass); }
+  .qno small { font-size: 18px; color: var(--muted); font-weight: 700; }
+  .qno b { font-size: 40px; line-height: 1.1; color: var(--text); }
+  .seg[aria-disabled] button { opacity: .5; cursor: not-allowed; } /* off with four choices: the game judges itself */
   .keymodal { width: 760px; justify-items: center; }
   .keywarn { font-size: 19px; font-weight: 700; color: var(--bad); line-height: 1.6; max-width: 640px; }
   .qrbox { background: #fff; padding: 10px; border-radius: 8px; line-height: 0; width: 400px; height: 400px; display: grid; place-items: center; overflow: hidden; }
@@ -138,6 +139,7 @@
   .chip.keychip:not([disabled]) { cursor: pointer; } .chip.keychip:not([disabled]):hover { color: var(--text); border-color: var(--brass); }
   .chip.keychip b { color: var(--text); letter-spacing: 1px; }
   .chip.keychip.near { border-color: var(--brass); color: var(--brass); }
+  .chip.keychip .take { color: var(--brass); text-decoration: underline; text-underline-offset: 3px; }
   .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; max-height: 150px; grid-auto-rows: 1fr; }
   .choice { display: flex; align-items: center; gap: 12px; padding: 8px 14px; background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; font-weight: 700; font-size: 21px; text-align: right; min-height: 56px; }
   .choice .mark { margin-inline-start: auto; flex: none; }
@@ -150,7 +152,6 @@
   #qpanel[data-size=l] .q { font-size: 19px; line-height: 1.4; } #qpanel[data-size=l] .choice { font-size: 16px; min-height: 44px; padding: 6px 12px; }
   .answer { padding: 10px 16px; border-radius: 8px; background: var(--okbg); border: 1px solid var(--ok); font-weight: 700; font-size: 22px; }
   .answer[hidden] { display: none; }
-  .peek { align-self: flex-start; font-size: 14px; padding: 6px 14px; min-height: 36px; touch-action: none; user-select: none; }
   .loss { font-size: 76px; font-weight: 700; color: var(--text); line-height: .9; } /* C: whose loss it is reads from the banner beside it, not from red */
   .fallen { font-family: 'Kufi', 'Plex', sans-serif; font-size: 46px; font-weight: 700; line-height: 1.1; }
   .lossnote { display: grid; gap: 2px; font-size: 16px; color: var(--muted); }
@@ -461,11 +462,14 @@ function defaults() {
   return { teams: tune.teams, names: Array.from({ length: 6 }, (_, i) => `الفريق ${i + 1}`), answerTime: tune.answerTime,
     qmode: 'choices', end: 'capital', rounds: tune.rounds, minutes: tune.minutes, hostScreen: 'none' };
 }
+// The host screen in effect: only when the host judges. With four choices the game marks every answer
+// itself, so a private answer has no use; the saved choice comes back when the host switches to judging.
+const hostMode = (s = settings) => s.qmode === 'judge' ? s.hostScreen : 'none';
 function loadSettings() { // saved settings, each value checked against its limits
   const s = Object.assign(defaults(), store.get('husun.settings', {}));
   const lim = { teams: CONFIG.teams, answerTime: CONFIG.answerTime, rounds: CONFIG.rounds, minutes: CONFIG.minutes };
   for (const [k, c] of Object.entries(lim)) s[k] = clamp(Number(s[k]) || c.value, c.min, c.max);
-  if (!['choices', 'judge'].includes(s.qmode)) s.qmode = 'choices';
+  if (!['choices', 'judge', 'own'].includes(s.qmode)) s.qmode = 'choices';
   if (!['capital', 'timed', 'rounds'].includes(s.end)) s.end = 'capital';
   if (!['none', 'phone', 'window'].includes(s.hostScreen)) s.hostScreen = 'none';
   s.names = Array.from({ length: 6 }, (_, i) => (Array.isArray(s.names) && typeof s.names[i] === 'string' && s.names[i].trim()) || `الفريق ${i + 1}`);
@@ -491,7 +495,7 @@ function reset() {
     cur: 0, turns: 0, round: 1, elapsed: 0, lastCall: false,
     phase: 'ready', timer: 0, ticked: -1, q: null,
     deck: R.questionDeck(bank.length, seed0), qi: 0, seed0, code: R.matchCode(bank, seed0), // the question order, fixed now (see drawQuestion)
-    keyTo: 0, keyAsk: settings.hostScreen === 'phone' ? { from: 0, step: 1 } : null, // the phone key: questions before keyTo are on it; keyAsk: the key screen is up
+    keyTo: 0, keyAsk: hostMode() === 'phone' ? { from: 0, step: 1 } : null, // the phone key: questions before keyTo are on it; keyAsk: the key screen is up
     keyOff: false, keySnooze: -1, // keyOff: the host went on without a key; keySnooze: the turn the host chose "later" on
     picked: null, result: null, reward: 0, reveal: false,     // the team's own question
     buys: [], sel: -1, target: -1, moveN: 1, movesLeft: 0, msg: '', msgGood: false, // market, attack and move
@@ -531,7 +535,10 @@ function undoVerdict() {
   state.timer = Math.max(state.timer, tune.tickWarn); // a time-out undone gets the warning seconds back, or it would end again at once
   state.ticked = -1; events.push({ undo: state.phase }); sfx.click(); renderAll();
 }
-function startQuestion() { state.q = drawQuestion(); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.result = null; state.reveal = false; }
+// 'own': the host asks their own questions (phone, book), so nothing is drawn from the bank: the order, the key
+// and the question counter stay where they are. The placeholder keeps every reader of state.q safe.
+const ownQuestion = () => ({ own: true, n: 0, cat: '', text: '', choices: [], right: -1 });
+function startQuestion() { state.q = settings.qmode === 'own' ? ownQuestion() : drawQuestion(); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.result = null; state.reveal = false; }
 
 // 1. The team's own question: a right answer pays.
 function askTurnQuestion() { startQuestion(); setPhase('question'); }
@@ -927,12 +934,12 @@ function renderHeader() {
     : settings.end === 'timed' ? h('span', { class: 'chip', id: 'clockchip' }, 'الوقت المتبقي')
     : h('span', { class: 'chip' }, 'الجولة ', N(state.round), ' · حتى آخر عاصمة');
   refs.header.replaceChildren(...[h('span', { html: LOGO(0.85) }), h('b', { style: 'font-size:20px' }, TITLE), end,
-    h('span', { class: 'chip muted' }, settings.qmode === 'choices' ? 'أربعة خيارات' : 'المقدّم يحكم'),
+    h('span', { class: 'chip muted' }, settings.qmode === 'choices' ? 'أربعة خيارات' : settings.qmode === 'own' ? 'أسئلة المقدّم' : 'المقدّم يحكم'),
     state.lastCall ? h('span', { class: 'chip bad' }, 'انتهى الوقت · آخر دور') : null,
-    phoneKey() ? keyChip() : null,
+    hostMode() === 'phone' && state ? keyChip() : null,
     h('span', { class: 'sp' }), themeSeg(renderAll),
     h('span', { class: 'hgroup' },
-      settings.hostScreen === 'window' ? B(presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم', 'ghost', openPresenter) : null,
+      hostMode() === 'window' ? B(presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم', 'ghost', openPresenter) : null,
       B('شرح اللعبة', 'ghost', () => showHelp(HELP_AT[state.phase] ?? 0)),
       B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', 'ghost', () => setMuted(!muted)),
       B(state.paused ? 'متابعة' : 'إيقاف مؤقت', 'ghost', () => { state.paused = !state.paused; renderHeader(); }),
@@ -965,7 +972,7 @@ function renderSide() {
     a.push(h('div', { class: 'hint' }, 'سؤال الدور: الإجابة الصحيحة تضيف ', h('b', { class: 'brass' }, N(fmt(tune.turnReward))), ' إلى مال الفريق.'));
     bottom.push(B('اطرح سؤال الدور', 'pri', askTurnQuestion, { 'data-primary': '1' }));
   } else if (p === 'question' || p === 'reveal') {
-    a.push(h('div', { class: 'hint muted' }, p === 'reveal' ? 'أُجيب السؤال. التالي: السوق.' : 'السؤال معروض على الخريطة. أجب قبل انتهاء الوقت.'));
+    a.push(h('div', { class: 'hint muted' }, p === 'reveal' ? 'أُجيب السؤال. التالي: السوق.' : settings.qmode === 'own' ? 'اطرح سؤالك على الفريق، واحكم قبل انتهاء الوقت.' : 'السؤال معروض على الخريطة. أجب قبل انتهاء الوقت.'));
   } else if (p === 'shop') {
     const pr = state.prices, hx = state.sel, small = 'padding:5px 10px;font-size:13px;min-height:32px';
     a.push(h('div', { class: 'hint' }, 'اختر أرضاً لك على الخريطة، ثم اشترِ أو بِع فيها. الأسعار تتغير كل جولة.'));
@@ -1007,14 +1014,15 @@ function renderSide() {
         // the count can be typed (Arabic or Latin digits); Enter moves, like the move button
         h('input', { class: 'stepn', value: String(state.moveN), inputmode: 'numeric', 'aria-label': `عدد الكتائب، من 1 إلى ${max}`,
           onfocus: e => e.target.select(),
-          oninput: e => { const v = toNum(e.target.value); if (v >= 1) state.moveN = clamp(v, 1, max); },
+          oninput: e => { const v = toNum(e.target.value); if (v >= 1) { state.moveN = clamp(v, 1, max); if (v > max) e.target.value = String(max); } }, // too many: shown corrected at once
           onchange: e => { e.target.value = String(state.moveN); },
           onkeydown: e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); doMove(); } else if (e.key === 'Escape') e.target.blur(); } }),
-        h('button', { onclick: () => { state.moveN = clamp(state.moveN + 1, 1, max); renderSide(); } }, '+'))),
-        h('div', { class: 'row' }, B('انقل', 'good', doMove, { 'data-primary': '1' }), B('اختيار آخر', '', () => { state.sel = -1; state.target = -1; renderSide(); })));
+        h('button', { onclick: () => { state.moveN = clamp(state.moveN + 1, 1, max); renderSide(); } }, '+')),
+        h('span', { class: 'muted', style: 'font-size:14px' }, 'من ', N(1), ' إلى ', N(max))),
+        h('div', { class: 'row' }, B('انقل', 'pri', doMove, { 'data-primary': '1' }), B('اختيار آخر', '', () => { state.sel = -1; state.target = -1; renderSide(); })));
     }
     a.push(msg);
-    bottom.push(B('إنهاء الدور', 'pri', endTurn, { 'data-primary': state.target >= 0 ? null : '1' }));
+    bottom.push(B('إنهاء الدور', state.target >= 0 ? '' : 'pri', endTurn, { 'data-primary': state.target >= 0 ? null : '1' })); // a set-up move owns the main button
   } else if (p === 'over') {
     const w = R.aliveTeams(g)[0];
     a.push(h('div', { style: 'display:flex;gap:12px;align-items:center' }, banner(w, 54), h('div', { class: 'verdict pop' }, 'الفوز لـ', state.names[w], '!')),
@@ -1045,23 +1053,26 @@ function renderQuestion() {
   } else old?.remove();
   if (!['question', 'reveal', 'duel', 'duelReveal'].includes(p)) return;
   const q = state.q, duel = p === 'duel' || p === 'duelReveal', d = state.duel, done = p === 'reveal' || p === 'duelReveal';
-  const longest = Math.max(...q.choices.map(x => x.length));
+  const longest = q.own ? 0 : Math.max(...q.choices.map(x => x.length));
   const size = q.text.length > 110 || longest > 45 ? 'l' : q.text.length > 70 || longest > 30 ? 'm' : '';
   const who = duel ? (done && d.last ? (d.neutral || d.last.side === 'a' ? d.a : d.d) : answerer(d)) : state.cur;
   let head;
-  if (!duel) head = h('div', { class: 'ph' }, h('span', { style: 'display:flex;gap:10px;align-items:center;font-size:18px' }, banner(who, 30), `سؤال ${state.names[state.cur]}`), h('span', { class: 'chip muted' }, q.cat));
+  if (!duel) head = h('div', { class: 'ph' }, h('span', { style: 'display:flex;gap:10px;align-items:center;font-size:18px' }, banner(who, 30), `سؤال ${state.names[state.cur]}`), q.own ? null : h('span', { class: 'chip muted' }, q.cat));
   else { // A: who answers now, at the size of the room; in the reveal, who just answered (the next team shows after "السؤال التالي")
     const g = state.g, P = RP();
     const side = (t, k, hx, opp) => h('span', {}, banner(t, 26), h('span', { class: 'nm', title: state.names[t] }, state.names[t]), h('span', { class: 'n' }, N(d.b[k])),
       h('span', { class: 'muted' }, 'ضربته ', N(R.hit(g.cannons[hx], g.fort[opp], P))));
     head = h('div', { class: 'ph' }, h('div', { class: 'answering' }, banner(who, 54), h('div', { style: 'min-width:0' },
       h('small', {}, done ? 'أجاب' : 'يجيب الآن', d.neutral ? ' · أرض محايدة' : ''), h('b', { title: state.names[who] }, state.names[who]))),
-      d.neutral ? h('span', { class: 'chip muted' }, q.cat)
+      d.neutral ? (q.own ? null : h('span', { class: 'chip muted' }, q.cat))
         : h('div', { class: 'sides' }, side(d.a, 'a', d.from, d.to), h('span', { class: 'x' }, 'ضد'), side(d.d, 'd', d.to, d.from)));
   }
-  const timer = done ? null : h('div', { class: 'ring', style: 'width:96px;height:96px' }, h('span', { id: 'ringsvg', html: ring(state.timer, settings.answerTime) }), h('b', { id: 'ringnum' }, N(Math.ceil(state.timer))));
+  const rs = q.own ? 168 : 96; // the host's own questions: the clock is the whole panel
+  const timer = done ? null : h('div', { class: 'ring', style: `width:${rs}px;height:${rs}px` }, h('span', { id: 'ringsvg', 'data-size': rs, html: ring(state.timer, settings.answerTime, rs) }),
+    h('b', { id: 'ringnum', style: q.own ? 'font-size:54px' : null }, N(Math.ceil(state.timer))));
   const qno = h('div', { class: 'qno' }, h('small', {}, 'سؤال'), h('b', {}, N(q.n)));
-  const parts = [h('div', { style: 'display:flex;gap:16px;align-items:center' }, timer, h('div', { class: 'q', style: 'flex:1' }, q.text), qno)];
+  const parts = [q.own ? h('div', { style: 'display:flex;justify-content:center' }, timer)
+    : h('div', { style: 'display:flex;gap:16px;align-items:center' }, timer, h('div', { class: 'q', style: 'flex:1' }, q.text), qno)];
   const canPick = !done && settings.qmode === 'choices';
   const answer = (right, k = null) => duel ? answerBattle(right, k) : answerTurn(right, k);
   if (settings.qmode === 'choices') {
@@ -1070,13 +1081,10 @@ function renderQuestion() {
       const mark = cls ? h('span', { class: 'mark', html: cls === ' right' ? MARK_OK : MARK_NO }) : null; // E: right and wrong carry a shape, not colour alone
       return h('button', { class: 'choice' + cls, disabled: !canPick, onclick: canPick ? () => answer(k === q.right, k) : null }, h('span', { class: 'k' }, k + 1), txt, mark);
     })));
-  } else if (done) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right]));
-  else { // C: the projected screen shows the answer only while the host holds the button (or H)
-    const peekOn = e => { peekPtr = true; e.currentTarget.setPointerCapture?.(e.pointerId); }, peekOff = () => { peekPtr = false; };
-    parts.push(h('button', { class: 'btn peek', onpointerdown: peekOn, onpointerup: peekOff, onpointercancel: peekOff, onlostpointercapture: peekOff, oncontextmenu: e => e.preventDefault() }, 'اضغط مطولاً لرؤية الإجابة (H)'),
-      h('div', { class: 'answer', id: 'peek', hidden: true }, 'الإجابة الصحيحة: ', q.choices[q.right]));
-  }
-  if (settings.qmode === 'judge' && !done) parts.push(h('div', { style: 'display:flex;gap:10px' },
+  } else if (done && !q.own) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right]));
+  // No peek before the verdict: on one screen it shows the room too. A host who needs the answer first
+  // uses شاشة المقدّم (setup): a window on this computer, or a key on the phone.
+  if (settings.qmode !== 'choices' && !done) parts.push(h('div', { style: 'display:flex;gap:10px' },
     B('إجابة صحيحة', 'good', () => answer(true), { 'data-primary': '1', 'data-judge': 'right', style: 'flex:1;font-size:20px' }),
     B('إجابة خاطئة', 'warn', () => answer(false), { 'data-judge': 'wrong', style: 'flex:1;font-size:20px' })));
   if (done) {
@@ -1110,7 +1118,6 @@ function renderQuestion() {
   }
   ui.append(h('section', { id: 'qpanel', class: duel ? 'panel battle' : 'panel', 'data-size': size, style: `width:${MAP.w}px` + (duel ? `;border-color:${TEAMS[who].c}` : '') }, head, h('div', { class: 'body' }, ...parts))); // A: edged in the answerer's colour
 }
-let peekPtr = false;
 const MARK_OK = '<svg width="30" height="30" viewBox="0 0 24 24" role="img" aria-label="صحيحة"><path d="M4 12.5 L9.5 18 L20 6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const MARK_NO = '<svg width="30" height="30" viewBox="0 0 24 24" role="img" aria-label="خاطئة"><path d="M6 6 L18 18 M18 6 L6 18" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg>';
 function timeUp() { // nobody answered in time: an unanswered team counts as wrong
@@ -1180,7 +1187,7 @@ const scenes = {
         h('input', { value: s.names[i], maxlength: '18', oninput: e => { s.names[i] = e.target.value.trim() || `الفريق ${i + 1}`; } }))));
       ui.append(h('div', { class: 'screen' },
         h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('span', { html: LOGO(1) }), h('b', { style: 'font-size:26px' }, 'إعداد الحرب'), h('span', { style: 'flex:1' }),
-          B('رجوع', '', () => go('title')), B('ابدأ الحرب', 'pri', () => { store.set('husun.settings', s); if (s.hostScreen === 'window') openPresenter(); reset(); go('play'); }, { 'data-primary': '1', style: 'padding:12px 30px;font-size:18px' })),
+          B('رجوع', '', () => go('title')), B('ابدأ الحرب', 'pri', () => { store.set('husun.settings', s); if (hostMode(s) === 'window') openPresenter(); reset(); go('play'); }, { 'data-primary': '1', style: 'padding:12px 30px;font-size:18px' })),
         h('div', { class: 'grid2', style: 'flex:1;min-height:0' },
           h('div', { style: 'display:grid;gap:14px;align-content:start' },
             h('div', { class: 'panel box' }, h('h3', {}, 'الفرق'), h('div', { style: 'display:flex;gap:10px;align-items:center' }, 'عدد الفرق',
@@ -1188,15 +1195,21 @@ const scenes = {
             h('div', { class: 'panel box' }, h('h3', {}, 'الوقت'), numF('وقت الإجابة على كل سؤال', 'answerTime', CONFIG.answerTime, 'ثانية')),
             h('div', { class: 'panel box' }, h('h3', {}, 'المظهر'), themeSeg(() => go('setup')))),
           h('div', { style: 'display:grid;gap:14px;align-content:start' },
-            h('div', { class: 'panel box' }, h('h3', {}, 'عرض الأسئلة'), seg('qmode', [['choices', 'أربعة خيارات على الشاشة'], ['judge', 'السؤال فقط والمقدّم يحكم']]),
-              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode === 'choices' ? 'تختار الفرق رقم الإجابة، وفي المعركة يسجّل المقدّم رقم كل فريق.' : 'يظهر السؤال، ويحكم المقدّم على كل إجابة بصحيحة أو خاطئة، ثم تظهر الإجابة الصحيحة.')),
+            h('div', { class: 'panel box' }, h('h3', {}, 'عرض الأسئلة'), seg('qmode', [['choices', 'أربعة خيارات على الشاشة'], ['judge', 'السؤال فقط والمقدّم يحكم'], ['own', 'أسئلتي أنا']]),
+              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode === 'choices' ? 'تختار الفرق رقم الإجابة، وفي المعركة يسجّل المقدّم رقم كل فريق.' : s.qmode === 'own' ? 'بدون بنك: تطرح السؤال من جوالك أو كتاب، واللعبة تعرض المؤقت وزرَّي «صحيحة» و«خاطئة».' : 'يظهر السؤال، ويحكم المقدّم على كل إجابة بصحيحة أو خاطئة، ثم تظهر الإجابة الصحيحة.')),
             h('div', { class: 'panel box' }, h('h3', {}, 'نهاية الحرب'), seg('end', [['capital', 'حتى آخر عاصمة'], ['timed', 'بعد مدة'], ['rounds', 'بعد عدد جولات']]),
               s.end === 'timed' ? numF('مدة الحرب', 'minutes', CONFIG.minutes, 'دقيقة') : s.end === 'rounds' ? numF('عدد الجولات', 'rounds', CONFIG.rounds, 'جولة')
                 : h('div', { class: 'muted', style: 'font-size:12px' }, 'تستمر الحرب حتى تبقى عاصمة واحدة. يستطيع المقدّم إنهاءها متى شاء، فتُحسب النقاط.')),
             h('div', { class: 'panel box' }, h('h3', {}, 'البداية'), h('div', { class: 'muted', style: 'font-size:13px;line-height:1.7' },
               `خريطة جديدة كل مرة من ${tune.mapCols * tune.mapRows - tune.mapLakes} أرضاً. لكل فريق عاصمة فيها ${bats(tune.startCapitalBattalions)}${tune.startHexes > 1 ? ` و${tune.startHexes - 1} أراضٍ حولها` : ''}، و${fmt(tune.startMoney)} من المال.`)),
-            h('div', { class: 'panel box' }, h('h3', {}, 'شاشة المقدّم'), seg('hostScreen', [['none', 'بدون'], ['phone', 'على جوالي'], ['window', 'نافذة على هذا الحاسوب']]),
-              h('div', { class: 'muted', style: 'font-size:12px' }, s.hostScreen === 'window'
+            h('div', { class: 'panel box' }, h('h3', {}, 'شاشة المقدّم'),
+              s.qmode === 'judge' ? seg('hostScreen', [['none', 'بدون'], ['phone', 'على جوالي'], ['window', 'نافذة على هذا الحاسوب']])
+                : h('div', { class: 'seg', 'aria-disabled': 'true' }, ...[['none', 'بدون'], ['phone', 'على جوالي'], ['window', 'نافذة على هذا الحاسوب']].map(([v, l]) =>
+                  h('button', { class: v === 'none' ? 'on' : '', disabled: true }, l))),
+              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode !== 'judge'
+                ? (s.qmode === 'own' ? 'مع «أسئلتي أنا» الأسئلة والإجابات عندك أنت، فلا شيء تعرضه شاشة المقدّم.'
+                  : 'مع «أربعة خيارات» تحكم اللعبة على كل إجابة بنفسها، فلا حاجة لأن يرى المقدّم الإجابة. اختر «السؤال فقط والمقدّم يحكم» لتفعيل شاشة المقدّم.')
+                : s.hostScreen === 'window'
                 ? 'اضبط العرض على «توسيع» (Win+P). تفتح نافذة للمقدّم فيها الإجابة: أبقها على شاشة الحاسوب، واسحب اللعبة إلى جهاز العرض.'
                 : s.hostScreen === 'phone' ? 'جهاز العرض يكرر شاشة الحاسوب. عند البدء، وحين تقترب الأسئلة من النهاية، يظهر رمز تصوّره بجوالك فترى الإجابات. أخفِ جهاز العرض قبل إظهار الرمز.'
                 : 'المقدّم يرى ما يراه الجمهور.'))))));
@@ -1277,9 +1290,7 @@ const scenes = {
       backdrop(false); drawMap();
       for (const id of ['mapbox', 'qpanel']) { const el = document.getElementById(id); if (el) el.style.width = MAP.w + 'px'; }
       const rs = document.getElementById('ringsvg');
-      if (rs) { rs.innerHTML = ring(state.timer, settings.answerTime); document.getElementById('ringnum').textContent = Math.ceil(state.timer); }
-      const pk = document.getElementById('peek');
-      if (pk) pk.hidden = !(peekPtr || (down.has('KeyH') && !typing()));
+      if (rs) { rs.innerHTML = ring(state.timer, settings.answerTime, +rs.dataset.size || 96); document.getElementById('ringnum').textContent = Math.ceil(state.timer); }
       const ul = document.getElementById('undoleft');
       if (ul) { const left = verdictUndo ? verdictUndo.until - state.t : 0; if (left <= 0) { verdictUndo = null; document.getElementById('undoverdict')?.remove(); } else ul.textContent = Math.ceil(left); }
       const cc = document.getElementById('clockchip');
@@ -1411,14 +1422,18 @@ async function buildKey(from, cap = 400) { // the most questions (up to cap) tha
   for (let t = 1; t <= tune.keyMaxVersion; t++) { try { const q = qrcode(t, 'L'); q.addData(url, 'Byte'); q.make(); return { from, count: lo, svg: q.createSvgTag({ cellSize: 4, margin: 4, scalable: true }) }; } catch (e) { /* too long for t */ } }
   return null;
 }
-const phoneKey = () => settings.hostScreen === 'phone' && state && !state.keyOff;
-function keyChip() { // header: the match code and how far the key reaches; brass when the reserve is near
-  const left = state.keyTo - state.qi, near = state.keyTo > 0 && left <= tune.keyReserve + 10;
-  const early = state.phase === 'ready' && !state.keyAsk && state.keyTo > 0; // between turns only, so no battle is cut
-  return h('button', { class: 'chip keychip' + (near ? ' near' : ''), disabled: !early,
-    title: early ? 'خذ مفتاح الأسئلة التالية الآن' : 'يطابق الرمز على جوال المقدّم',
+const phoneKey = () => hostMode() === 'phone' && state && !state.keyOff;
+function keyChip() { // header: the match code and what is left on the key; between turns it takes the next key (or a key again)
+  const early = state.phase === 'ready' && !state.keyAsk;
+  if (state.keyOff) return h('button', { class: 'chip keychip', disabled: !early, title: 'خذ مفتاح الإجابات على جوالك',
+    onclick: () => { state.keyOff = false; state.keyAsk = { from: state.qi, step: 1 }; renderAll(); } },
+    'بدون مفتاح', early ? h('span', { class: 'take' }, ' · اضغط لأخذ مفتاح') : null);
+  const left = Math.max(0, state.keyTo - state.qi), near = state.keyTo > 0 && left <= tune.keyReserve + 10, can = early && state.keyTo > 0;
+  return h('button', { class: 'chip keychip' + (near ? ' near' : ''), disabled: !can,
+    title: can ? 'خذ مفتاح الأسئلة التالية الآن' : 'يطابق الرمز على جوال المقدّم',
     onclick: () => { state.keyAsk = { from: state.qi, step: 1 }; renderAll(); } },
-    'رمز المطابقة ', h('b', { class: 'num' }, state.code), state.keyTo > 0 ? [' · المفتاح حتى ', h('b', { class: 'num' }, state.keyTo)] : null);
+    'رمز ', h('b', { class: 'num' }, state.code), state.keyTo > 0 ? [' · بقي ', h('b', { class: 'num' }, left), ' في المفتاح'] : null,
+    can ? h('span', { class: 'take' }, ' · خذ التالي') : null);
 }
 function renderHostKey() {
   const ask = state.keyAsk, old = document.getElementById('hostkey');
@@ -1428,7 +1443,8 @@ function renderHostKey() {
   const first = ask.from === 0, remain = state.keyTo - state.qi;
   const close = () => { state.keyAsk = null; renderAll(); };
   const box = h('div', { class: 'qrbox' + (ask.step === 1 ? ' veiled' : '') }, h('span', { class: 'muted' }, 'جارٍ تجهيز الرمز…'));
-  const show = B('جهاز العرض مخفي: أظهر الرمز', 'pri', () => { state.keyAsk.step = 2; renderAll(); }, { 'data-primary': '1', disabled: true });
+  // click only, never Enter: hosts press Enter all game to move on, and this shows answers
+  const show = B('جهاز العرض مخفي: أظهر الرمز', 'pri', () => { state.keyAsk.step = 2; renderAll(); }, { disabled: true });
   const modal = h('div', { class: 'modal keymodal' });
   if (ask.step === 1) {
     modal.append(h('b', { style: 'font-size:24px' }, first ? 'مفتاح الإجابات للمقدّم' : 'مفتاح الأسئلة التالية'),
@@ -1436,7 +1452,7 @@ function renderHostKey() {
       box,
       h('div', { class: 'keybtns' }, show,
         remain > 0 ? B(`لاحقاً (بقي ${remain} في المفتاح)`, '', () => { state.keySnooze = state.turns; close(); }) : null,
-        B('متابعة بدون مفتاح', 'ghost', () => { state.keyOff = true; close(); })));
+        B('بدون مفتاح الآن', 'ghost', () => { state.keyOff = true; close(); })));
   } else {
     modal.append(h('div', { style: 'font-size:18px', id: 'keyrange' }, 'جارٍ تجهيز الرمز…'), box,
       h('div', { class: 'keybtns' },
@@ -1447,7 +1463,7 @@ function renderHostKey() {
   const cap = ask.cap || 400;
   (keyBuilt && keyBuilt.from === ask.from && keyBuilt.cap === cap ? Promise.resolve(keyBuilt) : buildKey(ask.from, cap)).then(k => {
     if (state.keyAsk !== ask || !modal.isConnected) return;
-    if (!k) { box.replaceChildren(h('b', { style: 'color:var(--bg)' }, 'تعذّر صنع الرمز. ارفع «أكبر رمز» في الإعدادات.')); return; }
+    if (!k) { box.replaceChildren(h('b', { style: 'color:var(--bg)' }, 'تعذّر صنع الرمز. تابع «بدون مفتاح الآن»، أو ارفع keyMaxVersion في config.js.')); return; }
     keyBuilt = Object.assign(k, { cap });
     box.innerHTML = k.svg;
     if (ask.step === 1) { show.disabled = false; return; }
@@ -1486,7 +1502,7 @@ function tellPresenter() {
 }
 setInterval(() => { // the snapshot's timer, and the header's "connected" label when the host window opens or closes
   tellPresenter();
-  if (scene === 'play' && settings.hostScreen === 'window') {
+  if (scene === 'play' && hostMode() === 'window') {
     const b = [...(refs.header?.querySelectorAll('button') || [])].find(x => x.textContent.includes('شاشة المقدّم'));
     if (b && b.textContent !== (presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم')) renderHeader();
   }
