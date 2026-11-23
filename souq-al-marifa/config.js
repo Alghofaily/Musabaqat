@@ -8,6 +8,12 @@ window.CONFIG = {
   seed: 0, // every gameplay random call reads rng(), seeded from this (or ?seed= in the address); 0: a fresh game each time
   volume: { value: 0.5, min: 0, max: 1, step: 0.05 },
   introTime: { value: 3, min: 0, max: 6, step: 0.5 },            // seconds of the logo intro on load (any key or click skips it); 0: none
+  // The host's answer key on a phone (setup: شاشة المقدّم → على جوالي). One QR code carries as many
+  // questions as fit; the numbers below keep it readable.
+  keyQuestionChars: { value: 30, min: 0, max: 80, step: 5 },     // start of each question on the key (0: number and answer only)
+  keyAnswerChars: { value: 30, min: 10, max: 80, step: 5 },      // the answer, cut with … past this
+  keyMaxVersion: { value: 40, min: 10, max: 40, step: 1 },       // biggest QR code (40: 177x177 squares); lower for older phones
+  keyReserve: { value: 30, min: 5, max: 120, step: 5 },          // a turn starts with a new key when fewer questions than this are left
 
   // Setup defaults (the host changes them on the setup screen)
   teams: { value: 3, min: 2, max: 6, step: 1 },

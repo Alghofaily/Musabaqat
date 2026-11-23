@@ -19,8 +19,9 @@
   .light { --bg: #eef2f8; --panel: #ffffff; --panel2: #f5f7fb; --line: #e2e8f0; --text: #0f172a; --muted: #5b6b84; --accent: #0f172a; --onaccent: #fff; --hover: #eef3fb; --upbg: rgba(22,199,132,.13); --downbg: rgba(234,57,67,.11); --grid: rgba(30,60,120,.06); --up: #067a4d; --down: #c5222f; --gold: #9a6700; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
   body { font-family: 'Plex', Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; font-weight: 500; font-variant-numeric: tabular-nums; }
-  #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: var(--bg); color: var(--text); }
-  #game { position: absolute; inset: 0; width: 1280px; height: 720px; }
+  /* the stage takes the screen's own shape (fit): wide screens get a wider stage, portrait ones a tall layout (.tall) */
+  #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: var(--bg); color: var(--text); --hh: 60px; }
+  #game { position: absolute; inset: 0; width: 100%; height: 100%; }
   #ui { position: absolute; inset: 0; direction: rtl; }
   button { font: inherit; cursor: pointer; border: 0; border-radius: 6px; color: inherit; }
   button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -49,7 +50,7 @@
   .pill.up { background: var(--upbg); } .pill.down { background: var(--downbg); } .pill.flat { background: var(--panel2); color: var(--muted); }
 
   /* dashboard */
-  #app { position: absolute; inset: 0; display: grid; grid-template-rows: 60px 34px 1fr; }
+  #app { position: absolute; inset: 0; display: grid; grid-template-rows: var(--hh) 34px 1fr; }
   header { display: flex; align-items: center; gap: 12px; padding: 0 14px; background: var(--panel); border-bottom: 1px solid var(--line); }
   header .sp { flex: 1; }
   header .btn { min-height: 44px; padding: 8px 14px; font-size: 14px; }
@@ -120,7 +121,7 @@
   .qtyrow input { width: 110px; text-align: center; font-size: 18px; font-weight: bold; direction: ltr; }
   .qtyrow button { padding: 7px 10px; min-height: 44px; background: var(--panel2); border: 1px solid var(--line); font-size: 13px; font-weight: bold; }
   .msg { min-height: 18px; font-size: 13px; font-weight: bold; }
-  .news { position: absolute; left: 0; right: 0; top: 60px; height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 14px;
+  .news { position: absolute; left: 0; right: 0; top: var(--hh); height: 34px; display: flex; align-items: center; gap: 12px; padding: 0 14px;
     background: var(--down); color: #fff; font-weight: bold; font-size: 15px; z-index: 5; animation: slide .5s ease-out; }
   .news.good { background: var(--up); }
   .news .tag { background: rgba(0,0,0,.25); padding: 2px 10px; border-radius: 4px; font-size: 12px; }
@@ -132,11 +133,11 @@
   .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 22px 26px; min-width: 380px; display: grid; gap: 14px; text-align: center; }
 
   /* title, setup, bank, results */
-  .screen { position: absolute; inset: 0; padding: 20px 40px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box; }
+  .screen { position: absolute; inset: 0; padding: 14px 40px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box; overflow-y: auto; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .field { display: grid; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 700; }
   .field input { width: 120px; direction: ltr; text-align: center; font-size: 16px; font-weight: bold; }
-  .box { padding: 14px 16px; display: grid; gap: 12px; align-content: start; }
+  .box { padding: 12px 16px; display: grid; gap: 10px; align-content: start; }
   .box h3 { margin: 0; font-size: 16px; }
   .names { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .names input { width: 100%; box-sizing: border-box; direction: rtl; text-align: right; font-size: 14px; }
@@ -170,8 +171,17 @@
   .who .verb { font-size: 18px; font-weight: 500; }
   .who .tname { font-size: 30px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   main.focus .card .ph:has(.who), main.trade .card .ph:has(.who) { padding: 8px 18px; }
-  .peek { align-self: flex-start; font-size: 15px; padding: 8px 14px; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-  .peek[aria-pressed=true] { background: var(--hover); border-color: var(--text); }
+  .keymodal { width: 760px; max-width: calc(100% - 24px); justify-items: center; }
+  .keywarn { font-size: 19px; font-weight: 700; color: var(--down); line-height: 1.6; max-width: 640px; }
+  .qrbox { background: #fff; padding: 10px; border-radius: 8px; line-height: 0; width: 400px; height: 400px; max-width: 100%; display: grid; place-items: center; overflow: hidden; }
+  .qrbox svg { width: 100%; height: 100%; transition: filter .25s ease-out; }
+  .qrbox.veiled svg { filter: blur(16px); } /* unreadable by any camera until the host says the projector is hidden */
+  .keybtns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .chip.keychip { font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: default; }
+  .chip.keychip:not([disabled]) { cursor: pointer; } .chip.keychip:not([disabled]):hover { color: var(--text); border-color: var(--accent); }
+  .chip.keychip b { color: var(--text); letter-spacing: 1px; }
+  .chip.keychip.near { border-color: var(--gold); color: var(--gold); }
+  .chip.keychip .take { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
   .undo { position: relative; overflow: hidden; }
   .undo::after { content: ''; position: absolute; inset: auto 0 0 0; height: 3px; background: var(--text); transform-origin: right; animation: drain var(--d) linear forwards; }
   @keyframes drain { to { transform: scaleX(0); } }
@@ -181,12 +191,42 @@
   .pod.in { opacity: 1; transform: none; }
   .winner { height: 78px; display: flex; align-items: center; justify-content: center; gap: 14px; font-weight: 700; text-wrap: balance; text-align: center; }
   @media (prefers-reduced-motion: reduce) { .pod { transition: none; } }
-  #phone { position: fixed; inset: auto 10px 10px 10px; z-index: 50; display: flex; align-items: center; gap: 10px; padding: 10px 12px; direction: rtl;
-    background: #121a2b; color: #e6edf7; border: 1px solid #1f2a40; border-radius: 8px; font: 700 15px/1.5 'Plex', Tahoma, sans-serif; }
-  #phone span { flex: 1; }
-  #phone button { min-height: 40px; padding: 6px 12px; background: #e6edf7; color: #0b1220; font-weight: 700; }
   .addq { display: grid; grid-template-columns: 130px minmax(0,1fr); gap: 8px; }
   .addq input { direction: rtl; text-align: right; }
+  /* portrait (.tall): one column, the header wraps, panels stack */
+  .tall #app { --hh: 104px; }
+  .tall header { flex-wrap: wrap; align-content: center; row-gap: 6px; padding: 6px 10px; }
+  .tall header .ttl, .tall header .seg { display: none; }
+  .tall header .hgroup { padding-inline-start: 0; margin-inline-start: 0; border: 0; flex-wrap: wrap; }
+  .tall main { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-auto-rows: max-content; align-content: start; overflow-y: auto; }
+  .tall main > .card, .tall main > #mk, .tall main > #lb, .tall main.trade > .card, .tall main.trade > #mk { grid-column: 1; grid-row: auto; }
+  .tall main > .card { order: 1; } .tall main > #mk { order: 2; overflow: visible; } .tall main > #lb { order: 3; }
+  .tall main.trade > #mk { order: 1; } .tall main.trade > .card { order: 2; }
+  .tall table.mw :is(th, td):is(:nth-child(2), :nth-child(6)) { display: none; }
+  .tall main.focus table.mw :is(th, td):nth-child(5) { display: none; }
+  .tall table.mw td, .tall main.trade table.mw td { height: 30px; padding: 0 8px; }
+  .tall table.mw th { padding: 4px 8px; }
+  .tall main.trade table.lb :is(th, td):is(:nth-child(3), :nth-child(5)) { display: table-cell; }
+  .tall .co small { display: none; }
+  .tall main.focus .card .body { padding: 14px 16px; gap: 12px; }
+  .tall main.focus .q { font-size: 28px; }
+  .tall main.focus .choices { grid-template-columns: minmax(0, 1fr); flex: none; grid-auto-rows: auto; gap: 8px; }
+  .tall main.focus .choice { font-size: 20px; min-height: 56px; padding: 8px 12px; }
+  .tall main.focus .card[data-size=m] .q { font-size: 24px; } .tall main.focus .card[data-size=l] .q { font-size: 20px; }
+  .tall main.focus .card[data-size=m] .choice { font-size: 18px; min-height: 52px; } .tall main.focus .card[data-size=l] .choice { font-size: 16px; min-height: 48px; }
+  .tall main.focus .reward { font-size: 56px; }
+  .tall .qtyrow { flex-wrap: wrap; }
+  .tall .screen { padding: 16px; overflow-x: hidden; overflow-y: auto; }
+  .tall table.lb td { white-space: nowrap; }
+  .tall .grid2 { grid-template-columns: minmax(0, 1fr) !important; flex: none !important; }
+  .tall .names { grid-template-columns: repeat(2, 1fr); }
+  .tall .bq { grid-template-columns: minmax(0, 1fr) auto; }
+  .tall .addq { grid-template-columns: minmax(0, 1fr); }
+  .tall .banklist { flex: none; overflow: visible; }
+  .tall .family.end ~ .screen { padding-bottom: 96px; } /* the family link sits under the buttons, not on them */
+  .tall .pods { width: 100%; gap: 8px !important; } .tall .pod { width: auto !important; flex: 1; min-width: 0; }
+  .tall .winner { height: auto; min-height: 78px; }
+  .modal { max-width: calc(100% - 24px); box-sizing: border-box; }
   /* Intro: the mark draws itself like a price line climbing, the arrowhead lands, then the name rises.
      Every timing is a share of --t (config introTime), so one value sets the whole length. */
   #intro { position: fixed; inset: 0; z-index: 9999; display: grid; place-content: center; justify-items: center; gap: 4vmin; background: var(--bg); animation: intro-out var(--t) linear both; }
@@ -217,6 +257,9 @@
 <script src="config.js"></script>
 <script src="questions.js"></script>
 <script src="csv.js"></script>
+<script src="order.js"></script>
+<script src="pack.js"></script>
+<script src="vendor/qrcode.js"></script>
 <script>
 'use strict';
 // سوق المعرفة: a host-run team quiz on a live trading-platform screen. A right answer pays cash
@@ -227,11 +270,11 @@
 const params = new URLSearchParams(location.search);
 const tune = new Proxy({}, { get: (_, k) => CONFIG[k].value }); // live: tune.speed is CONFIG.speed.value
 const STEP = 1 / 60;
-const W = 1280, H = 720;
+let W = 1280, H = 720, TALL = false; // the stage's size in its own pixels, set by fit() from the screen's shape
 const PIXEL = false;
 const FONT = "Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif";
 const TITLE = 'سوق المعرفة';
-const CONTROLS = ['الفأرة أو اللمس: كل شيء', '1-4: اختيار الإجابة', 'Enter: الزر الرئيسي', 'P: إيقاف مؤقت · M: كتم الصوت', 'H مطولاً: رؤية الإجابة · Z: تراجع'];
+const CONTROLS = ['الفأرة أو اللمس: كل شيء', '1-4: اختيار الإجابة', 'Enter: الزر الرئيسي', 'P: إيقاف مؤقت · M: كتم الصوت', 'Z: تراجع'];
 const clock = window.GAME_CLOCK || { now: () => performance.now() / 1000 };
 const CHEAP = params.get('render') === 'cheap';
 let seed;
@@ -252,11 +295,19 @@ const canvas = document.getElementById('game');
 const ui = document.getElementById('ui');
 const ctx = canvas.getContext('2d');
 function fit() {
-  const s = Math.min(innerWidth / W, innerHeight / H), r = s * (devicePixelRatio || 1);
+  const vw = innerWidth, vh = innerHeight, a = vw / vh;
+  TALL = a < 0.9;
+  if (TALL) { W = Math.max(560, Math.round(1150 * a)); H = Math.round(W / a); }
+  else if (a >= 16 / 9) { H = 720; W = Math.round(720 * a); }
+  else { W = 1280; H = Math.round(1280 / a); }
+  const s = Math.min(vw / W, vh / H), r = s * (devicePixelRatio || 1);
   canvas.width = Math.round(W * r); canvas.height = Math.round(H * r); ctx.setTransform(r, 0, 0, r, 0, 0);
-  stage.style.transform = `translate(${Math.round((innerWidth - W * s) / 2)}px, ${Math.round((innerHeight - H * s) / 2)}px) scale(${s})`;
+  stage.style.width = W + 'px'; stage.style.height = H + 'px';
+  stage.style.transform = `translate(${Math.round((vw - W * s) / 2)}px, ${Math.round((vh - H * s) / 2)}px) scale(${s})`;
+  document.body.classList.toggle('tall', TALL);
 }
-addEventListener('resize', fit); fit();
+addEventListener('resize', () => { fit(); if (scene) drawFrame(); }); // layout follows the CSS; only the canvas needs a redraw
+fit();
 
 // ---- Input ------------------------------------------------------------------------------
 const down = new Set(), hit = new Set();
@@ -329,7 +380,7 @@ function h(tag, props = {}, ...kids) {
   return e;
 }
 const B = (label, cls, fn, extra = {}) => h('button', { class: 'btn ' + cls, onclick: () => { sfx.click(); fn(); }, ...extra }, label);
-const N = v => h('span', { class: 'num' }, v);
+const N = v => h('span', { class: 'num' }, typeof v === 'string' && /^[+\-−]/.test(v) ? '\u200E' + v : v); // LRM: the sign stays in front even where CSS isolation is ignored
 
 // ---- Drawn figures -------------------------------------------------------------------------
 // six hues that also differ in lightness, so they stay apart under deuteranopia and protanopia; only teams use them
@@ -437,28 +488,48 @@ function downloadTemplate() {
 }
 function defaults() {
   return { teams: tune.teams, names: Array.from({ length: 6 }, (_, i) => `الفريق ${i + 1}`), cash: tune.startCash, price: tune.startPrice,
-    answerTime: tune.answerTime, tradeTime: tune.tradeTime, mode: 'seq', qmode: 'choices', end: 'rounds', rounds: tune.rounds, minutes: tune.minutes };
+    answerTime: tune.answerTime, tradeTime: tune.tradeTime, mode: 'seq', qmode: 'choices', end: 'rounds', rounds: tune.rounds, minutes: tune.minutes, hostScreen: 'phone' };
 }
+// The host screen in effect: only when the host judges. With four choices the game marks every answer
+// itself, and with own questions the answers are the host's; the saved choice returns when judging again.
+const hostMode = (s = settings) => s.qmode === 'judge' ? s.hostScreen : 'none';
 function loadSettings() { // saved settings, each value checked against its limits
   const s = Object.assign(defaults(), store.get('souq.settings', {}));
   const lim = { teams: CONFIG.teams, cash: CONFIG.startCash, price: CONFIG.startPrice, answerTime: CONFIG.answerTime, tradeTime: CONFIG.tradeTime, rounds: CONFIG.rounds, minutes: CONFIG.minutes };
   for (const [k, c] of Object.entries(lim)) s[k] = clamp(Number(s[k]) || c.value, c.min, c.max);
   if (!['seq', 'fast'].includes(s.mode)) s.mode = 'seq';
-  if (!['choices', 'judge'].includes(s.qmode)) s.qmode = 'choices';
+  if (!['choices', 'judge', 'own'].includes(s.qmode)) s.qmode = 'choices';
+  if (!['phone', 'window'].includes(s.hostScreen)) s.hostScreen = 'phone'; // judging always has a host screen
   if (!['manual', 'timed', 'rounds'].includes(s.end)) s.end = 'rounds';
   s.names = Array.from({ length: 6 }, (_, i) => (Array.isArray(s.names) && typeof s.names[i] === 'string' && s.names[i].trim()) || `الفريق ${i + 1}`);
   return s;
 }
 let settings = loadSettings();
+// A game in progress survives a refresh or a closed tab: saved on every render of the play scene, cleared at
+// the end. It resumes only with the same bank (its match code), or the fixed question order would not hold.
+// `seed` is the live rng stream (as in undo), so a resumed game goes on with the same chance.
+const saveGame = () => { if (scene === 'play' && !state.final) store.set('souq.game', { seed, settings, state }); };
+const clearGame = () => { try { localStorage.removeItem('souq.game'); } catch {} };
+function savedGame() {
+  const g = store.get('souq.game', null);
+  return g && g.state && Array.isArray(g.state.cash) && g.settings && g.state.code === SouqOrder.matchCode(bank, g.state.seed0) ? g : null;
+}
+function resumeGame(g) {
+  seed = g.seed; settings = Object.assign(loadSettings(), g.settings); state = g.state; undo = null;
+  go('play'); state.paused = true; renderHeader(); // back paused: the room is ready before the clock runs
+}
+addEventListener('beforeunload', e => { if (scene === 'play') { saveGame(); e.preventDefault(); e.returnValue = ''; } });
 let theme = store.get('souq.theme', 'dark') === 'light' ? 'light' : 'dark';
-function setTheme(t) { theme = t; document.body.className = t; store.set('souq.theme', t); }
+// classList, not className: the body also carries .tall
+function setTheme(t) { theme = t; document.body.classList.remove('dark', 'light'); document.body.classList.add(t); store.set('souq.theme', t); }
 setTheme(theme);
 
 // ---- Game state and rules ----------------------------------------------------------------------
 let scene, state;
+const O = SouqOrder;
 function reset() {
   seed = Number(params.get('seed')) || CONFIG.seed || (Date.now() | 0); // seed 0: a new game every time
-  const s = settings, n = s.teams;
+  const seed0 = seed, s = settings, n = s.teams; // seed0: the question order's seed, before rng() moves `seed`
   const price = COMPANIES.map(() => Math.max(5, Math.round(s.price * (1 + uni(-tune.priceSpread, tune.priceSpread)))));
   const hist = price.map(p => { // a short walk before the open, so every chart is alive from the first screen
     const pts = [p]; for (let i = 0; i < 11; i++) pts.unshift(Math.max(1, Math.round(pts[0] * (1 + uni(-tune.driftMax, tune.driftMax) * 1.5))));
@@ -469,15 +540,26 @@ function reset() {
     price, open: hist.map(p => p[0]), hist, flash: Array(10).fill(null), // the open is the chart's first point, so the change pill and the sparkline agree
     cur: 0, turns: 0, round: 1, elapsed: 0, lastCall: false,
     phase: 'ready', timer: 0, ticked: -1, q: null, answeredBy: null, picked: null, result: null, reward: 0, news: null,
-    sel: 0, buys: 0, sells: 0, msg: '', msgGood: false, deck: [], reveal: false, final: null,
+    sel: 0, buys: 0, sells: 0, msg: '', msgGood: false, reveal: false, final: null,
+    deck: O.questionDeck(bank.length, seed0), qi: 0, seed0, code: O.matchCode(bank, seed0), // the question order, fixed now (see drawQuestion)
+    keyTo: 0, keyAsk: hostMode() === 'phone' ? { from: 0, step: 1 } : null, // the phone key: questions before keyTo are on it; keyAsk: the key screen is up
+    keyOff: false, keySnooze: -1, // keyOff: the host went on without a key; keySnooze: the turn the host chose "later" on
   };
 }
-function drawQuestion() { // no question repeats until the whole bank has been asked
-  if (!state.deck.length) { state.deck = bank.map((_, i) => i); for (let i = state.deck.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [state.deck[i], state.deck[j]] = [state.deck[j], state.deck[i]]; } }
-  const row = bank[state.deck.pop()];
+// Questions come in the order fixed at Start (order.js questionDeck, its own stream), so a host's answer key
+// made then stays right however the trades go; state.qi is in every undo snapshot. No question repeats
+// until the whole bank has been asked; then the next pass is fixed by the seed too.
+function drawQuestion() {
+  const n = bank.length, k = state.qi++;
+  if (phoneKey() && k >= state.keyTo && !state.keyAsk) state.keyAsk = { from: k, step: 1 }; // last resort: the reserve normally prevents this
+  if (k > 0 && k % n === 0) state.deck = O.questionDeck(n, state.seed0 + k / n);
+  const row = bank[state.deck[k % n]];
   const order = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
-  return { cat: row[0], text: row[1], choices: order.map(k => row[2 + k]), right: order.indexOf(0) };
+  return { n: k + 1, cat: row[0], text: row[1], choices: order.map(k => row[2 + k]), right: order.indexOf(0) };
 }
+// 'own': the host asks their own questions (phone, book), so nothing is drawn from the bank: the order, the key
+// and the question counter stay where they are. The placeholder keeps every reader of state.q safe.
+const ownQuestion = () => ({ own: true, n: 0, cat: '', text: '', choices: [], right: -1 });
 const worth = i => state.cash[i] + state.shares[i].reduce((a, n, c) => a + n * state.price[c], 0);
 // competition ranking on the riyal shown: equal worth shares a place (1, 1, 3), never split by team order
 const rankOf = (w, all) => 1 + all.filter(x => Math.round(x) > Math.round(w)).length;
@@ -499,7 +581,7 @@ function trade(buy) {
   if (!(qty > 0)) return fail('أدخل كمية صحيحة');
   if (buy) {
     if (state.buys >= tune.maxBuys) return fail(`انتهت عمليات الشراء لهذا الدور (${tune.maxBuys})`);
-    if (qty * p > state.cash[t]) return fail(`الرصيد لا يكفي: أقصى كمية ${fmt(Math.floor(state.cash[t] / p))} سهم`);
+    if (qty * p > state.cash[t]) return fail(`المال لا يكفي: ينقصك ${fmt(qty * p - state.cash[t])}`);
     state.cash[t] -= qty * p; state.shares[t][co] += qty; state.buys++;
   } else {
     if (state.sells >= tune.maxSells) return fail(`انتهت عمليات البيع لهذا الدور (${tune.maxSells})`);
@@ -537,26 +619,25 @@ function gameOverDue() {
   if (settings.end === 'timed') return state.elapsed >= settings.minutes * 60;
   return false;
 }
-function setPhase(p) { if (p !== 'reveal') undo = null; state.phase = p; state.msg = ''; refs.qtyVal = ''; events.push({ phase: p }); renderAll(); }
+function setPhase(p) {
+  if (p !== 'reveal') undo = null; state.phase = p; state.msg = ''; refs.qtyVal = '';
+  if (p === 'ready' && phoneKey() && !state.keyAsk && state.keySnooze !== state.turns && state.keyTo - state.qi < tune.keyReserve) state.keyAsk = { from: state.qi, step: 1 };
+  events.push({ phase: p }); renderAll();
+}
 let undo = null; // the state just before the last verdict, kept for tune.undoTime seconds while the verdict is on screen
 function undoVerdict() {
   if (!undo || state.phase !== 'reveal') return;
   const u = undo; undo = null; state = u.state; seed = u.seed; refs.countFor = null;
   sfx.click(); events.push({ undo: 'verdict' }); renderAll();
 }
-function setPeek(on) { // judge mode: the answer shows only while the host holds the button or H
-  state.peek = on;
-  document.getElementById('peekans')?.style.setProperty('visibility', on ? 'visible' : 'hidden');
-  document.getElementById('peekbtn')?.setAttribute('aria-pressed', String(on));
-}
 function newQuestion() {
-  state.q = drawQuestion(); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.result = null; state.reveal = false; state.peek = false;
+  state.q = settings.qmode === 'own' ? ownQuestion() : drawQuestion(); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.result = null; state.reveal = false;
   state.answeredBy = settings.mode === 'seq' ? state.cur : null; setPhase('question');
 }
 function answer(right, picked = null) {
   if (state.answeredBy == null || state.phase !== 'question') return;
   const snap = { state: structuredClone(state), seed, until: state.t + tune.undoTime };
-  state.cur = state.answeredBy; state.peek = false; state.picked = picked; state.result = right ? 'right' : 'wrong'; state.reveal = true;
+  state.cur = state.answeredBy; state.picked = picked; state.result = right ? 'right' : 'wrong'; state.reveal = true;
   if (right) { // Ma3aliSahmuk's reward: int(U(.25, 1) * 1% * cash) * 5
     state.reward = Math.trunc(uni(tune.rewardMin, tune.rewardMax) * 0.01 * state.cash[state.cur]) * 5;
     state.cash[state.cur] += state.reward; sfx.right(); sfx.cash();
@@ -579,6 +660,7 @@ function endTurn() {
   setPhase('ready');
 }
 function endGame() { // every share is valued at the market price
+  clearGame();
   state.final = [...Array(state.n).keys()].map(i => ({ i, cash: state.cash[i], stock: worth(i) - state.cash[i], worth: worth(i) })).sort((a, b) => b.worth - a.worth);
   state.score = Math.round(state.final[0].worth); state.gained = `${state.names[state.final[0].i]}: ${fmt(state.final[0].worth)}`;
   go('results');
@@ -595,7 +677,7 @@ function go(name) { if (name !== scene) document.getElementById('toast')?.remove
 
 // The dashboard's parts, each re-rendered when its data changes
 let refs = {};
-function renderAll() { if (scene !== 'play') return; refs.main.className = state.phase === 'trade' ? 'trade' : 'focus'; renderHeader(); renderTicker(); renderMarket(); renderCard(); renderBoard(); renderNews(); }
+function renderAll() { if (scene !== 'play') return; refs.main.className = state.phase === 'trade' ? 'trade' : 'focus'; renderHeader(); renderTicker(); renderMarket(); renderCard(); renderBoard(); renderNews(); renderHostKey(); tellPresenter(); saveGame(); }
 function themeSeg(after) {
   return h('div', { class: 'seg' }, h('button', { class: theme === 'dark' ? 'on' : '', onclick: () => { setTheme('dark'); after(); } }, 'داكن'),
     h('button', { class: theme === 'light' ? 'on' : '', onclick: () => { setTheme('light'); after(); } }, 'فاتح'));
@@ -603,15 +685,17 @@ function themeSeg(after) {
 function renderHeader() {
   const end = settings.end === 'rounds' ? h('span', { class: 'chip' }, 'الجولة ', N(`${Math.min(state.round, settings.rounds)} / ${settings.rounds}`))
     : settings.end === 'timed' ? h('span', { class: 'chip', id: 'clockchip' }, 'الوقت المتبقي') : h('span', { class: 'chip' }, 'الجولة ', N(state.round), ' · إنهاء يدوي');
-  refs.header.replaceChildren(
-    h('span', { html: LOGO(0.9), style: 'display:flex' }), h('b', { style: 'font-size:20px' }, TITLE),
-    h('span', { class: 'chip muted' }, settings.mode === 'seq' ? 'متتالي' : 'الأسرع'),
-    h('span', { class: 'chip muted' }, settings.qmode === 'choices' ? 'أربعة خيارات' : 'المقدّم يحكم'), end,
+  refs.header.replaceChildren(...[
+    h('span', { html: LOGO(0.9), style: 'display:flex' }), h('b', { class: 'ttl', style: 'font-size:20px' }, TITLE),
+    h('span', { class: 'chip muted ttl' }, settings.mode === 'seq' ? 'متتالي' : 'الأسرع'),
+    h('span', { class: 'chip muted ttl' }, settings.qmode === 'choices' ? 'أربعة خيارات' : settings.qmode === 'own' ? 'أسئلتي أنا' : 'المقدّم يحكم'), end,
+    hostMode() === 'phone' && state ? keyChip() : null,
     h('span', { class: 'sp' }), themeSeg(renderAll),
     h('span', { class: 'hgroup' },
+      hostMode() === 'window' ? B(presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم', 'ghost', openPresenter) : null,
       B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', 'ghost', () => setMuted(!muted)),
       B(state.paused ? 'متابعة' : 'إيقاف مؤقت', 'ghost', () => { state.paused = !state.paused; renderHeader(); }),
-      B('إنهاء المسابقة', 'ghost danger', confirmEnd)));
+      B('إنهاء المسابقة', 'ghost danger', confirmEnd))].filter(Boolean));
 }
 function renderTicker() {
   const items = COMPANIES.map((c, co) => {
@@ -674,7 +758,8 @@ function renderCard() {
     const longest = Math.max(...q.choices.map(x => x.length));
     c.dataset.size = q.text.length > 110 || longest > 45 ? 'l' : q.text.length > 70 || longest > 30 ? 'm' : '';
     const parts = [h('div', { style: 'display:flex;gap:12px;align-items:center' }, done ? null : timerBox(settings.answerTime),
-      h('div', { style: 'flex:1' }, h('span', { class: 'chip muted' }, q.cat), h('div', { class: 'q', style: 'margin-top:6px' }, q.text)))];
+      h('div', { style: 'flex:1' }, h('div', { style: 'display:flex;gap:6px;flex-wrap:wrap' }, q.n ? h('span', { class: 'chip' }, 'سؤال ', N(q.n)) : null, q.cat ? h('span', { class: 'chip muted' }, q.cat) : null),
+      h('div', { class: q.own ? 'q muted' : 'q', style: 'margin-top:6px' }, q.own ? (done ? 'انتهى السؤال' : 'اطرح سؤالك على الفريق، واحكم قبل انتهاء الوقت.') : q.text)))];
     if (settings.mode === 'fast' && !done) parts.push(h('div', {}, h('div', { class: 'muted', style: 'font-size:14px;margin-bottom:5px' }, state.answeredBy == null ? 'من أجاب أولاً؟ (أو اضغط رقم الفريق)' : 'يجيب الآن:'),
       h('div', { class: 'teams' }, ...[...Array(state.n).keys()].map(i => teamChip(i, state.answeredBy === i, () => { state.answeredBy = i; renderCard(); renderBoard(); })))));
     if (settings.qmode === 'choices') {
@@ -685,17 +770,10 @@ function renderCard() {
           mark && h('span', { class: 'mark', html: mark, 'aria-label': cls === ' right' ? 'الإجابة الصحيحة' : 'إجابة خاطئة' }));
       })));
     } else {
-      if (done) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right]));
-      else {
-        const off = () => setPeek(false);
-        parts.push(h('button', { class: 'btn peek', id: 'peekbtn', 'aria-pressed': String(!!state.peek), oncontextmenu: e => e.preventDefault(),
-          onpointerdown: e => { e.currentTarget.setPointerCapture?.(e.pointerId); setPeek(true); }, onpointerup: off, onpointercancel: off, onlostpointercapture: off },
-          'اضغط مطولاً لرؤية الإجابة (H)'),
-          h('div', { class: 'answer', id: 'peekans', style: `visibility:${state.peek ? 'visible' : 'hidden'}` }, 'الإجابة الصحيحة: ', q.choices[q.right]));
-      }
-      if (!done) parts.push(h('div', { style: 'display:flex;gap:10px' },
-        B('إجابة صحيحة', 'buy', () => answer(true), { disabled: !canAnswer, 'data-primary': canAnswer ? '1' : null, style: 'flex:1' }),
-        B('إجابة خاطئة', 'sell', () => answer(false), { disabled: !canAnswer, style: 'flex:1' })));
+      if (done) { if (!q.own) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right])); }
+      else parts.push(h('div', { style: 'display:flex;gap:10px' },
+        B('إجابة صحيحة', 'buy', () => answer(true), { disabled: !canAnswer, 'data-judge': 'right', 'data-primary': canAnswer ? '1' : null, style: 'flex:1' }),
+        B('إجابة خاطئة', 'sell', () => answer(false), { disabled: !canAnswer, 'data-judge': 'wrong', style: 'flex:1' })));
     }
     if (done) {
       const right = state.result === 'right';
@@ -728,12 +806,16 @@ function renderCard() {
     const cost = h('b', { class: 'num', style: 'color:var(--text)' }), after = h('b', { class: 'num' });
     const msg = h('div', { class: 'msg' });
     const buyBtn = B('شراء', 'buy', () => trade(true), { style: 'flex:1;font-size:18px' });
-    const preview = v => { // the ticket never offers a buy that would take the balance below zero
-      const n = toNum(v) || 0, short = n * price > state.cash[t];
+    const sellBtn = B('بيع', 'sell', () => trade(false), { style: 'flex:1;font-size:18px', disabled: state.sells >= tune.maxSells || !state.shares[t][co] });
+    const preview = v => { // the ticket never offers a buy that would take the balance below zero; each button says what it would do
+      const n = toNum(v) || 0, short = n * price > state.cash[t], held = state.shares[t][co], over = n > held;
       cost.textContent = fmt(n * price); after.textContent = fmt(state.cash[t] - n * price); after.style.color = short ? 'var(--down)' : 'var(--text)';
       buyBtn.disabled = state.buys >= tune.maxBuys || short;
+      buyBtn.textContent = short ? `ينقصك ${fmt(n * price - state.cash[t])}` : n > 0 ? `شراء ${fmt(n)} بـ${fmt(n * price)}` : 'شراء';
+      sellBtn.disabled = state.sells >= tune.maxSells || !held || over;
+      sellBtn.textContent = held && over ? `لديك ${fmt(held)} فقط` : n > 0 && held ? `بيع ${fmt(n)} بـ${fmt(n * price)}` : 'بيع';
       msg.className = 'msg ' + (short || !state.msgGood ? 'down' : 'up');
-      msg.textContent = short ? `الرصيد لا يكفي: أقصى كمية ${fmt(maxBuy)} سهم` : state.msg;
+      msg.textContent = short ? `المال لا يكفي: ينقصك ${fmt(n * price - state.cash[t])}` : state.msg;
     };
     const qty = h('input', { id: 'qty', inputmode: 'numeric', value: qtyNow, placeholder: '0',
       oninput: e => { refs.qtyVal = e.target.value; preview(e.target.value); },
@@ -750,8 +832,7 @@ function renderCard() {
           h('div', { class: 'qtyrow' }, qty, ...[10, 50, 100].map(v => h('button', { onclick: () => setQ(v) }, N(v))),
             h('button', { onclick: () => setQ(maxBuy), title: 'أقصى كمية يسمح بها الرصيد' }, 'الأقصى'), h('button', { onclick: () => setQ(state.shares[t][co]), title: 'كل الأسهم التي لديك' }, 'الكل')),
           h('div', { class: 'muted', style: 'font-size:14px' }, 'القيمة: ', cost, ' · الرصيد بعد الشراء: ', after),
-          h('div', { style: 'display:flex;gap:10px' }, buyBtn,
-            B('بيع', 'sell', () => trade(false), { style: 'flex:1;font-size:18px', disabled: state.sells >= tune.maxSells || !state.shares[t][co] })),
+          h('div', { style: 'display:flex;gap:10px' }, buyBtn, sellBtn),
           msg),
         h('div', { style: 'margin-top:auto;display:flex;justify-content:space-between;align-items:center' },
           h('span', { class: 'muted', style: 'font-size:12px' }, 'كل صفقة تحرك السعر: الشراء يرفعه والبيع يخفضه'),
@@ -786,7 +867,7 @@ function showHelp(i = 0) { // the how-to-play dialog: one photo and one step at 
   const last = i === HELP.length - 1, close = () => document.getElementById('help')?.remove();
   ui.append(h('div', { class: 'ov', id: 'help' }, h('div', { class: 'modal', style: 'max-width:780px;justify-items:center' },
     h('div', { class: 'muted', style: 'font-size:14px' }, 'شرح اللعبة · ', N(`${i + 1} / ${HELP.length}`)),
-    h('img', { src: `assets/help-${i + 1}.png`, alt: HELP[i][0], width: '704', height: '396', style: 'border-radius:8px;border:1px solid var(--line);display:block' }),
+    h('img', { src: `assets/help-${i + 1}.png`, alt: HELP[i][0], width: '704', height: '396', style: 'border-radius:8px;border:1px solid var(--line);display:block;max-width:100%;height:auto' }),
     h('b', { style: 'font-size:22px' }, HELP[i][0]), h('div', { style: 'font-size:16px;line-height:1.7;max-width:680px;min-height:54px' }, HELP[i][1]),
     h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('السابق', '', () => showHelp(i - 1), { disabled: i === 0 }),
       B(last ? 'إغلاق' : 'التالي', 'pri', last ? close : () => showHelp(i + 1), { 'data-primary': '1' }), last ? null : B('إغلاق', '', close)))));
@@ -809,15 +890,19 @@ function toast(text, onUndo) { // a short notice with an undo button, gone after
 const scenes = {
   title: {
     enter() {
+      const game = savedGame();
       ui.append(familyLink());
       ui.append(h('div', { class: 'screen', style: 'align-items:center;justify-content:center;gap:22px;text-align:center' },
         h('span', { html: LOGO(2.6) }), h('div', { style: 'font-size:60px;font-weight:bold' }, TITLE),
         h('div', { class: 'muted', style: 'font-size:20px' }, 'مسابقة معلومات للفرق على شاشة تداول حية: أجب صحيحاً، اربح المال، واستثمره في السوق'),
-        h('div', { style: 'display:flex;gap:12px' }, B('مسابقة جديدة', 'pri', () => go('setup'), { 'data-primary': '1', style: 'padding:14px 34px;font-size:20px' }),
+        h('div', { style: 'display:flex;gap:12px;flex-wrap:wrap;justify-content:center' }, ...(game ? [B('متابعة اللعبة السابقة', 'pri', () => resumeGame(game), { 'data-primary': '1', style: 'padding:14px 34px;font-size:20px' }),
+          B('لعبة جديدة', '', () => confirmBox('بدء لعبة جديدة؟', 'اللعبة السابقة لم تنتهِ، وتُحذف عند بدء لعبة جديدة.', 'نعم، لعبة جديدة', () => go('setup'), 'رجوع'), { style: 'padding:14px 26px;font-size:18px' })]
+          : [B('مسابقة جديدة', 'pri', () => go('setup'), { 'data-primary': '1', style: 'padding:14px 34px;font-size:20px' })]),
           B('بنك الأسئلة', '', () => go('bank'), { style: 'padding:14px 26px;font-size:18px' }),
           B('شرح اللعبة', '', () => showHelp(), { style: 'padding:14px 26px;font-size:18px' })),
+        game ? h('div', { class: 'muted', style: 'font-size:17px;margin-top:-10px' }, 'لعبة لم تنتهِ: الجولة ', N(game.state.round), '، دور ', game.state.names[game.state.cur]) : null,
         themeSeg(() => go('title')),
-        h('div', { class: 'panel', style: 'padding:12px 20px;display:flex;gap:26px;font-size:14px' }, ...CONTROLS.map(c => h('span', { class: 'muted' }, c))),
+        h('div', { class: 'panel', style: 'padding:12px 20px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 26px;font-size:14px' }, ...CONTROLS.map(c => h('span', { class: 'muted' }, c))),
         h('div', { class: 'muted', style: 'font-size:14px' }, qCount(bank.length), ' في البنك')));
     },
     update() {}, draw() { backdrop(true); },
@@ -832,8 +917,8 @@ const scenes = {
       const names = h('div', { class: 'names' }, ...[...Array(s.teams).keys()].map(i => h('span', { style: 'display:flex;gap:6px;align-items:center' }, shield(i, 20),
         h('input', { value: s.names[i], maxlength: '18', oninput: e => { s.names[i] = e.target.value.trim() || `الفريق ${i + 1}`; } }))));
       ui.append(h('div', { class: 'screen' },
-        h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('span', { html: LOGO(1) }), h('b', { style: 'font-size:26px' }, 'إعداد المسابقة'), h('span', { style: 'flex:1' }),
-          B('رجوع', '', () => go('title')), B('ابدأ التداول', 'pri', () => { store.set('souq.settings', s); reset(); go('play'); }, { 'data-primary': '1', style: 'padding:12px 30px;font-size:18px' })),
+        h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('span', { html: LOGO(1) }), h('b', { style: 'font-size:26px' }, 'إعداد المسابقة'), h('span', { style: 'flex:1' }), themeSeg(() => go('setup')),
+          B('رجوع', '', () => go('title')), B('ابدأ التداول', 'pri', () => { store.set('souq.settings', s); if (hostMode(s) === 'window') openPresenter(); reset(); go('play'); }, { 'data-primary': '1', style: 'padding:12px 30px;font-size:18px' })),
         h('div', { class: 'grid2', style: 'flex:1;min-height:0' },
           h('div', { style: 'display:grid;gap:14px;align-content:start' },
             h('div', { class: 'panel box' }, h('h3', {}, 'الفرق'), h('div', { style: 'display:flex;gap:10px;align-items:center' }, 'عدد الفرق',
@@ -844,11 +929,20 @@ const scenes = {
               numF('وقت الإجابة', 'answerTime', CONFIG.answerTime, 'ثانية'), numF('وقت التداول', 'tradeTime', CONFIG.tradeTime, 'ثانية')))),
           h('div', { style: 'display:grid;gap:14px;align-content:start' },
             h('div', { class: 'panel box' }, h('h3', {}, 'طريقة اللعب'), seg('mode', [['seq', 'متتالي: كل فريق في دوره'], ['fast', 'الأسرع: من يجيب أولاً']])),
-            h('div', { class: 'panel box' }, h('h3', {}, 'عرض الأسئلة'), seg('qmode', [['choices', 'أربعة خيارات على الشاشة'], ['judge', 'السؤال فقط والمقدّم يحكم']]),
-              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode === 'choices' ? 'تختار الفرق الإجابة من الخيارات، وتظهر الإجابة الصحيحة بعدها.' : 'يظهر السؤال، ويضغط المقدّم صحيحة أو خاطئة، ثم تظهر الإجابة الصحيحة.')),
+            h('div', { class: 'panel box' }, h('h3', {}, 'عرض الأسئلة'), seg('qmode', [['choices', 'أربعة خيارات على الشاشة'], ['judge', 'السؤال فقط والمقدّم يحكم'], ['own', 'أسئلتي أنا']]),
+              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode === 'choices' ? 'تختار الفرق الإجابة من الخيارات، وتظهر الإجابة الصحيحة بعدها.' : s.qmode === 'own' ? 'بدون بنك: تطرح السؤال من جوالك أو كتاب، واللعبة تعرض المؤقت وزرَّي «صحيحة» و«خاطئة».' : 'يظهر السؤال، ويضغط المقدّم صحيحة أو خاطئة، ثم تظهر الإجابة الصحيحة.'),
+              h('h3', { style: 'margin-top:6px' }, 'شاشة المقدّم'),
+              s.qmode === 'judge' ? seg('hostScreen', [['phone', 'على جوالي'], ['window', 'نافذة على هذا الحاسوب']])
+                : h('div', { class: 'seg', 'aria-disabled': 'true' }, ...['على جوالي', 'نافذة على هذا الحاسوب'].map(l => h('button', { disabled: true }, l))),
+              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode !== 'judge'
+                ? (s.qmode === 'own' ? 'مع «أسئلتي أنا» الأسئلة والإجابات عندك أنت، فلا شيء تعرضه شاشة المقدّم.'
+                  : 'مع «أربعة خيارات» تحكم اللعبة على كل إجابة بنفسها، فلا حاجة لأن يرى المقدّم الإجابة. اختر «السؤال فقط والمقدّم يحكم» لتفعيل شاشة المقدّم.')
+                : s.hostScreen === 'window'
+                ? 'اضبط العرض على «توسيع» (Win+P). تفتح نافذة للمقدّم فيها الإجابة: أبقها على شاشة الحاسوب، واسحب اللعبة إلى جهاز العرض.'
+                : 'جهاز العرض يكرر شاشة الحاسوب. عند البدء، وحين تقترب الأسئلة من النهاية، يظهر رمز تصوّره بجوالك فترى الإجابات. أخفِ جهاز العرض قبل إظهار الرمز.')),
             h('div', { class: 'panel box' }, h('h3', {}, 'نهاية المسابقة'), seg('end', [['manual', 'يدوياً'], ['timed', 'بعد مدة'], ['rounds', 'بعد عدد جولات']]),
               s.end === 'timed' ? numF('مدة المسابقة', 'minutes', CONFIG.minutes, 'دقيقة') : s.end === 'rounds' ? numF('عدد الجولات', 'rounds', CONFIG.rounds, 'جولة') : h('div', { class: 'muted', style: 'font-size:12px' }, 'ينهي المقدّم المسابقة متى شاء بزر "إنهاء المسابقة".')),
-            h('div', { class: 'panel box' }, h('h3', {}, 'المظهر'), themeSeg(() => go('setup')))))));
+            ))));
     },
     update() {}, draw() { backdrop(false); },
   },
@@ -900,11 +994,9 @@ const scenes = {
       renderAll();
     },
     update(dt) {
-      if (state.paused) return;
+      if (state.paused || state.keyAsk) return; // the key screen holds the clock too
       if (undo && pressed('KeyZ') && !typing()) return undoVerdict();
       if (undo && state.t > undo.until) { undo = null; renderCard(); }
-      const hHeld = down.has('KeyH') && !typing(); // H acts on press and release only, so it never fights a held pointer
-      if (hHeld !== !!refs.hHeld) { refs.hHeld = hHeld; if (state.phase === 'question' && settings.qmode === 'judge') setPeek(hHeld); }
       if (settings.end === 'timed') {
         state.elapsed += dt;
         if (!state.lastCall && state.elapsed >= settings.minutes * 60) { state.lastCall = true; if (state.phase === 'ready') return endGame(); renderCard(); }
@@ -957,7 +1049,7 @@ const scenes = {
       const top = f.filter(e => e.rank === 1).map(e => state.names[e.i]);
       const line = top.length > 1 ? 'تعادل: ' + top.slice(0, -1).join('، ') + ' و' + top[top.length - 1] : 'الفائز: ' + top[0];
       const headline = h('div', { class: 'winner', style: 'font-size:32px' }, 'النتائج النهائية');
-      const table = h('div', { class: 'panel', style: 'width:820px;visibility:hidden' }, h('table', { class: 'lb' },
+      const table = h('div', { class: 'panel', style: 'width:820px;max-width:100%;visibility:hidden' }, h('table', { class: 'lb' },
         h('tr', {}, ...['المركز', 'الفريق', 'الرصيد', 'قيمة الأسهم', 'صافي الثروة', 'الأداء'].map(s => h('th', {}, s))),
         ...f.map(e => { const g = (e.worth - state.startWorth) / state.startWorth;
           return h('tr', {}, h('td', {}, h('span', { style: 'display:flex;gap:8px;align-items:center' }, N(e.rank), tied(e.rank) ? h('span', { class: 'chip', style: 'font-size:14px;padding:2px 8px' }, 'تعادل') : null)),
@@ -965,7 +1057,7 @@ const scenes = {
             h('td', {}, N(fmt(e.cash))), h('td', {}, N(fmt(e.stock))), h('td', { style: 'font-weight:bold' }, N(fmt(e.worth))),
             h('td', {}, h('span', { class: 'pill ' + (g > 0 ? 'up' : g < 0 ? 'down' : 'flat') }, pct(g)))); })));
       ui.append(h('div', { class: 'screen', style: 'align-items:center;gap:10px;padding-top:14px' }, headline,
-        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;height:300px' }, ...[2, 1, 3].filter(r => steps[r]).map(r => steps[r])), // second, first, third, right to left
+        h('div', { class: 'pods', style: 'display:flex;align-items:flex-end;gap:16px;height:300px' }, ...[2, 1, 3].filter(r => steps[r]).map(r => steps[r])), // second, first, third, right to left
         table,
         h('div', { style: 'display:flex;gap:12px' }, B('مسابقة جديدة بنفس الإعدادات', 'pri', () => { reset(); go('play'); }, { 'data-primary': '1' }), B('الشاشة الرئيسية', '', () => go('title')))));
       const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -993,7 +1085,7 @@ const scenes = {
   figures: { // every drawn figure side by side, each named
     enter() {
       const cell = (el, name) => h('div', { class: 'panel', style: 'display:grid;place-items:center;gap:8px;padding:14px;min-height:120px' }, el, h('b', {}, name));
-      ui.append(h('div', { class: 'screen', style: 'display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-content:start' },
+      ui.append(h('div', { class: 'screen', style: 'display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-content:start' },
         cell(h('span', { html: LOGO(1.6) }), 'الشعار'), cell(h('span', { html: TROPHY }), 'الكأس'),
         cell(h('span', { html: ring(18, 30) }), 'عداد الوقت'), cell(h('span', { html: spark([100, 104, 99, 108, 112, 109, 118]) }), 'رسم الأداء'),
         cell(h('span', { style: 'display:flex;gap:6px' }, ...[0, 1, 2, 3, 4, 5].map(i => shield(i, 26))), 'شعارات الفرق'),
@@ -1031,10 +1123,11 @@ function step() {
   if (pressed('KeyM') && !typing()) setMuted(!muted);
   if ((pressed('KeyP') || pressed('Space')) && !typing() && scene === 'play') { state.paused = !state.paused; renderHeader(); }
   if ((pressed('Enter') || pressed('NumpadEnter')) && !typing() && !document.getElementById('confirm')) { // Enter: the screen's main button
-    const p = (document.getElementById('importask') || document.getElementById('help') || ui).querySelector('[data-primary]:not([disabled])'); // an open dialog's own button first
+    const p = (document.getElementById('hostkey') || document.getElementById('importask') || document.getElementById('help') || ui).querySelector('[data-primary]:not([disabled])'); // an open dialog's own button first
     if (p) p.click();
   }
-  if (pressed('Escape')) { document.getElementById('confirm')?.remove(); document.getElementById('importask')?.remove(); document.getElementById('help')?.remove(); }
+  if (pressed('Escape') && state && state.keyAsk && state.keyAsk.step === 2 && document.getElementById('hostkey')) { state.keyAsk.step = 1; renderAll(); }
+  else if (pressed('Escape')) { document.getElementById('confirm')?.remove(); document.getElementById('importask')?.remove(); document.getElementById('help')?.remove(); }
   state.t += STEP;
   scenes[scene].update(STEP); hit.clear();
 }
@@ -1049,6 +1142,121 @@ function drawFrame() { scenes[scene].draw(); }
 function frame() { tick(); requestAnimationFrame(frame); }
 function timer() { if (document.visibilityState === 'visible' && clock.now() - last > 0.1) tick(); }
 
+// ---- The host's answer key on a phone (setup: شاشة المقدّم → على جوالي; projector duplicates the laptop) ----
+// The key screen comes at Start, at the start of a turn when fewer than keyReserve questions are left
+// on the key (so no battle is cut), and, as a last resort, before a question past the key. Step 1 asks
+// the host to hide the projector; step 2 shows one QR code of key.html with the next questions and
+// answers in its #hash (pack.js), as many as fit the biggest code allowed; "done scanning" resumes.
+// Running from a flash drive (file://), the code points at the published key.html; ?keybase= overrides.
+const KEY_PAGE = params.get('keybase') || (location.protocol.startsWith('http') ? new URL('key.html', location.href).href
+  : 'https://alghofaily.github.io/Musabaqat/souq-al-marifa/key.html');
+let keyBuilt = null; // { from, count, svg } for the key screen now up
+function keyRows(from, count) { // the questions the game will ask from position `from`, in its order (rules.js questionOrder)
+  return O.questionOrder(bank.length, state.seed0, from, count).map((bi, i) =>
+    [from + i + 1, SouqKey.cut(bank[bi][1], tune.keyQuestionChars), SouqKey.cut(bank[bi][2], tune.keyAnswerChars)]);
+}
+async function buildKey(from, cap = 400) { // the most questions (up to cap) that fit one code of keyMaxVersion, then the smallest code that holds them
+  const fits = async n => { const url = KEY_PAGE + '#' + await SouqKey.pack({ code: state.code, rows: keyRows(from, n) });
+    try { const q = qrcode(tune.keyMaxVersion, 'L'); q.addData(url, 'Byte'); q.make(); return url; } catch (e) { return null; } };
+  let lo = 0, hi = Math.min(cap, bank.length), url = null; // one pass of the bank at most: past it the same questions come again
+  while (lo < hi) { const m = (lo + hi + 1) >> 1; const u = await fits(m); if (u) { lo = m; url = u; } else hi = m - 1; }
+  if (!url) return null;
+  for (let t = 1; t <= tune.keyMaxVersion; t++) { try { const q = qrcode(t, 'L'); q.addData(url, 'Byte'); q.make(); return { from, count: lo, svg: q.createSvgTag({ cellSize: 4, margin: 4, scalable: true }) }; } catch (e) { /* too long for t */ } }
+  return null;
+}
+function phoneKey() { return hostMode() === 'phone' && state && !state.keyOff; }
+function keyChip() { // header: the match code and what is left on the key; between turns it takes the next key (or a key again)
+  const early = state.phase === 'ready' && !state.keyAsk;
+  if (state.keyOff) return h('button', { class: 'chip keychip', disabled: !early, title: 'خذ مفتاح الإجابات على جوالك',
+    onclick: () => { state.keyOff = false; state.keyAsk = { from: state.qi, step: 1 }; renderAll(); } },
+    'بدون مفتاح', early ? h('span', { class: 'take' }, ' · اضغط لأخذ مفتاح') : null);
+  const left = Math.max(0, state.keyTo - state.qi), near = state.keyTo > 0 && left <= tune.keyReserve + 10, can = early && state.keyTo > 0;
+  return h('button', { class: 'chip keychip' + (near ? ' near' : ''), disabled: !can,
+    title: can ? 'خذ مفتاح الأسئلة التالية الآن' : 'يطابق الرمز على جوال المقدّم',
+    onclick: () => { state.keyAsk = { from: state.qi, step: 1 }; renderAll(); } },
+    'رمز ', h('b', { class: 'num' }, state.code), state.keyTo > 0 ? [' · بقي ', h('b', { class: 'num' }, left), ' في المفتاح'] : null,
+    can ? h('span', { class: 'take' }, ' · خذ التالي') : null);
+}
+function renderHostKey() {
+  const ask = state.keyAsk, old = document.getElementById('hostkey');
+  if (!ask) { old?.remove(); keyBuilt = null; return; }
+  if (old && old.dataset.step === String(ask.step) && old.dataset.from === String(ask.from) && old.dataset.cap === String(ask.cap || 0)) return;
+  old?.remove();
+  const first = ask.from === 0, remain = state.keyTo - state.qi;
+  const close = () => { state.keyAsk = null; renderAll(); };
+  const box = h('div', { class: 'qrbox' + (ask.step === 1 ? ' veiled' : '') }, h('span', { class: 'muted' }, 'جارٍ تجهيز الرمز…'));
+  // click only, never Enter: hosts press Enter all game to move on, and this shows answers
+  const show = B('جهاز العرض مخفي: أظهر الرمز', 'pri', () => { state.keyAsk.step = 2; renderAll(); }, { disabled: true });
+  const modal = h('div', { class: 'modal keymodal' });
+  if (ask.step === 1) {
+    modal.append(h('b', { style: 'font-size:24px' }, first ? 'مفتاح الإجابات للمقدّم' : 'مفتاح الأسئلة التالية'),
+      h('div', { class: 'keywarn' }, 'أخفِ شاشة العرض أولاً: زر الإخفاء في جهاز العرض، أو Win+P ثم «شاشة الكمبيوتر فقط». في الرمز إجابات الأسئلة القادمة، ومن يصوّره من الجمهور يراها.'),
+      box,
+      h('div', { class: 'keybtns' }, show,
+        remain > 0 ? B(`لاحقاً (بقي ${remain} في المفتاح)`, '', () => { state.keySnooze = state.turns; close(); }) : null,
+        B('بدون مفتاح الآن', 'ghost', () => { state.keyOff = true; close(); })));
+  } else {
+    modal.append(h('div', { style: 'font-size:18px', id: 'keyrange' }, 'جارٍ تجهيز الرمز…'), box,
+      h('div', { class: 'keybtns' },
+        B('تم المسح: أكمل المسابقة', 'pri', () => { state.keyTo = ask.from + keyBuilt.count; close(); }, { 'data-primary': '1', disabled: true, id: 'keydone' }),
+        B('رمز أصغر', '', () => { state.keyAsk.cap = Math.max(5, Math.floor((keyBuilt?.count || 20) / 2)); keyBuilt = null; renderAll(); }, { id: 'keysmaller', disabled: true }),
+        B('رجوع (Esc)', 'ghost', () => { state.keyAsk.step = 1; renderAll(); })));
+  }
+  const cap = ask.cap || 400;
+  (keyBuilt && keyBuilt.from === ask.from && keyBuilt.cap === cap ? Promise.resolve(keyBuilt) : buildKey(ask.from, cap)).then(k => {
+    if (state.keyAsk !== ask || !modal.isConnected) return;
+    if (!k) { box.replaceChildren(h('b', { style: 'color:var(--bg)' }, 'تعذّر صنع الرمز. تابع «بدون مفتاح الآن»، أو ارفع keyMaxVersion في config.js.')); return; }
+    keyBuilt = Object.assign(k, { cap });
+    box.innerHTML = k.svg;
+    if (ask.step === 1) { show.disabled = false; return; }
+    document.getElementById('keyrange').replaceChildren(`امسح الرمز بجوالك: الأسئلة ${ask.from + 1} إلى ${ask.from + k.count} · رمز المطابقة `, h('b', { class: 'num', style: 'letter-spacing:3px' }, state.code));
+    document.getElementById('keydone').disabled = false;
+    document.getElementById('keysmaller').disabled = k.count <= 10;
+  });
+  ui.append(h('div', { class: 'ov', id: 'hostkey', 'data-step': String(ask.step), 'data-from': String(ask.from), 'data-cap': String(ask.cap || 0), role: 'dialog', 'aria-label': 'مفتاح الإجابات للمقدّم' }, modal));
+}
+
+// ---- The host window (setup: شاشة المقدّم → نافذة على هذا الحاسوب; projector set to Extend) ----
+// presenter.html stays on the laptop screen and shows the answer; this window, on the projector, is
+// the only holder of the game. It sends a full snapshot on every render and every second; the host
+// window sends back the same actions as the keyboard (Enter, 1–4) or the judge buttons, so each one
+// works only where it already would. window.open + postMessage also work from file:// (a flash drive).
+let presenter = null;
+const presenterOpen = () => !!presenter && !presenter.closed;
+function openPresenter() { // from a click only: browsers block pop-ups opened any other way
+  if (presenterOpen()) { presenter.focus(); return; }
+  presenter = window.open('presenter.html', 'souq-presenter', 'popup,width=960,height=720');
+  if (!presenter) setTimeout(() => { if (scene === 'play') { state.msg = 'منع المتصفح نافذة المقدّم. اسمح بالنوافذ المنبثقة لهذه الصفحة، ثم اضغط «افتح شاشة المقدّم» في الأعلى.'; state.msgGood = false; renderAll(); } }, 0);
+  else if (scene === 'play') renderHeader();
+}
+function tellPresenter() {
+  if (!presenterOpen()) return;
+  const playing = scene === 'play' && state, q = playing && state.q, p = playing ? state.phase : '';
+  const asking = (p === 'question' || p === 'reveal') && q && !q.own;
+  const primary = ui.querySelector('[data-primary]:not([disabled])');
+  presenter.postMessage({ type: 'state', scene, phase: p, paused: playing ? state.paused : false,
+    round: playing ? state.round : 0, team: playing ? state.names[state.cur] : '', answering: asking && state.answeredBy != null ? state.names[state.answeredBy] : '',
+    q: asking ? { n: q.n, text: q.text, answer: q.choices[q.right], right: q.right + 1, choices: q.choices } : null,
+    qmode: settings.qmode, done: p === 'reveal', timer: asking ? Math.ceil(state.timer) : null,
+    primary: primary ? primary.textContent.trim() : '', judge: !!ui.querySelector('[data-judge]') }, '*');
+}
+setInterval(() => { // the snapshot's timer, and the header's "connected" label when the host window opens or closes
+  tellPresenter();
+  if (scene === 'play' && hostMode() === 'window') {
+    const b = [...(refs.header?.querySelectorAll('button') || [])].find(x => x.textContent.includes('شاشة المقدّم'));
+    if (b && b.textContent !== (presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم')) renderHeader();
+  }
+}, 1000);
+addEventListener('message', e => {
+  if (!presenterOpen() || e.source !== presenter) return; // only the window this game opened
+  const m = e.data || {};
+  if (m.type === 'hello') return tellPresenter();
+  if (m.type !== 'cmd' || scene !== 'play' || state.paused) return;
+  if (m.cmd === 'enter') hit.add('Enter');
+  else if (m.cmd === 'choice' && m.k >= 1 && m.k <= 4) hit.add('Digit' + m.k);
+  else if (m.cmd === 'judge' && (m.v === 'right' || m.v === 'wrong')) ui.querySelector(`[data-judge="${m.v}"]:not([disabled])`)?.click();
+});
+
 // ---- What a check can read and drive (?manual=1 stops the loop; players never see it) ----
 window.game = {
   get scene() { return scene; },
@@ -1059,9 +1267,6 @@ window.game = {
   step(n = 1, draw = true, alpha = 1) { for (let i = 0; i < n; i++) step(); if (draw) { ALPHA = alpha; drawFrame(); } },
 };
 
-if (matchMedia('(max-width: 699px) and (orientation: portrait)').matches) // a phone held upright: the 1280x720 screen is tiny there
-  document.body.append(h('div', { id: 'phone', role: 'note' }, h('span', {}, 'صُممت هذه اللعبة للابتوب وشاشة العرض'),
-    h('button', { onclick: () => document.getElementById('phone').remove() }, 'حسناً')));
 reset();
 go(params.get('scene') || 'title');
 last = clock.now();

@@ -40,13 +40,14 @@ Trades move prices (Ma3aliSahmuk's impact rule), so others' buys lift your holdi
 
 ## Features
 - [x] Setup screen: teams, cash, price, timers, question mode, play mode (sequential / fastest), end mode (manual / timed minutes / rounds), theme light/dark
-- [x] Question bank: 60 starter Arabic questions in categories; the host can add, delete and reset in a bank editor, saved in the browser
+- [x] Question bank: the studio's shared default bank (2,602 Arabic questions in 13 categories, made by `tools/question-bank/`; levels ignored here); the host can add, delete and reset in a bank editor, saved in the browser
 - [x] Two question modes: 4 choices (teams answer on screen), or the question alone with right/wrong buttons and the answer revealed
 - [x] Market watch: 10 fictional companies in 5 sectors, with sparkline, price, change % and flashes
 - [x] Trade panel: buy/sell with a quantity, 2+2 limit, price impact, trading countdown
 - [x] Twists (my pick): sector news (±8–25% to every company in a sector), dividend day (cash per share held), trading halt for that team
 - [x] CSV upload in the bank screen: Arabic column headers السؤال، الخيار 1 (الإجابة)، الخيار 2، الخيار 3، الخيار 4; one import button, then the host is asked to add to the existing questions or replace them; template download; bad rows reported by line
 - [x] Results podium (top 3) + standings; sounds with mute
+- [x] Host features (ported from husun-al-marifa, 2026-11-23): fixed question order with the question number on stage (`order.js`); host screens only in judge mode, either a window on the laptop (`presenter.html`) or an answer key on the host's phone by QR (`key.html`, `pack.js`, `vendor/qrcode.js`); «أسئلتي أنا» own-questions mode; the hold-to-peek answer is removed; a game in progress survives a refresh («متابعة اللعبة السابقة»); the stage fills any screen shape, with a portrait layout; trade buttons show the total and the shortfall
 - [x] Logo intro on load, the Musabaqat family link (title and results screens), undo after a verdict or a deleted question
 
 ## Your systems

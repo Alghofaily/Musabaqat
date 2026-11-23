@@ -44,11 +44,12 @@ Harder levels pay four times the easy ones, but a wrong answer earns nothing and
 - [x] Three levels: easy 25, medium 50, hard 100, each drawn from its own questions; no repeats until a level is used up
 - [x] Card board: 12 face-down cards dealt from the original's 13-card mix (±10, ±100, ±1000, nothing, play again, dove, lightning, fire, stop sign, bomb), each with its own drawn face and a flip
 - [x] Attack cards used now or kept; kept cards and doves shown on each team's podium and usable on that team's turn
-- [x] Question bank: 60 starter questions (20 per level) written for this game; add, delete, reset
+- [x] Question bank: the studio's shared default bank (2,602 questions: 451 easy, 574 medium, 1,577 hard, made by `tools/question-bank/`); add, delete, reset
 - [x] CSV import with Arabic headers السؤال، الخيار 1 (الإجابة)، الخيار 2، الخيار 3، الخيار 4، المستوى; a blank or wrong المستوى rejects the whole file with its lines; then add or replace
 - [x] Podium and standings; sounds with mute
 - [x] Logo intro on load, the Musabaqat family link (title and results screens), undo after a verdict or a deleted question
 - [x] Arabic README, and a row in the games repo's main README
+- [x] Host features (ported from husun-al-marifa, 2026-11-23): fixed question order, one deck per level, with the question number in its level on stage (`order.js`); host screens only in judge mode, either a window on the laptop (`presenter.html`) or an answer key on the host's phone by QR with a block per level (`key.html`, `pack.js`, `vendor/qrcode.js`); «أسئلتي أنا» own-questions mode (the level still sets the points); the hold-to-peek answer is removed; a game in progress survives a refresh («متابعة اللعبة السابقة»); the stage fills any screen shape, with a portrait layout
 
 ## Your systems
 - luck cards · in the slice

@@ -20,8 +20,9 @@
     --gold: #f2b705; --gold2: #c98a00; --goldtxt: #8a5700; --ink: #3a2600; --blue: #1f7ae0; --good: #0b7a43; --bad: #c4222c; --hover: #ffedc2; --beam: 255,255,255; --face: #ffffff; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
   body { font-family: 'Cairo', Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; font-weight: 700; font-variant-numeric: tabular-nums; }
-  #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; color: var(--text); background: var(--bg); }
-  #game { position: absolute; inset: 0; width: 1280px; height: 720px; }
+  /* the stage takes the screen's own shape (fit): wide screens get a wider stage, portrait ones a tall layout (.tall) */
+  #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; color: var(--text); background: var(--bg); --hh: 56px; }
+  #game { position: absolute; inset: 0; width: 100%; height: 100%; }
   #ui { position: absolute; inset: 0; direction: rtl; }
   button { font: inherit; cursor: pointer; border: 0; border-radius: 10px; color: inherit; }
   button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
@@ -46,15 +47,15 @@
   .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); font-size: 13px; font-weight: bold; }
 
   /* the show */
-  #app { position: absolute; inset: 0; display: grid; grid-template-rows: 56px 1fr 144px; }
+  #app { position: absolute; inset: 0; display: grid; grid-template-rows: var(--hh) 1fr 144px; }
   header { display: flex; align-items: center; gap: 12px; padding: 0 16px; background: rgba(0,0,0,.18); border-bottom: 1px solid var(--line); }
   .light header { background: rgba(255,255,255,.55); }
   header .sp { flex: 1; }
   header .btn { padding: 8px 14px; font-size: 14px; }
   .hgroup { display: flex; gap: 6px; align-items: center; padding-inline-start: 12px; margin-inline-start: 6px; border-inline-start: 1px solid var(--line); }
   .center { display: flex; align-items: center; justify-content: center; padding: 8px 12px; min-height: 0; }
-  .show.stage { width: 1200px; padding: 0; background: none; border-color: transparent; box-shadow: none; align-items: center; }
-  .show { width: 1120px; max-height: 100%; padding: 20px 28px; display: flex; flex-direction: column; gap: 14px; position: relative; box-sizing: border-box; }
+  .show.stage { width: min(1200px, 100%); padding: 0; background: none; border-color: transparent; box-shadow: none; align-items: center; }
+  .show { width: min(1120px, 100%); max-height: 100%; padding: 20px 28px; display: flex; flex-direction: column; gap: 14px; position: relative; box-sizing: border-box; }
   .title { font-size: 26px; font-weight: bold; display: flex; align-items: center; gap: 12px; }
   .levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .lvl { display: grid; place-items: center; gap: 6px; padding: 22px 10px; border-radius: 12px; color: #1a1000; font-weight: bold; border: 0; box-shadow: 0 6px 0 rgba(0,0,0,.25); }
@@ -72,7 +73,6 @@
   .choice .mk { margin-inline-start: auto; flex: none; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; }
   .choice.right .mk { background: var(--good); } .choice.wrong .mk { background: var(--bad); }
   .lockrow { display: flex; align-items: center; gap: 14px; }
-  .peek { user-select: none; touch-action: none; }
   .choice:disabled { cursor: default; }
   .answer { padding: 10px 14px; border-radius: 12px; border: 2px solid var(--good); background: rgba(47,212,122,.15); font-weight: bold; }
   .ring { position: relative; width: 96px; height: 96px; flex: none; }
@@ -158,15 +158,15 @@
   @keyframes rise { 0% { transform: translate(-50%, 6px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(-50%, -26px); opacity: 0; } }
   .delta { position: absolute; top: -40px; left: 50%; font-weight: 900; font-size: 30px; animation: rise 1.8s ease-out forwards; pointer-events: none; text-shadow: 0 2px 6px rgba(0,0,0,.5); z-index: 3; }
   .ov { position: absolute; inset: 0; background: rgba(3,8,30,.7); display: flex; align-items: center; justify-content: center; z-index: 20; }
-  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px 26px; min-width: 400px; max-width: 640px; display: grid; gap: 14px; justify-items: center; text-align: center; }
+  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px 26px; min-width: min(400px, 100%); max-width: min(640px, calc(100% - 24px)); box-sizing: border-box; display: grid; gap: 14px; justify-items: center; text-align: center; }
   .notes { font-size: 14px; color: var(--muted); }
 
   /* title, setup, bank, results */
-  .screen { position: absolute; inset: 0; padding: 26px 40px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box; }
+  .screen { position: absolute; inset: 0; padding: 14px 40px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box; }
   .grid2 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 14px; }
   .field { display: grid; gap: 6px; font-size: 13px; color: var(--muted); font-weight: bold; }
   .field input { width: 120px; direction: ltr; text-align: center; font-size: 16px; font-weight: bold; }
-  .box { padding: 14px 16px; display: grid; gap: 12px; align-content: start; }
+  .box { padding: 12px 16px; display: grid; gap: 10px; align-content: start; }
   .box h3 { margin: 0; font-size: 16px; }
   .names { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .names input { width: 100%; box-sizing: border-box; direction: rtl; text-align: right; font-size: 14px; }
@@ -175,8 +175,6 @@
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; } }
   .toast { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 30; display: flex; align-items: center; gap: 14px; padding: 8px 10px 8px 18px; font-size: 16px; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  #phone { position: fixed; top: 10px; inset-inline: 10px; z-index: 50; display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: #0b1a55; color: #f2f5ff; border: 1px solid #29479b; font: 700 15px/1.5 Cairo, Tahoma, sans-serif; direction: rtl; }
-  #phone button { background: #f6c343; color: #3a2600; padding: 6px 12px; min-height: 40px; border-radius: 8px; }
   .rstep { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 220px; flex-shrink: 0; opacity: 0; animation: stepIn .7s cubic-bezier(.16,1,.3,1) forwards; }
   @keyframes stepIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
   /* Results fit the 720 stage: the headline steps down with its length (results scene) and never shrinks into the podium;
@@ -185,6 +183,53 @@
   .winner { font-size: 64px; font-weight: 900; line-height: 1.2; color: var(--goldtxt); text-align: center; text-wrap: balance; max-width: 1180px; flex-shrink: 0; opacity: 0; animation: stepIn .8s cubic-bezier(.16,1,.3,1) forwards; }
   .tie { font-size: 14px; padding: 0 10px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); }
   .addq input, .addq select { direction: rtl; text-align: right; min-width: 0; }
+  /* the host's answer key (phone) and its header chip */
+  .keymodal { width: 760px; max-width: calc(100% - 24px); justify-items: center; }
+  .keywarn { font-size: 19px; font-weight: 700; color: var(--bad); line-height: 1.6; max-width: 640px; }
+  .qrbox { background: #fff; padding: 10px; border-radius: 8px; line-height: 0; width: 400px; height: 400px; max-width: 100%; display: grid; place-items: center; overflow: hidden; }
+  .qrbox svg { width: 100%; height: 100%; transition: filter .25s ease-out; }
+  .qrbox.veiled svg { filter: blur(16px); } /* unreadable by any camera until the host says the projector is hidden */
+  .keybtns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .chip.keychip { font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: default; }
+  .chip.keychip:not([disabled]) { cursor: pointer; } .chip.keychip:not([disabled]):hover { color: var(--text); border-color: var(--gold); }
+  .chip.keychip b { color: var(--text); letter-spacing: 1px; }
+  .chip.keychip.near { border-color: var(--gold); color: var(--goldtxt); }
+  .chip.keychip .take { color: var(--goldtxt); text-decoration: underline; text-underline-offset: 3px; }
+  .fan { display: flex; gap: 12px; justify-content: center; }
+  /* portrait (.tall): the header wraps, the levels and choices stack, the cards sit three to a row, the podiums wrap */
+  .tall #app { --hh: 104px; grid-template-rows: var(--hh) 1fr auto; }
+  .tall header { flex-wrap: wrap; align-content: center; row-gap: 6px; padding: 6px 10px; }
+  .tall header .ttl, .tall header .seg { display: none; }
+  .tall header .hgroup { padding-inline-start: 0; margin-inline-start: 0; border: 0; flex-wrap: wrap; }
+  .tall .center { padding: 6px; }
+  .tall .show { padding: 14px 16px; gap: 10px; overflow-y: auto; } .tall .show.stage { padding: 0; overflow: visible; }
+  .tall .levels { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .tall .lvl { grid-template-columns: auto auto auto 1fr; justify-items: start; padding: 10px 16px; gap: 4px 14px; }
+  .tall .lvl b { font-size: 44px; } .tall .lvl > span { font-size: 22px; } .tall .lvl small { justify-self: end; }
+  .tall .q { font-size: 28px; } .tall .choices { grid-template-columns: minmax(0, 1fr); }
+  .tall .choice { font-size: 21px; min-height: 60px; }
+  .tall .show[data-size=m] .q { font-size: 24px; } .tall .show[data-size=l] .q { font-size: 20px; }
+  .tall .show[data-size=m] .choice { font-size: 18px; min-height: 54px; } .tall .show[data-size=l] .choice { font-size: 16px; min-height: 48px; }
+  .tall .board { grid-template-columns: repeat(3, 132px); gap: 6px; }
+  .tall .effect { flex-wrap: wrap; gap: 10px 16px; min-height: 0; }
+  .tall .banner { gap: 12px; } .tall .banner.big b { font-size: 48px; } .tall .banner.big .v { font-size: 44px; } .tall .banner.medium b { font-size: 38px; } .tall .banner.medium .v { font-size: 34px; }
+  .tall .podiums { flex-wrap: wrap; gap: 8px; padding: 14px 8px 8px; }
+  .tall .pod { flex: 1 1 28%; max-width: none; }
+  .tall .pod .sc { font-size: 30px; } .tall .pod .nm { font-size: 15px; }
+  .tall .screen { padding: 16px; overflow-x: hidden; overflow-y: auto; }
+  .tall .fan { zoom: .62; }
+  .tall .grid2 { grid-template-columns: minmax(0, 1fr) !important; flex: none !important; }
+  .tall .names { grid-template-columns: repeat(2, 1fr); }
+  .tall .bq { grid-template-columns: 70px minmax(0, 1fr) auto; }
+  .tall .bq > :nth-child(3), .tall .bq > :nth-child(4) { grid-column: 1 / -1; }
+  .tall .bq > :nth-child(5) { grid-row: 1; grid-column: 3; }
+  .tall .addq { grid-template-columns: minmax(0, 1fr) !important; }
+  .tall .banklist { flex: none; overflow: visible; }
+  .tall .family.end ~ .screen { padding-bottom: 96px; } /* the family link sits under the buttons, not on them */
+  .tall .rrow { width: 100%; gap: 8px !important; } .tall .rstep { width: auto !important; flex: 1; min-width: 0; }
+  .tall .rstep .rname { max-width: 100%; }
+  .tall .winner { max-width: 100%; }
+  .tall .figs { grid-template-columns: repeat(3, 1fr) !important; }
   /* Intro: a spotlight comes up, the luck card turns face-on into it, then the name pops in gold.
      Every timing is a share of --t (config introTime), so one value sets the whole length. */
   #intro { position: fixed; inset: 0; z-index: 9999; display: grid; place-content: center; justify-items: center; gap: 3vmin; background: var(--bg); perspective: 1200px; animation: intro-out var(--t) linear both; }
@@ -217,6 +262,9 @@
 <script src="config.js"></script>
 <script src="questions.js"></script>
 <script src="csv.js"></script>
+<script src="order.js"></script>
+<script src="pack.js"></script>
+<script src="vendor/qrcode.js"></script>
 <script>
 'use strict';
 // ورقة الحظ: a host-run team quiz show. A team picks how hard its question is, answers on the
@@ -227,7 +275,7 @@
 const params = new URLSearchParams(location.search);
 const tune = new Proxy({}, { get: (_, k) => CONFIG[k].value }); // live: tune.speed is CONFIG.speed.value
 const STEP = 1 / 60;
-const W = 1280, H = 720;
+let W = 1280, H = 720, TALL = false; // the stage's size follows the screen (fit)
 const PIXEL = false;
 const FONT = "Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif";
 const TITLE = 'ورقة الحظ';
@@ -252,11 +300,19 @@ const canvas = document.getElementById('game');
 const ui = document.getElementById('ui');
 const ctx = canvas.getContext('2d');
 function fit() {
-  const s = Math.min(innerWidth / W, innerHeight / H), r = s * (devicePixelRatio || 1);
+  const vw = innerWidth, vh = innerHeight, a = vw / vh;
+  TALL = a < 0.9;
+  if (TALL) { W = Math.max(560, Math.round(1150 * a)); H = Math.round(W / a); }
+  else if (a >= 16 / 9) { H = 720; W = Math.round(720 * a); }
+  else { W = 1280; H = Math.round(1280 / a); }
+  const s = Math.min(vw / W, vh / H), r = s * (devicePixelRatio || 1);
   canvas.width = Math.round(W * r); canvas.height = Math.round(H * r); ctx.setTransform(r, 0, 0, r, 0, 0);
-  stage.style.transform = `translate(${Math.round((innerWidth - W * s) / 2)}px, ${Math.round((innerHeight - H * s) / 2)}px) scale(${s})`;
+  stage.style.width = W + 'px'; stage.style.height = H + 'px';
+  stage.style.transform = `translate(${Math.round((vw - W * s) / 2)}px, ${Math.round((vh - H * s) / 2)}px) scale(${s})`;
+  document.body.classList.toggle('tall', TALL);
 }
-addEventListener('resize', fit); fit();
+addEventListener('resize', () => { fit(); if (scene) drawFrame(); }); // layout follows the CSS; only the canvas needs a redraw
+fit();
 
 // ---- Input ------------------------------------------------------------------------------
 const down = new Set(), hit = new Set();
@@ -337,7 +393,7 @@ function h(tag, props = {}, ...kids) {
   return e;
 }
 const B = (label, cls, fn, extra = {}) => h('button', { class: 'btn ' + cls, onclick: () => { sfx.click(); fn(); }, ...extra }, label);
-const N = v => h('span', { class: 'num' }, v);
+const N = v => h('span', { class: 'num' }, typeof v === 'string' && /^[+\-−]/.test(v) ? '\u200E' + v : v); // LRM: the sign stays in front even where CSS isolation is ignored
 
 // ---- Drawn figures -------------------------------------------------------------------------
 // Okabe-Ito hues (told apart under protanopia and deuteranopia), spread in lightness; no yellow (the UI's gold)
@@ -430,8 +486,6 @@ const STARS = l => `<svg width="${l * 28}" height="26" viewBox="0 0 ${l * 28} 26
 const MARK = { // drawn ✓ and ✗ for the revealed choices, so right and wrong never rest on green and red alone
   right: '<svg width="22" height="22" viewBox="0 0 22 22"><path d="M4 11.5 L9 16.5 L18 6" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   wrong: '<svg width="22" height="22" viewBox="0 0 22 22"><path d="M5.5 5.5 L16.5 16.5 M16.5 5.5 L5.5 16.5" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/></svg>' };
-let peekHeld = false;
-function peekSync() { const el = document.getElementById('peekans'); if (el) el.hidden = !(peekHeld || (down.has('KeyH') && !typing())); }
 const levelPts = l => tune['level' + l + 'Points'];
 
 // ---- Settings, bank and theme (kept in the browser, under this game's own keys) --------------
@@ -442,40 +496,73 @@ function loadBank() { const b = store.get('waraqa.bank', null); return Array.isA
 let bank = loadBank();
 const saveBank = () => store.set('waraqa.bank', bank);
 function loadSettings() { // saved settings, each value checked against its limits
-  const s = Object.assign({ teams: tune.teams, names: [], answerTime: tune.answerTime, qmode: 'choices', end: 'rounds', rounds: tune.rounds, minutes: tune.minutes }, store.get('waraqa.settings', {}));
+  const s = Object.assign({ teams: tune.teams, names: [], answerTime: tune.answerTime, qmode: 'choices', end: 'rounds', rounds: tune.rounds, minutes: tune.minutes, hostScreen: 'phone' }, store.get('waraqa.settings', {}));
   for (const [k, c] of Object.entries({ teams: CONFIG.teams, answerTime: CONFIG.answerTime, rounds: CONFIG.rounds, minutes: CONFIG.minutes })) s[k] = clamp(Number(s[k]) || c.value, c.min, c.max);
-  if (!['choices', 'judge'].includes(s.qmode)) s.qmode = 'choices';
+  if (!['choices', 'judge', 'own'].includes(s.qmode)) s.qmode = 'choices';
+  if (!['phone', 'window'].includes(s.hostScreen)) s.hostScreen = 'phone'; // judging always has a host screen
   if (!['manual', 'timed', 'rounds'].includes(s.end)) s.end = 'rounds';
   s.names = Array.from({ length: 6 }, (_, i) => (Array.isArray(s.names) && typeof s.names[i] === 'string' && s.names[i].trim()) || `الفريق ${i + 1}`);
   return s;
 }
 let settings = loadSettings();
+// The host screens (a window on the laptop, or the answer key on the host's phone) exist only when the host judges.
+const hostMode = (s = settings) => s.qmode === 'judge' ? s.hostScreen : 'none';
+// A game in progress survives a refresh or a closed tab: saved on every render of the play scene, cleared at
+// the end. It resumes only with the same bank (its match code), or the fixed question order would not hold.
+// `seed` is the live rng stream, so a resumed game goes on with the same chance. A dove question open
+// mid-attack is not saved: the game comes back to the card's choice, before any point moved.
+const saveGame = () => { if (scene === 'play' && !state.final && !document.getElementById('dove')) store.set('waraqa.game', { seed, settings, state }); };
+const clearGame = () => { try { localStorage.removeItem('waraqa.game'); } catch {} };
+function savedGame() {
+  const g = store.get('waraqa.game', null);
+  return g && g.state && Array.isArray(g.state.pts) && g.state.qi && g.settings && g.state.code === WO.matchCode(bank, g.state.seed0) ? g : null;
+}
+function resumeGame(g) {
+  seed = g.seed; settings = Object.assign(loadSettings(), g.settings); state = g.state; undoSnap = null; revealTimers.forEach(clearTimeout); revealTimers = [];
+  if (state.revealing) state.revealing = false; // the card's flip had no timers left: it shows face up
+  go('play'); state.paused = true; renderHeader(); // back paused: the room is ready before the clock runs
+}
+addEventListener('beforeunload', e => { if (scene === 'play') { saveGame(); e.preventDefault(); e.returnValue = ''; } });
 let theme = store.get('waraqa.theme', 'dark') === 'light' ? 'light' : 'dark';
-function setTheme(t) { theme = t; document.body.className = t; store.set('waraqa.theme', t); }
+// classList, not className: the body also carries .tall
+function setTheme(t) { theme = t; document.body.classList.remove('dark', 'light'); document.body.classList.add(t); store.set('waraqa.theme', t); }
 setTheme(theme);
 
 // ---- Game state and rules ----------------------------------------------------------------------
 let scene, state;
+const WO = WaraqaOrder;
 function reset() {
   seed = Number(params.get('seed')) || CONFIG.seed || (Date.now() | 0); // seed 0: a new game every time
-  const n = settings.teams;
+  const seed0 = seed, n = settings.teams; // seed0: before the game's chance moves it, so the question order can be rebuilt (the host's key)
   state = {
     t: 0, score: 0, gained: '', paused: false,
     n, names: settings.names.slice(0, n), pts: Array(n).fill(0), doves: Array(n).fill(0), skip: Array(n).fill(0),
     kept: Array.from({ length: n }, () => ({ lightning: 0, fire: 0, stop: 0, nuke: 0 })), deltas: Array(n).fill(null),
     cur: 0, turns: 0, round: 1, elapsed: 0, lastCall: false,
     phase: 'level', level: 0, q: null, timer: 0, ticked: -1, picked: null, sel: null, result: null, reveal: false, hits: Array(n).fill(null),
-    board: [], pick: -1, card: null, cardStage: '', lines: [], notes: [], decks: { 1: [], 2: [], 3: [] }, final: null,
+    board: [], pick: -1, card: null, cardStage: '', lines: [], notes: [], final: null,
+    // the question order: each level asks its own bank rows (lv) in a fixed order from seed0 (order.js), qi questions asked so far in each
+    seed0, code: WO.matchCode(bank, seed0), lv: { 1: WO.levelRows(bank, 1), 2: WO.levelRows(bank, 2), 3: WO.levelRows(bank, 3) }, qi: { 1: 0, 2: 0, 3: 0 },
+    // the phone key: keyTo[L] = questions of level L before that position are on it; keyAsk: the key screen is up
+    keyTo: { 1: 0, 2: 0, 3: 0 }, keyAsk: hostMode() === 'phone' ? { from: { 1: 0, 2: 0, 3: 0 }, step: 1 } : null, keyOff: false, keySnooze: -1,
   };
 }
 const inLevel = l => bank.reduce((a, r) => a + (r[6] === String(l)), 0);
-function drawQuestion(level) { // no question repeats in a level until the level is used up
-  const d = state.decks[level];
-  if (!d.length) { bank.forEach((r, i) => { if (r[6] === String(level)) d.push(i); }); for (let i = d.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [d[i], d[j]] = [d[j], d[i]]; } }
-  const row = bank[d.pop()];
+const levelOK = l => settings.qmode === 'own' || inLevel(l); // the host's own questions need no bank
+// Questions come in the order fixed at Start (order.js, its own stream per level), so a host's answer key made then
+// stays right however the cards fall; state.qi is in every undo snapshot. A level asks all its questions once
+// before one repeats; then its next pass is fixed by the seed too.
+function drawQuestion(level) {
+  const rows = state.lv[level], n = rows.length, k = state.qi[level], from = Object.assign({}, state.qi);
+  state.qi[level]++;
+  if (phoneKey() && k >= state.keyTo[level] && !state.keyAsk) state.keyAsk = { from, step: 1 }; // last resort: the reserve normally prevents this
+  const row = bank[rows[WO.questionDeck(n, state.seed0 + level * 1000 + Math.floor(k / n))[k % n]]];
   const order = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
-  return { cat: row[0], text: row[1], choices: order.map(k => row[2 + k]), right: order.indexOf(0) };
+  return { n: k + 1, cat: row[0], text: row[1], choices: order.map(k => row[2 + k]), right: order.indexOf(0) };
 }
+// 'own': the host asks their own questions (phone, book), so nothing is drawn from the bank: the order, the key
+// and the question counter stay where they are. The placeholder keeps every reader of state.q safe.
+const ownQuestion = () => ({ own: true, n: 0, cat: '', text: '', choices: [], right: -1 });
 function addPts(i, v) { state.pts[i] += v; state.deltas[i] = { v, t: state.t }; say(`${state.names[i]}: ${sign(v)}، المجموع ${fmt(state.pts[i])}`); }
 const say = text => { const l = document.getElementById('live'); if (l) l.textContent = text; }; // read out by screen readers (aria-live)
 function dealBoard() { // each card drawn by its weight: luckyquiz's mix
@@ -510,10 +597,17 @@ function gameOverDue() {
   if (settings.end === 'timed') return state.elapsed >= settings.minutes * 60;
   return false;
 }
-function setPhase(p) { state.phase = p; events.push({ phase: p }); renderAll(); }
+function keyLow() { // some level has fewer questions left on the key than a turn needs (half its size at most, so a small level does not ask every turn)
+  return [1, 2, 3].some(l => state.lv[l].length && state.keyTo[l] - state.qi[l] < Math.min(tune.keyReserve, Math.ceil(state.lv[l].length / 2)));
+}
+function setPhase(p) {
+  state.phase = p; events.push({ phase: p });
+  if (p === 'level' && phoneKey() && !state.keyAsk && state.keySnooze !== state.turns && keyLow()) state.keyAsk = { from: Object.assign({}, state.qi), step: 1 };
+  renderAll();
+}
 function chooseLevel(l) {
-  if (state.phase !== 'level' || !inLevel(l)) return;
-  state.level = l; state.q = drawQuestion(l); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.sel = null; state.result = null; state.reveal = false;
+  if (state.phase !== 'level' || !levelOK(l) || state.keyAsk) return;
+  state.level = l; state.q = settings.qmode === 'own' ? ownQuestion() : drawQuestion(l); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.sel = null; state.result = null; state.reveal = false;
   setPhase('question');
 }
 let undoSnap = null, undoUntil = 0; // the state just before the last verdict, kept tune.undoSeconds for "تراجع"
@@ -624,6 +718,7 @@ function useKept(type) { // a kept card, used from the podium on the team's own 
     B('إلغاء', '', close))));
 }
 function endGame() {
+  clearGame();
   state.final = [...Array(state.n).keys()].map(i => ({ i, pts: state.pts[i] })).sort((a, b) => b.pts - a.pts);
   state.score = state.final[0].pts; state.gained = `${state.names[state.final[0].i]}: ${state.final[0].pts}`;
   sfx.win(); go('results');
@@ -638,7 +733,7 @@ const familyLink = (at = '') => h('a', { class: at ? `family ${at}` : 'family', 
   'aria-label': 'ألعاب مسابقات: تفتح صفحة الألعاب في نافذة جديدة', html: FAMILY_MARK, onclick: e => e.currentTarget.blur() }); // blur: a later Enter goes back to the game
 function go(name) { scene = name; state.paused = false; ui.replaceChildren(); (scenes[name].enter || (() => {}))(); events.push({ scene: name }); }
 let refs = {};
-function renderAll() { if (scene !== 'play') return; renderHeader(); renderShow(); renderPodiums(); }
+function renderAll() { if (scene !== 'play') return; renderHeader(); renderShow(); renderPodiums(); renderHostKey(); tellPresenter(); saveGame(); }
 function themeSeg(after) {
   return h('div', { class: 'seg' }, h('button', { class: theme === 'dark' ? 'on' : '', onclick: () => { setTheme('dark'); after(); } }, 'داكن'),
     h('button', { class: theme === 'light' ? 'on' : '', onclick: () => { setTheme('light'); after(); } }, 'فاتح'));
@@ -646,12 +741,14 @@ function themeSeg(after) {
 function renderHeader() {
   const end = settings.end === 'rounds' ? h('span', { class: 'chip' }, 'الجولة ', N(`${Math.min(state.round, settings.rounds)} / ${settings.rounds}`))
     : settings.end === 'timed' ? h('span', { class: 'chip', id: 'clockchip' }, 'الوقت المتبقي') : h('span', { class: 'chip' }, 'الجولة ', N(state.round), ' · إنهاء يدوي');
-  refs.header.replaceChildren(h('span', { html: LOGO(0.8), style: 'display:flex' }), h('b', { style: 'font-size:22px' }, TITLE), end,
-    h('span', { class: 'chip muted' }, settings.qmode === 'choices' ? 'أربعة خيارات' : 'المقدّم يحكم'), h('span', { class: 'sp' }), themeSeg(renderAll),
+  refs.header.replaceChildren(...[h('span', { html: LOGO(0.8), style: 'display:flex' }), h('b', { class: 'ttl', style: 'font-size:22px' }, TITLE), end,
+    h('span', { class: 'chip muted ttl' }, settings.qmode === 'choices' ? 'أربعة خيارات' : settings.qmode === 'own' ? 'أسئلتي أنا' : 'المقدّم يحكم'),
+    hostMode() === 'phone' ? keyChip() : null, h('span', { class: 'sp' }), themeSeg(renderAll),
     h('span', { class: 'hgroup' },
+      hostMode() === 'window' ? B(presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم', 'ghost', openPresenter) : null,
       B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', 'ghost', () => setMuted(!muted)),
       B(state.paused ? 'متابعة' : 'إيقاف مؤقت', 'ghost', () => { state.paused = !state.paused; renderHeader(); }),
-      B('إنهاء المسابقة', 'ghost danger', confirmEnd)));
+      B('إنهاء المسابقة', 'ghost danger', confirmEnd))].filter(Boolean));
 }
 function teamTitle(i, prefix) { return h('div', { class: 'title' }, prefix ? h('span', { class: 'muted', style: 'font-size:18px' }, prefix) : null, shield(i, 30), state.names[i]); }
 function renderShow() {
@@ -665,7 +762,7 @@ function renderShow() {
     box.replaceChildren(...[teamTitle(me, 'الدور على'),
       state.notes.length ? h('div', { class: 'notes' }, state.notes.join(' · ')) : null,
       h('div', { class: 'muted' }, 'اختر مستوى السؤال: كلما صعب السؤال زادت الدرجات'),
-      h('div', { class: 'levels' }, ...[1, 2, 3].map(l => h('button', { class: 'lvl lvl' + l, disabled: !inLevel(l), 'data-primary': l === 2 && inLevel(2) ? '1' : null, onclick: () => { sfx.click(); chooseLevel(l); } },
+      h('div', { class: 'levels' }, ...[1, 2, 3].map(l => h('button', { class: 'lvl lvl' + l, disabled: !levelOK(l), 'data-primary': l === 2 && levelOK(2) ? '1' : null, onclick: () => { sfx.click(); chooseLevel(l); } },
         h('span', { class: 'stars', html: STARS(l) }), h('span', {}, LEVEL_NAMES[l]), h('b', {}, N(levelPts(l))), h('small', {}, 'درجة · اضغط ', N(l))))),
       hasKept ? h('div', { class: 'notes' }, 'لديك أوراق محفوظة: اضغط عليها في منصتك لاستخدامها قبل السؤال') : null,
       state.lastCall ? h('div', { class: 'chip bad' }, 'انتهى الوقت: هذا آخر دور') : null].filter(Boolean));
@@ -676,8 +773,8 @@ function renderShow() {
     const longest = Math.max(...q.choices.map(x => x.length));
     box.dataset.size = q.text.length > 110 || longest > 45 ? 'l' : q.text.length > 70 || longest > 30 ? 'm' : '';
     const parts = [h('div', { style: 'display:flex;gap:14px;align-items:center' }, done ? null : timerBox(),
-      h('div', { style: 'flex:1' }, h('div', { style: 'display:flex;gap:8px' }, h('span', { class: 'chip' }, LEVEL_NAMES[state.level], ' · ', N(levelPts(state.level)), ' درجة'), h('span', { class: 'chip muted' }, q.cat)),
-        h('div', { class: 'q', style: 'margin-top:8px' }, q.text)), teamTitle(me))];
+      h('div', { style: 'flex:1' }, h('div', { style: 'display:flex;gap:8px' }, h('span', { class: 'chip' }, LEVEL_NAMES[state.level], ' · ', N(levelPts(state.level)), ' درجة'), q.own ? h('span', { class: 'chip muted' }, 'أسئلتي أنا') : [h('span', { class: 'chip' }, 'سؤال ', N(q.n)), h('span', { class: 'chip muted' }, q.cat)]),
+        h('div', { class: 'q', style: 'margin-top:8px' }, q.own ? 'سؤالك أنت: اسأله بصوتك، ثم احكم' : q.text)), teamTitle(me))];
     if (settings.qmode === 'choices') {
       parts.push(h('div', { class: 'choices' }, ...q.choices.map((txt, k) => {
         const cls = done && k === q.right ? ' right' : done && k === state.picked ? ' wrong' : !done && k === state.sel ? ' sel' : '';
@@ -688,16 +785,9 @@ function renderShow() {
       if (!done) parts.push(h('div', { class: 'lockrow' }, B('تأكيد الإجابة', 'gold', () => select(state.sel), { 'data-primary': '1', disabled: state.sel == null, style: 'font-size:18px' }),
         h('span', { class: 'muted', style: 'font-size:16px' }, state.sel == null ? 'اختر إجابة بالضغط عليها أو برقمها' : 'اضغط الرقم نفسه مرة أخرى أو Enter للتأكيد')));
     } else {
-      if (state.reveal) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right]));
-      else { // hold to peek: the answer shows only while the host holds the button or H, so the room never sees it
-        const on = v => { peekHeld = v; peekSync(); };
-        parts.push(h('div', { style: 'display:flex;gap:12px;align-items:center;min-height:52px' },
-          h('button', { class: 'btn peek', style: 'font-size:15px', onpointerdown: e => { e.currentTarget.setPointerCapture?.(e.pointerId); on(true); }, onpointerup: () => on(false),
-            onpointercancel: () => on(false), onlostpointercapture: () => on(false), oncontextmenu: e => e.preventDefault() }, 'اضغط مطولاً لرؤية الإجابة (H)'),
-          h('div', { class: 'answer', id: 'peekans', hidden: true }, 'الإجابة: ', q.choices[q.right])));
-      }
-      if (!done) parts.push(h('div', { style: 'display:flex;gap:12px' }, B('إجابة صحيحة', 'good', () => answer(true), { 'data-primary': '1', style: 'flex:1;font-size:18px' }),
-        B('إجابة خاطئة', 'bad', () => answer(false), { style: 'flex:1;font-size:18px' })));
+      if (state.reveal && !q.own) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right]));
+      if (!done) parts.push(h('div', { style: 'display:flex;gap:12px' }, B('إجابة صحيحة', 'good', () => answer(true), { 'data-judge': 'right', 'data-primary': '1', style: 'flex:1;font-size:18px' }),
+        B('إجابة خاطئة', 'bad', () => answer(false), { 'data-judge': 'wrong', style: 'flex:1;font-size:18px' })));
     }
     if (done) {
       const right = state.result === 'right', loss = Math.round(levelPts(state.level) * tune.wrongPenalty);
@@ -787,16 +877,22 @@ function showHelp(i = 0) { // the how-to-play dialog: one step at a time, with i
   document.getElementById('help')?.remove();
   const [title, text, show] = HELP[i], last = i === HELP.length - 1, close = () => document.getElementById('help')?.remove();
   const body = Array.isArray(show)
-    ? h('div', { style: `width:704px;min-height:396px;display:grid;grid-template-columns:${show.length > 3 ? '1fr 1fr' : '1fr'};gap:14px 22px;align-content:center;text-align:start` }, ...show.map(t =>
+    ? h('div', { style: `width:min(704px,100%);min-height:396px;display:grid;grid-template-columns:${show.length > 3 ? '1fr 1fr' : '1fr'};gap:14px 22px;align-content:center;text-align:start` }, ...show.map(t =>
         h('div', { style: 'display:flex;gap:14px;align-items:center' },
           h('div', { style: 'width:79px;height:107px;flex:none;direction:ltr' }, h('div', { style: 'transform:scale(.6);transform-origin:0 0' }, cardEl(t, 'open static'))), // the real card, at 60%
           h('div', {}, h('b', { style: 'font-size:17px' }, CARDS[t].name), h('div', { style: 'font-size:14.5px;line-height:1.6;margin-top:2px' }, cardHelp(t))))))
-    : h('img', { src: `assets/help-${show}.png`, alt: title, width: '704', height: '396', style: 'border-radius:8px;border:1px solid var(--line);display:block' });
+    : h('img', { src: `assets/help-${show}.png`, alt: title, width: '704', height: '396', style: 'border-radius:8px;border:1px solid var(--line);display:block;max-width:100%;height:auto' });
   ui.append(h('div', { class: 'ov', id: 'help' }, h('div', { class: 'modal', style: 'max-width:780px;justify-items:center;background:var(--panel2)' },
     h('div', { class: 'muted', style: 'font-size:14px' }, 'شرح اللعبة · ', N(`${i + 1} / ${HELP.length}`)), body,
     h('b', { style: 'font-size:22px' }, title), h('div', { style: 'font-size:16px;line-height:1.7;max-width:680px;min-height:54px' }, text),
     h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('السابق', '', () => showHelp(i - 1), { disabled: i === 0 }),
       B(last ? 'إغلاق' : 'التالي', 'gold', last ? close : () => showHelp(i + 1), { 'data-primary': '1' }), last ? null : B('إغلاق', '', close)))));
+}
+function confirmBox(title, text, yes, onYes, no) { // asks before an action that cannot be taken back; Enter does nothing here, Escape cancels
+  if (document.getElementById('confirm')) return;
+  const close = () => document.getElementById('confirm')?.remove();
+  ui.append(h('div', { class: 'ov', id: 'confirm' }, h('div', { class: 'modal' }, h('b', { style: 'font-size:20px' }, title), h('div', { class: 'muted' }, text),
+    h('div', { style: 'display:flex;gap:10px' }, B(yes, 'bad', () => { close(); onYes(); }), B(no, '', close)))));
 }
 function confirmEnd() {
   if (document.getElementById('confirm')) return;
@@ -822,7 +918,7 @@ async function importCSV(file) { // the host's file: السؤال، الخيار
   if (levelErrors.length) return say(`لم يُستورد الملف: عمود "المستوى" فارغ أو غير صحيح في السطر ${lineList(levelErrors)}. يجب أن يكون 1 أو 2 أو 3 في كل سطر.`, false);
   if (!questions.length) return say('لم أجد أسئلة صالحة في الملف' + (skipped.length ? ': ' + whyList(skipped) : '. تأكد من الأعمدة الستة.'), false);
   const apply = replace => {
-    bank = replace ? questions : questions.concat(bank); state.decks = { 1: [], 2: [], 3: [] };
+    bank = replace ? questions : questions.concat(bank);
     const saved = saveBank();
     say(`${replace ? 'استُبدلت الأسئلة بـ' : 'أُضيف'} ${questions.length} سؤالاً من "${file.name}"` + (skipped.length ? ` · تُجوهل ${skipped.length}: ${whyList(skipped)}` : '')
       + (saved ? '' : ' · تنبيه: تعذر الحفظ في المتصفح، ستبقى الأسئلة حتى إغلاق الصفحة فقط'), saved);
@@ -843,14 +939,14 @@ function deleteQuestion(i) {
   if (bank.length <= 1) return;
   if (bankUndo) clearTimeout(bankUndo.timer);
   bankUndo = { i, row: bank.splice(i, 1)[0], timer: setTimeout(() => { bankUndo = null; document.querySelector('.toast')?.remove(); }, tune.undoSeconds * 1000) };
-  saveBank(); state.decks = { 1: [], 2: [], 3: [] }; go('bank');
+  saveBank(); go('bank');
 }
 function confirmRestore() { // the same dialog as ending the show: replacing the bank loses the host's own questions
   if (document.getElementById('confirm')) return;
   const close = () => document.getElementById('confirm')?.remove();
   ui.append(h('div', { class: 'ov', id: 'confirm' }, h('div', { class: 'modal' }, h('b', { style: 'font-size:20px' }, 'استعادة الأسئلة الأصلية؟'),
     h('div', { class: 'muted' }, `تُحذف الأسئلة الحالية (${bank.length} سؤالاً) ويعود البنك إلى أسئلة اللعبة الـ${DEFAULT_BANK.length}. لا يمكن التراجع.`),
-    h('div', { style: 'display:flex;gap:10px' }, B('نعم، استعِد الأصلية', 'bad', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); state.decks = { 1: [], 2: [], 3: [] }; go('bank'); }), B('إلغاء', '', close)))));
+    h('div', { style: 'display:flex;gap:10px' }, B('نعم، استعِد الأصلية', 'bad', () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); go('bank'); }), B('إلغاء', '', close)))));
 }
 function downloadTemplate() {
   const a = h('a', { href: URL.createObjectURL(new Blob([WaraqaCSV.TEMPLATE], { type: 'text/csv;charset=utf-8' })), download: 'waraqat-al-hazz-template.csv' });
@@ -861,17 +957,21 @@ function downloadTemplate() {
 const scenes = {
   title: {
     enter() {
+      const game = savedGame();
       ui.append(familyLink());
-      const fan = h('div', { style: 'display:flex;gap:12px;justify-content:center' }, ...['plus1000', 'lightning', 'dove', 'nuke', 'again'].map((t, i) =>
+      const fan = h('div', { class: 'fan' }, ...['plus1000', 'lightning', 'dove', 'nuke', 'again'].map((t, i) =>
         h('div', { style: `transform:rotate(${(i - 2) * 8}deg) translateY(${Math.abs(i - 2) * 12}px)` }, cardEl(t, 'open static big'))));
       ui.append(h('div', { class: 'screen', style: 'align-items:center;justify-content:center;gap:18px;text-align:center' },
         fan, h('div', { style: 'font-size:64px;font-weight:bold;text-shadow:0 4px 18px rgba(0,0,0,.35)' }, TITLE),
         h('div', { class: 'muted', style: 'font-size:20px' }, 'اختر مستوى سؤالك، أجب صحيحاً، ثم اقلب ورقة قد ترفعك أو تهزّ منافسيك'),
-        h('div', { style: 'display:flex;gap:12px' }, B('مسابقة جديدة', 'gold', () => go('setup'), { 'data-primary': '1', style: 'padding:14px 36px;font-size:20px' }),
+        h('div', { style: 'display:flex;gap:12px;flex-wrap:wrap;justify-content:center' }, ...(game ? [B('متابعة اللعبة السابقة', 'gold', () => resumeGame(game), { 'data-primary': '1', style: 'padding:14px 36px;font-size:20px' }),
+          B('لعبة جديدة', '', () => confirmBox('بدء لعبة جديدة؟', 'اللعبة السابقة لم تنتهِ، وتُحذف عند بدء لعبة جديدة.', 'نعم، لعبة جديدة', () => go('setup'), 'رجوع'), { style: 'padding:14px 26px;font-size:18px' })]
+          : [B('مسابقة جديدة', 'gold', () => go('setup'), { 'data-primary': '1', style: 'padding:14px 36px;font-size:20px' })]),
           B('بنك الأسئلة', '', () => go('bank'), { style: 'padding:14px 26px;font-size:18px' }),
           B('شرح اللعبة', '', () => showHelp(), { style: 'padding:14px 26px;font-size:18px' })),
+        game ? h('div', { class: 'muted', style: 'font-size:17px;margin-top:-6px' }, 'لعبة لم تنتهِ: الجولة ', N(game.state.round), '، دور ', game.state.names[game.state.cur]) : null,
         themeSeg(() => go('title')),
-        h('div', { class: 'panel', style: 'padding:10px 20px;display:flex;gap:24px;font-size:14px' }, ...CONTROLS.map(c => h('span', { class: 'muted' }, c))),
+        h('div', { class: 'panel', style: 'padding:10px 20px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 24px;font-size:14px' }, ...CONTROLS.map(c => h('span', { class: 'muted' }, c))),
         h('div', { class: 'panel muted', style: 'font-size:15px;padding:4px 16px' }, N(bank.length), ' سؤالاً في البنك: ', [1, 2, 3].map(l => `${LEVEL_NAMES[l]} ${inLevel(l)}`).join(' · '))));
     },
     update() {}, draw() { backdrop(); },
@@ -886,8 +986,8 @@ const scenes = {
       const names = h('div', { class: 'names' }, ...[...Array(s.teams).keys()].map(i => h('span', { style: 'display:flex;gap:6px;align-items:center' }, shield(i, 20),
         h('input', { value: s.names[i], maxlength: '18', oninput: e => { s.names[i] = e.target.value.trim() || `الفريق ${i + 1}`; } }))));
       ui.append(h('div', { class: 'screen' },
-        h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('span', { html: LOGO(0.8) }), h('b', { style: 'font-size:26px' }, 'إعداد المسابقة'), h('span', { style: 'flex:1' }),
-          B('رجوع', '', () => go('title')), B('ابدأ العرض', 'gold', () => { store.set('waraqa.settings', s); reset(); go('play'); }, { 'data-primary': '1', style: 'padding:12px 30px;font-size:18px' })),
+        h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('span', { html: LOGO(0.8) }), h('b', { style: 'font-size:26px' }, 'إعداد المسابقة'), h('span', { style: 'flex:1' }), themeSeg(() => go('setup')),
+          B('رجوع', '', () => go('title')), B('ابدأ العرض', 'gold', () => { store.set('waraqa.settings', s); reset(); go('play'); if (hostMode() === 'window') openPresenter(); }, { 'data-primary': '1', style: 'padding:12px 30px;font-size:18px' })),
         h('div', { class: 'grid2', style: 'flex:1;min-height:0' },
           h('div', { style: 'display:grid;gap:14px;align-content:start' },
             h('div', { class: 'panel box' }, h('h3', {}, 'الفرق'), h('div', { style: 'display:flex;gap:10px;align-items:center' }, 'عدد الفرق', seg('teams', [2, 3, 4, 5, 6].map(n => [n, String(n)]))), names),
@@ -896,11 +996,20 @@ const scenes = {
               [1, 2, 3].map(l => `${LEVEL_NAMES[l]}: ${levelPts(l)} درجة (${inLevel(l)} سؤالاً)`).join(' · '), h('br'),
               'الإجابة الصحيحة تمنح درجات المستوى وسحب ورقة واحدة من الأوراق المقلوبة.'))),
           h('div', { style: 'display:grid;gap:14px;align-content:start' },
-            h('div', { class: 'panel box' }, h('h3', {}, 'عرض الأسئلة'), seg('qmode', [['choices', 'أربعة خيارات على الشاشة'], ['judge', 'السؤال فقط والمقدّم يحكم']]),
-              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode === 'choices' ? 'تختار الفرق الإجابة من الخيارات، وتظهر الإجابة الصحيحة بعدها.' : 'يظهر السؤال، ويضغط المقدّم صحيحة أو خاطئة، ثم تظهر الإجابة الصحيحة.')),
+            h('div', { class: 'panel box' }, h('h3', {}, 'عرض الأسئلة'), seg('qmode', [['choices', 'أربعة خيارات على الشاشة'], ['judge', 'السؤال فقط والمقدّم يحكم'], ['own', 'أسئلتي أنا']]),
+              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode === 'choices' ? 'تختار الفرق الإجابة من الخيارات، وتظهر الإجابة الصحيحة بعدها.' : s.qmode === 'own' ? 'بدون بنك: تطرح السؤال من جوالك أو كتاب، واللعبة تعرض المؤقت وزرَّي «صحيحة» و«خاطئة». المستوى يحدد الدرجات.' : 'يظهر السؤال، ويضغط المقدّم صحيحة أو خاطئة، ثم تظهر الإجابة الصحيحة.'),
+              h('h3', { style: 'margin-top:6px' }, 'شاشة المقدّم'),
+              s.qmode === 'judge' ? seg('hostScreen', [['phone', 'على جوالي'], ['window', 'نافذة على هذا الحاسوب']])
+                : h('div', { class: 'seg', 'aria-disabled': 'true' }, ...['على جوالي', 'نافذة على هذا الحاسوب'].map(l => h('button', { disabled: true }, l))),
+              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode !== 'judge'
+                ? (s.qmode === 'own' ? 'مع «أسئلتي أنا» الأسئلة والإجابات عندك أنت، فلا شيء تعرضه شاشة المقدّم.'
+                  : 'مع «أربعة خيارات» تحكم اللعبة على كل إجابة بنفسها، فلا حاجة لأن يرى المقدّم الإجابة. اختر «السؤال فقط والمقدّم يحكم» لتفعيل شاشة المقدّم.')
+                : s.hostScreen === 'window'
+                ? 'اضبط العرض على «توسيع» (Win+P). تفتح نافذة للمقدّم فيها الإجابة: أبقها على شاشة الحاسوب، واسحب اللعبة إلى جهاز العرض.'
+                : 'جهاز العرض يكرر شاشة الحاسوب. عند البدء، وحين تقترب الأسئلة من النهاية، يظهر رمز تصوّره بجوالك فترى الإجابات. أخفِ جهاز العرض قبل إظهار الرمز.')),
             h('div', { class: 'panel box' }, h('h3', {}, 'نهاية المسابقة'), seg('end', [['manual', 'يدوياً'], ['timed', 'بعد مدة'], ['rounds', 'بعد عدد جولات']]),
               s.end === 'timed' ? numF('مدة المسابقة', 'minutes', CONFIG.minutes, 'دقيقة') : s.end === 'rounds' ? numF('عدد الجولات', 'rounds', CONFIG.rounds, 'جولة') : h('div', { class: 'muted', style: 'font-size:12px' }, 'ينهي المقدّم المسابقة متى شاء بزر "إنهاء المسابقة".')),
-            h('div', { class: 'panel box' }, h('h3', {}, 'المظهر'), themeSeg(() => go('setup')))))));
+            ))));
     },
     update() {}, draw() { backdrop(); },
   },
@@ -915,7 +1024,7 @@ const scenes = {
         const row = ['cat', 'q', 'a', 'w1', 'w2', 'w3'].map(k => f[k].value.trim()).concat(lvlSel.value);
         if (row.some(v => !v)) { err.textContent = 'املأ كل الحقول'; sfx.bad(); return; }
         if (new Set(row.slice(2, 6)).size < 4) { err.textContent = 'الخيارات الأربعة يجب أن تكون مختلفة'; sfx.bad(); return; }
-        bank.unshift(row); saveBank(); state.decks = { 1: [], 2: [], 3: [] }; go('bank');
+        bank.unshift(row); saveBank(); go('bank');
       };
       ui.append(h('div', { class: 'screen' },
         h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('b', { style: 'font-size:26px' }, 'بنك الأسئلة'), h('span', { class: 'chip' }, N(bank.length), ' سؤال'),
@@ -939,7 +1048,7 @@ const scenes = {
       for (const k of Object.keys(f)) f[k].style.direction = 'rtl';
       bankMsg = null;
       if (bankUndo) ui.append(h('div', { class: 'panel toast', role: 'status' }, 'حُذف السؤال', B('تراجع', 'gold', () => {
-        clearTimeout(bankUndo.timer); bank.splice(bankUndo.i, 0, bankUndo.row); bankUndo = null; saveBank(); state.decks = { 1: [], 2: [], 3: [] }; go('bank'); })));
+        clearTimeout(bankUndo.timer); bank.splice(bankUndo.i, 0, bankUndo.row); bankUndo = null; saveBank(); go('bank'); })));
     },
     update() {}, draw() { backdrop(); },
   },
@@ -951,7 +1060,7 @@ const scenes = {
       renderAll();
     },
     update(dt) {
-      if (state.paused) return;
+      if (state.paused || state.keyAsk) return; // the key screen holds the clock, like a pause
       if (settings.end === 'timed') {
         state.elapsed += dt;
         if (!state.lastCall && state.elapsed >= settings.minutes * 60) { state.lastCall = true; if (state.phase === 'level') return endGame(); }
@@ -969,7 +1078,6 @@ const scenes = {
       }
       if ([...state.deltas, ...state.hits].some(d => d && state.t - d.t >= 1.8)) renderPodiums();
       if (undoSnap && state.t > undoUntil) { undoSnap = null; document.getElementById('undobtn')?.remove(); }
-      if (state.phase === 'question') peekSync();
     },
     draw() {
       backdrop();
@@ -993,7 +1101,7 @@ const scenes = {
       ui.append(h('div', { class: 'screen', style: 'align-items:center;justify-content:center;gap:14px' },
         ((head) => h('div', { class: 'winner', style: `animation-delay:${at(0)}s;font-size:${head.length > 44 ? 40 : head.length > 26 ? 52 : 64}px` }, head))( // two lines at most on the stage
           top[0].teams.length > 1 ? `تعادل على المركز الأول: ${names(top[0])}` : `الفائز: ${names(top[0])}`),
-        h('div', { style: 'display:flex;align-items:flex-end;gap:16px;min-height:300px' }, ...[1, 0, 2].filter(g => top[g]).map(g => { const grp = top[g];
+        h('div', { class: 'rrow', style: 'display:flex;align-items:flex-end;gap:16px;min-height:300px' }, ...[1, 0, 2].filter(g => top[g]).map(g => { const grp = top[g];
           return h('div', { class: 'rstep', style: `animation-delay:${at(g)}s;width:${grp.teams.some(e => state.names[e.i].length > 12) ? 360 : 220}px` },
             g === 0 ? h('span', { html: TROPHY }) : null,
             ...grp.teams.map(e => h('b', { style: `display:flex;gap:8px;align-items:center;font-size:${g === 0 ? 24 : 19}px` }, shield(e.i, g === 0 ? 34 : 26), h('span', { class: 'rname', title: state.names[e.i] }, state.names[e.i]))),
@@ -1011,7 +1119,7 @@ const scenes = {
   },
   figures: { // every card face and figure side by side, each named
     enter() {
-      ui.append(h('div', { class: 'screen', style: 'display:grid;grid-template-columns:repeat(8,1fr);gap:10px;align-content:start;justify-items:center' },
+      ui.append(h('div', { class: 'screen figs', style: 'display:grid;grid-template-columns:repeat(8,1fr);gap:10px;align-content:start;justify-items:center' },
         h('div', { style: 'display:grid;justify-items:center;gap:4px' }, cardEl(null, 'static'), h('b', { style: 'font-size:12px' }, 'ظهر الورقة')),
         ...Object.keys(CARDS).map(t => h('div', { style: 'display:grid;justify-items:center;gap:4px' }, cardEl(t, 'open static'), h('b', { style: 'font-size:12px' }, CARDS[t].name))),
         h('div', { style: 'display:grid;justify-items:center;gap:4px' }, h('span', { html: LOGO(1.4) }), h('b', { style: 'font-size:12px' }, 'الشعار')),
@@ -1029,7 +1137,7 @@ function rankGroups(final) { // teams with equal points share a rank ("تعاد�
 }
 
 // ---- Background: the stage, sweeping spotlights, a glowing floor, sparkles ---------------------
-const sparks = Array.from({ length: 40 }, () => ({ x: vrng() * W, y: vrng() * H * 0.6, p: vrng() * 6, s: 1 + vrng() * 2 }));
+const sparks = Array.from({ length: 40 }, () => ({ x: vrng(), y: vrng() * 0.6, p: vrng() * 6, s: 1 + vrng() * 2 })); // shares of the stage, so a resize moves them with it
 function backdrop() {
   const cs = getComputedStyle(document.body), bg = cs.getPropertyValue('--bg').trim() || '#071030', bg2 = cs.getPropertyValue('--bg2').trim() || '#13256f';
   const beam = cs.getPropertyValue('--beam').trim() || '255,236,170';
@@ -1045,7 +1153,7 @@ function backdrop() {
     ctx.lineTo(x + Math.cos(a - wdt) * len, -20 + Math.sin(a - wdt) * len); ctx.lineTo(x + Math.cos(a + wdt) * len, -20 + Math.sin(a + wdt) * len); ctx.closePath(); ctx.fill();
   }
   ctx.fillStyle = `rgba(${beam},1)`;
-  for (const s of sparks) { ctx.globalAlpha = 0.25 + 0.25 * Math.sin(state.t * 2 + s.p); ctx.fillRect(s.x, s.y, s.s, s.s); }
+  for (const s of sparks) { ctx.globalAlpha = 0.25 + 0.25 * Math.sin(state.t * 2 + s.p); ctx.fillRect(s.x * W, s.y * H, s.s, s.s); }
   ctx.globalAlpha = 1;
 }
 
@@ -1059,7 +1167,8 @@ function step() {
     const p = (document.querySelector('.ov:not(#pause)') || ui).querySelector('[data-primary]:not([disabled])');
     if (p) p.click();
   }
-  if (pressed('Escape')) ['confirm', 'importask', 'usecard', 'help'].forEach(id => document.getElementById(id)?.remove());
+  if (pressed('Escape') && state.keyAsk && state.keyAsk.step === 2 && document.getElementById('hostkey')) { state.keyAsk.step = 1; renderAll(); }
+  else if (pressed('Escape')) ['confirm', 'importask', 'usecard', 'help'].forEach(id => document.getElementById(id)?.remove());
   state.t += STEP;
   scenes[scene].update(STEP); hit.clear();
 }
@@ -1074,6 +1183,124 @@ function drawFrame() { scenes[scene].draw(); }
 function frame() { tick(); requestAnimationFrame(frame); }
 function timer() { if (document.visibilityState === 'visible' && clock.now() - last > 0.1) tick(); }
 
+// ---- The host's answer key on a phone (setup: شاشة المقدّم → على جوالي; projector duplicates the laptop) ----
+// The key screen comes at Start, at the start of a turn when a level is running low on the key (so no card
+// is cut), and, as a last resort, before a question past the key. Step 1 asks the host to hide the projector;
+// step 2 shows one QR code of key.html with the next questions of each level and the match code; the host
+// scans it, then goes on. Questions come from the fixed order (order.js), so the key is right whatever
+// happens. Running from a flash drive (file://), the code points at the published key.html; ?keybase= overrides.
+const KEY_PAGE = params.get('keybase') || (location.protocol.startsWith('http') ? new URL('key.html', location.href).href
+  : 'https://alghofaily.github.io/Musabaqat/waraqat-al-hazz/key.html');
+const LEVELS = [1, 2, 3];
+let keyBuilt = null; // { from, cap, c, counts, svg } for the key screen now up
+function keyRows(from, counts) { // the questions each level will ask from position from[level], in its own order (order.js)
+  return LEVELS.flatMap(L => counts[L] > 0 ? WO.questionOrder(state.lv[L].length, state.seed0 + L * 1000, from[L], counts[L]).map((k, i) => {
+    const r = bank[state.lv[L][k]]; return [L, from[L] + i + 1, WaraqaKey.cut(r[1], tune.keyQuestionChars), WaraqaKey.cut(r[2], tune.keyAnswerChars)]; }) : []);
+}
+async function buildKey(from, cap = 400) { // the most questions per level (up to cap, one pass of the level) that fit one code of keyMaxVersion, then the smallest code that holds them
+  const counts = c => ({ 1: Math.min(c, state.lv[1].length), 2: Math.min(c, state.lv[2].length), 3: Math.min(c, state.lv[3].length) });
+  const fits = async c => { const url = KEY_PAGE + '#' + await WaraqaKey.pack({ code: state.code, rows: keyRows(from, counts(c)) });
+    try { const q = qrcode(tune.keyMaxVersion, 'L'); q.addData(url, 'Byte'); q.make(); return url; } catch (e) { return null; } };
+  let lo = 0, hi = Math.min(cap, Math.max(...LEVELS.map(L => state.lv[L].length))), url = null; // one pass of a level at most: past it the same questions come again
+  while (lo < hi) { const m = (lo + hi + 1) >> 1; const u = await fits(m); if (u) { lo = m; url = u; } else hi = m - 1; }
+  if (!url) return null;
+  for (let t = 1; t <= tune.keyMaxVersion; t++) { try { const q = qrcode(t, 'L'); q.addData(url, 'Byte'); q.make(); return { from, c: lo, counts: counts(lo), svg: q.createSvgTag({ cellSize: 4, margin: 4, scalable: true }) }; } catch (e) { /* too long for t */ } }
+  return null;
+}
+function phoneKey() { return hostMode() === 'phone' && state && !state.keyOff; }
+const keyLeft = () => Math.min(...LEVELS.filter(L => state.lv[L].length).map(L => Math.max(0, state.keyTo[L] - state.qi[L]))); // the level closest to the end of the key
+function keyChip() { // header: the match code and what is left on the key; between turns it takes the next key (or a key again)
+  const early = state.phase === 'level' && !state.keyAsk, take = () => { state.keyAsk = { from: Object.assign({}, state.qi), step: 1 }; renderAll(); };
+  if (state.keyOff) return h('button', { class: 'chip keychip', disabled: !early, title: 'خذ مفتاح الإجابات على جوالك', onclick: () => { state.keyOff = false; take(); } },
+    'بدون مفتاح', early ? h('span', { class: 'take' }, ' · اضغط لأخذ مفتاح') : null);
+  const left = keyLeft(), keyed = LEVELS.some(L => state.keyTo[L] > 0), near = keyed && left <= tune.keyReserve + 10, can = early && keyed;
+  return h('button', { class: 'chip keychip' + (near ? ' near' : ''), disabled: !can, title: can ? 'خذ مفتاح الأسئلة التالية الآن' : 'يطابق الرمز على جوال المقدّم', onclick: take },
+    'رمز ', h('b', { class: 'num' }, state.code), keyed ? [' · بقي ', h('b', { class: 'num' }, left), ' في المفتاح'] : null, can ? h('span', { class: 'take' }, ' · خذ التالي') : null);
+}
+function renderHostKey() {
+  const ask = state.keyAsk, old = document.getElementById('hostkey'), fromKey = ask && JSON.stringify(ask.from);
+  if (!ask) { old?.remove(); keyBuilt = null; return; }
+  if (old && old.dataset.step === String(ask.step) && old.dataset.from === fromKey && old.dataset.cap === String(ask.cap || 0)) return;
+  old?.remove();
+  const first = LEVELS.every(L => ask.from[L] === 0), remain = keyLeft();
+  const close = () => { state.keyAsk = null; renderAll(); };
+  const box = h('div', { class: 'qrbox' + (ask.step === 1 ? ' veiled' : '') }, h('span', { class: 'muted' }, 'جارٍ تجهيز الرمز…'));
+  // click only, never Enter: hosts press Enter all game to move on, and this shows answers
+  const show = B('جهاز العرض مخفي: أظهر الرمز', 'gold', () => { state.keyAsk.step = 2; renderAll(); }, { disabled: true });
+  const modal = h('div', { class: 'modal keymodal' });
+  if (ask.step === 1) {
+    modal.append(h('b', { style: 'font-size:24px' }, first ? 'مفتاح الإجابات للمقدّم' : 'مفتاح الأسئلة التالية'),
+      h('div', { class: 'keywarn' }, 'أخفِ شاشة العرض أولاً: زر الإخفاء في جهاز العرض، أو Win+P ثم «شاشة الكمبيوتر فقط». في الرمز إجابات الأسئلة القادمة، ومن يصوّره من الجمهور يراها.'),
+      box,
+      h('div', { class: 'keybtns' }, show,
+        remain > 0 ? B(`لاحقاً (بقي ${remain} في المفتاح)`, '', () => { state.keySnooze = state.turns; close(); }) : null,
+        B('بدون مفتاح الآن', 'ghost', () => { state.keyOff = true; close(); })));
+  } else {
+    modal.append(h('div', { style: 'font-size:18px', id: 'keyrange' }, 'جارٍ تجهيز الرمز…'), box,
+      h('div', { class: 'keybtns' },
+        B('تم المسح: أكمل المسابقة', 'gold', () => { for (const L of LEVELS) state.keyTo[L] = ask.from[L] + keyBuilt.counts[L]; close(); }, { 'data-primary': '1', disabled: true, id: 'keydone' }),
+        B('رمز أصغر', '', () => { state.keyAsk.cap = Math.max(3, Math.floor((keyBuilt?.c || 20) / 2)); keyBuilt = null; renderAll(); }, { id: 'keysmaller', disabled: true }),
+        B('رجوع (Esc)', 'ghost', () => { state.keyAsk.step = 1; renderAll(); })));
+  }
+  const cap = ask.cap || 400;
+  (keyBuilt && keyBuilt.from === ask.from && keyBuilt.cap === cap ? Promise.resolve(keyBuilt) : buildKey(ask.from, cap)).then(k => {
+    if (state.keyAsk !== ask || !modal.isConnected) return;
+    if (!k) { box.replaceChildren(h('b', { style: 'color:#13204f' }, 'تعذّر صنع الرمز. تابع «بدون مفتاح الآن»، أو ارفع keyMaxVersion في config.js.')); return; }
+    keyBuilt = Object.assign(k, { cap });
+    box.innerHTML = k.svg;
+    if (ask.step === 1) { show.disabled = false; return; }
+    document.getElementById('keyrange').replaceChildren('امسح الرمز بجوالك: ' + LEVELS.filter(L => k.counts[L]).map(L => `${LEVEL_NAMES[L]} ${ask.from[L] + 1} إلى ${ask.from[L] + k.counts[L]}`).join('، ') + ' · رمز المطابقة ', h('b', { class: 'num', style: 'letter-spacing:3px' }, state.code));
+    document.getElementById('keydone').disabled = false;
+    document.getElementById('keysmaller').disabled = k.c <= 5;
+  });
+  ui.append(h('div', { class: 'ov', id: 'hostkey', 'data-step': String(ask.step), 'data-from': fromKey, 'data-cap': String(ask.cap || 0), role: 'dialog', 'aria-label': 'مفتاح الإجابات للمقدّم' }, modal));
+}
+
+// ---- The host window (setup: شاشة المقدّم → نافذة على هذا الحاسوب; projector set to Extend) ----
+// presenter.html stays on the laptop screen and shows the answer; this window, on the projector, is
+// the only holder of the game. It sends a full snapshot on every render and every second; the host
+// window sends back the same actions as the keyboard (Enter, 1–4) or the judge buttons, so each one
+// works only where it already would. window.open + postMessage also work from file:// (a flash drive).
+let presenter = null;
+const presenterOpen = () => !!presenter && !presenter.closed;
+function notice(text) { // a short notice with its own close button (the popup blocker's message)
+  const el = h('div', { class: 'panel toast', role: 'status' }, text, B('حسناً', 'gold', () => el.remove())); ui.append(el);
+}
+function openPresenter() { // from a click only: browsers block pop-ups opened any other way
+  if (presenterOpen()) { presenter.focus(); return; }
+  presenter = window.open('presenter.html', 'waraqa-presenter', 'popup,width=960,height=720');
+  if (!presenter) setTimeout(() => { if (scene === 'play') notice('منع المتصفح نافذة المقدّم. اسمح بالنوافذ المنبثقة لهذه الصفحة، ثم اضغط «افتح شاشة المقدّم» في الأعلى.'); }, 0);
+  else if (scene === 'play') renderHeader();
+}
+function tellPresenter() {
+  if (!presenterOpen()) return;
+  const playing = scene === 'play' && state, q = playing && state.q, p = playing ? state.phase : '';
+  const asking = (p === 'question' || p === 'reveal') && q;
+  const primary = p === 'level' ? null : ui.querySelector('[data-primary]:not([disabled])');
+  presenter.postMessage({ type: 'state', scene, phase: p, paused: playing ? state.paused : false,
+    round: playing ? state.round : 0, team: playing ? state.names[state.cur] : '', answering: asking ? state.names[state.cur] : '',
+    levels: LEVELS.map(k => ({ k, name: LEVEL_NAMES[k], pts: levelPts(k), n: levelOK(k) ? 1 : 0 })),
+    q: asking ? { n: q.n, own: !!q.own, level: LEVEL_NAMES[state.level], text: q.text, answer: q.choices[q.right], right: q.right + 1, choices: q.choices } : null,
+    qmode: settings.qmode, done: p === 'reveal', timer: asking ? Math.ceil(state.timer) : null,
+    primary: primary ? primary.textContent.trim() : '', judge: !!ui.querySelector('[data-judge]') }, '*');
+}
+setInterval(() => { // the snapshot's timer, and the header's "connected" label when the host window opens or closes
+  tellPresenter();
+  if (scene === 'play' && hostMode() === 'window') {
+    const b = [...(refs.header?.querySelectorAll('button') || [])].find(x => x.textContent.includes('شاشة المقدّم'));
+    if (b && b.textContent !== (presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم')) renderHeader();
+  }
+}, 1000);
+addEventListener('message', e => {
+  if (!presenterOpen() || e.source !== presenter) return; // only the window this game opened
+  const m = e.data || {};
+  if (m.type === 'hello') return tellPresenter();
+  if (m.type !== 'cmd' || scene !== 'play' || state.paused) return;
+  if (m.cmd === 'enter') hit.add('Enter');
+  else if ((m.cmd === 'choice' || m.cmd === 'level') && m.k >= 1 && m.k <= 4) hit.add('Digit' + m.k); // the same keys the game reads: a level in the level phase, a choice in a question
+  else if (m.cmd === 'judge' && (m.v === 'right' || m.v === 'wrong')) ui.querySelector(`[data-judge="${m.v}"]:not([disabled])`)?.click();
+});
+
 // ---- What a check can read and drive (?manual=1 stops the loop; players never see it) ----
 window.game = {
   get scene() { return scene; },
@@ -1084,8 +1311,6 @@ window.game = {
   step(n = 1, draw = true, alpha = 1) { for (let i = 0; i < n; i++) step(); if (draw) { ALPHA = alpha; drawFrame(); } },
 };
 
-if (innerWidth < 700 && innerHeight > innerWidth) document.body.append(h('div', { id: 'phone', role: 'note' }, h('span', { style: 'flex:1' }, 'صُممت هذه اللعبة للابتوب وشاشة العرض'),
-  h('button', { onclick: e => e.currentTarget.parentElement.remove() }, 'حسناً')));
 reset();
 go(params.get('scene') || 'title');
 last = clock.now();

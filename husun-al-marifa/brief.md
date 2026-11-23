@@ -42,7 +42,7 @@ From round 2, neighbours touch borders, so every attack risks a counterattack. A
 - [x] Attack battle: the teams answer in turn, the host marks each, hits by cannons and forts, withdraw between questions; a forecast before attacking (battalions and hits both sides)
 - [x] Money: a correct answer pays; every 4 rounds, battalions per hex held go into the capital
 - [x] Capitals: a fortress, and the team is out when it falls
-- [x] Question bank: starter Arabic questions, a bank editor, CSV upload with Arabic headers (السؤال، الخيار 1 (الإجابة)، الخيار 2، الخيار 3، الخيار 4), add to or replace the existing questions, a template download, bad rows reported by line
+- [x] Question bank: the studio's shared default bank (2,602 Arabic questions in 13 categories, made by `tools/question-bank/`; levels ignored here), a bank editor, CSV upload with Arabic headers (السؤال، الخيار 1 (الإجابة)، الخيار 2، الخيار 3، الخيار 4), add to or replace the existing questions, a template download, bad rows reported by line
 - [x] Answer timer ring, answer reveal, sounds for right and wrong answers with a mute button
 - [x] In-game help screens, like the other games
 - [x] Results podium (top 3) + standings

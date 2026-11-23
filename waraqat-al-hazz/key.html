@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!-- PROTOTYPE - NOT FOR PRODUCTION
+     Question: does choosing your own risk, then flipping a luck card, make a quiz more exciting than points alone?
+     Date: 2026-11-23
+     The host's answer key on a phone (setup: شاشة المقدّم → على جوالي). The game shows a QR code of this
+     page's address; the questions and answers ride in the #hash, which the browser never sends to the
+     server, and are unpacked here. Nothing is stored. The key has one block per level (easy, medium, hard),
+     each numbered as the stage numbers that level's questions. -->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>مفتاح الإجابات — للمقدّم فقط</title>
+<style>
+  @font-face { font-family: 'Cairo'; font-weight: 700; src: url(vendor/cairo-arabic-700.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Cairo'; font-weight: 900; src: url(vendor/cairo-arabic-900.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Cairo'; font-weight: 700; src: url(vendor/cairo-latin-700.woff2) format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+  @font-face { font-family: 'Cairo'; font-weight: 900; src: url(vendor/cairo-latin-900.woff2) format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+  :root { --bg: #071030; --panel: #0b1a55; --line: #29479b; --text: #f2f5ff; --muted: #a9b8e6; --brass: #f6c343; --ok: #2fd47a; }
+  body { margin: 0; font: 700 17px/1.5 'Cairo', Tahoma, 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); font-variant-numeric: tabular-nums; }
+  header { position: sticky; top: 0; z-index: 1; background: var(--panel); border-bottom: 2px solid var(--brass); padding: 10px 16px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; }
+  .go { flex-basis: 100%; display: flex; gap: 8px; align-items: center; font-size: 15px; color: var(--muted); }
+  .go select, .go input { font: inherit; font-size: 22px; font-weight: 700; width: 5.5ch; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text); direction: ltr; text-align: center; }
+  .go select:focus-visible, .go input:focus-visible { outline: 3px solid var(--brass); outline-offset: 1px; }
+  header b { color: var(--brass); }
+  .code { font-size: 24px; letter-spacing: 4px; direction: ltr; display: inline-block; color: var(--brass); font-weight: 700; }
+  .range { padding: 10px 16px 0; color: var(--muted); font-size: 15px; }
+  ol { list-style: none; margin: 0; padding: 6px 12px 48px; }
+  li { display: grid; grid-template-columns: 4ch 1fr; gap: 2px 10px; padding: 10px 4px; border-bottom: 1px solid var(--line); scroll-margin-top: 140px; }
+  li.ten { border-bottom: 2px solid var(--brass); } /* a rule every ten questions, to keep one's place */
+  li.hit { background: var(--panel); border-radius: 8px; outline: 2px solid var(--brass); }
+  .n { font-size: 22px; font-weight: 700; color: var(--brass); grid-row: span 2; direction: ltr; text-align: center; }
+  .q { color: var(--muted); font-size: 14px; }
+  .a { font-size: 20px; font-weight: 700; color: var(--ok); }
+  h2 { margin: 18px 16px 0; font-size: 20px; color: var(--brass); border-bottom: 2px solid var(--brass); padding-bottom: 4px; }
+  .msg { padding: 24px 16px; }
+</style>
+</head>
+<body>
+<header><b>للمقدّم فقط</b><span>رمز المطابقة <span class="code" id="code">----</span></span>
+  <label class="go">اذهب إلى <select id="golv" aria-label="المستوى"></select> سؤال <input id="go" type="number" inputmode="numeric" min="1" aria-label="رقم السؤال في مستواه على شاشة اللعبة"></label></header>
+<p class="range" id="range"></p>
+<main id="main"><p class="msg">جارٍ فتح المفتاح…</p></main>
+<script src="pack.js"></script>
+<script>
+  (async () => {
+    const main = document.getElementById('main');
+    try {
+      const key = await WaraqaKey.unpack(location.hash.slice(1));
+      document.getElementById('code').textContent = key.code;
+      const LV = { 1: 'سهل', 2: 'متوسط', 3: 'صعب' }, sel = document.getElementById('golv'), box = document.createElement('div');
+      for (const l of [1, 2, 3]) {
+        const rows = key.rows.filter(r => r[0] === l);
+        if (!rows.length) continue;
+        const h2 = document.createElement('h2'); h2.textContent = `${LV[l]}: الأسئلة ${rows[0][1]} إلى ${rows.at(-1)[1]}`;
+        const ol = document.createElement('ol');
+        for (const [, n, q, a] of rows) {
+          const li = document.createElement('li'); li.id = `q${l}-${n}`; if (n % 10 === 0) li.className = 'ten';
+          for (const [cls, text] of [['n', n], ['q', q], ['a', a]]) { const s = document.createElement('span'); s.className = cls; s.textContent = text; li.append(s); } // text, never HTML: CSV rows are untrusted
+          ol.append(li);
+        }
+        box.append(h2, ol); sel.append(new Option(LV[l], l));
+      }
+      document.getElementById('range').textContent = 'طابق رمز المطابقة مع الرمز على شاشة اللعبة. لكل مستوى ترقيمه، كما يظهر على الشاشة.';
+      document.title = 'مفتاح الإجابات';
+      main.replaceChildren(box);
+      // the host picks the level and types the number on the stage; that line comes to the middle and is marked
+      const find = () => {
+        document.querySelector('li.hit')?.classList.remove('hit');
+        const li = document.getElementById(`q${sel.value}-${document.getElementById('go').value}`);
+        if (li) { li.classList.add('hit'); li.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+      };
+      document.getElementById('go').addEventListener('input', find); sel.addEventListener('change', find);
+    } catch (e) {
+      main.innerHTML = '<p class="msg">هذا الرابط لا يحمل مفتاحاً صالحاً. صوّر الرمز من شاشة اللعبة مرة أخرى.</p>';
+    }
+  })();
+</script>
+</body>
+</html>

@@ -1498,7 +1498,7 @@ function keyRows(from, count) { // the questions the game will ask from position
 async function buildKey(from, cap = 400) { // the most questions (up to cap) that fit one code of keyMaxVersion, then the smallest code that holds them
   const fits = async n => { const url = KEY_PAGE + '#' + await HusunKey.pack({ code: state.code, rows: keyRows(from, n) });
     try { const q = qrcode(tune.keyMaxVersion, 'L'); q.addData(url, 'Byte'); q.make(); return url; } catch (e) { return null; } };
-  let lo = 0, hi = cap, url = null;
+  let lo = 0, hi = Math.min(cap, bank.length), url = null; // one pass of the bank at most: past it the same questions come again
   while (lo < hi) { const m = (lo + hi + 1) >> 1; const u = await fits(m); if (u) { lo = m; url = u; } else hi = m - 1; }
   if (!url) return null;
   for (let t = 1; t <= tune.keyMaxVersion; t++) { try { const q = qrcode(t, 'L'); q.addData(url, 'Byte'); q.make(); return { from, count: lo, svg: q.createSvgTag({ cellSize: 4, margin: 4, scalable: true }) }; } catch (e) { /* too long for t */ } }
