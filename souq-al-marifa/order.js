@@ -36,19 +36,22 @@
   }
 
   // The short typed code for the host's phone key (key.html): the game letter (H, S or W), a 2-character stamp of the
-  // built-in bank (so a phone page with another bank refuses) and the seed in base 31 (7 characters, padded with the
-  // first letter, '2'). It holds no question and no answer: the phone rebuilds the key from the bank and the seed.
+  // built-in bank (so a phone page with another bank refuses) the seed in base 31 (7 characters, padded with the
+  // first letter, '2') and a check character. It holds no question and no answer: the phone rebuilds the key from the bank and the seed.
   const KEY_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'; // no 0/O, 1/I/L, the same as matchCode
   function keyCode(game, bank, seed) {
     let n = seed >>> 0, s = '';
     for (let i = 0; i < 7; i++) { s = KEY_ALPHABET[n % 31] + s; n = Math.floor(n / 31); }
-    return game + matchCode(bank, 0).slice(0, 2) + s;
+    const body = game + matchCode(bank, 0).slice(0, 2) + s;
+    return body + keyCheck(body);
   }
+  // the last character: a weighted sum mod 31 (prime), so any one mistyped character, or two neighbours swapped, is caught
+  function keyCheck(body) { let sum = 0; [...body].forEach((c, i) => { sum += (i + 1) * KEY_ALPHABET.indexOf(c); }); return KEY_ALPHABET[sum % 31]; }
   // text a person typed -> { game, stamp, seed } or null (case, spaces and dashes ignored; wrong length or letters: null)
   function readKeyCode(text) {
     const t = String(text).toUpperCase().replace(/[\s-]/g, '');
-    if (t.length !== 10 || [...t].some(c => !KEY_ALPHABET.includes(c))) return null;
-    let n = 0; for (const c of t.slice(3)) n = n * 31 + KEY_ALPHABET.indexOf(c);
+    if (t.length !== 11 || [...t].some(c => !KEY_ALPHABET.includes(c)) || keyCheck(t.slice(0, 10)) !== t[10]) return null;
+    let n = 0; for (const c of t.slice(3, 10)) n = n * 31 + KEY_ALPHABET.indexOf(c);
     return { game: t[0], stamp: t.slice(1, 3), seed: n | 0 };
   }
 

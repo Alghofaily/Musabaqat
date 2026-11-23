@@ -163,7 +163,7 @@ test('keyCode: round trip for edge seeds, and typing ignores case, spaces and th
   const bank = [['a', 'q1', 'x', 'y', 'z', 'w']];
   for (const s of [0, 1, -1, 2 ** 31 - 1, -(2 ** 31), Date.now() | 0]) {
     const code = R.keyCode('H', bank, s);
-    assert.strictEqual(code.length, 10);
+    assert.strictEqual(code.length, 11);
     assert.strictEqual(R.readKeyCode(code).seed, s | 0);
     assert.strictEqual(R.readKeyCode(code).game, 'H');
     const typed = (code.slice(0, 3) + ' - ' + code.slice(3)).toLowerCase();
@@ -173,9 +173,9 @@ test('keyCode: round trip for edge seeds, and typing ignores case, spaces and th
 
 test('readKeyCode: a wrong length or a forbidden letter (O 0 I 1 L) gives null', () => {
   const good = R.keyCode('H', [['a', 'q', 'x', 'y', 'z', 'w']], 7);
-  assert.strictEqual(R.readKeyCode(good.slice(0, 9)), null);
+  assert.strictEqual(R.readKeyCode(good.slice(0, 10)), null);
   assert.strictEqual(R.readKeyCode(good + '2'), null);
-  for (const bad of 'O0I1L') assert.strictEqual(R.readKeyCode(good.slice(0, 9) + bad), null, bad);
+  for (const bad of 'O0I1L') assert.strictEqual(R.readKeyCode(good.slice(0, 10) + bad), null, bad);
   assert.strictEqual(R.readKeyCode(''), null);
 });
 
@@ -189,4 +189,16 @@ test('keyCode: the order rebuilt from the typed code equals the game\'s own draw
   const n = 6, seed = 123456, code = R.keyCode('H', [['a', 'q', 'x', 'y', 'z', 'w']], seed), drawn = []; let deck = R.questionDeck(n, seed);
   for (let k = 0; k < 15; k++) { if (k > 0 && k % n === 0) deck = R.questionDeck(n, seed + k / n); drawn.push(deck[k % n]); } // the game's drawQuestion
   assert.deepStrictEqual(R.questionOrder(n, R.readKeyCode(code).seed, 0, 15), drawn);
+});
+
+test('readKeyCode: the check character catches every single mistyped character and every swap of two neighbours', () => {
+  const A = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+  for (const seed of [7, -987654321, 2147483647]) {
+    const good = R.keyCode('H', [['a', 'q', 'x', 'y', 'z', 'w']], seed);
+    assert.ok(R.readKeyCode(good));
+    for (let i = 0; i < good.length; i++) for (const c of A) if (c !== good[i])
+      assert.strictEqual(R.readKeyCode(good.slice(0, i) + c + good.slice(i + 1)), null, `seed ${seed} position ${i} -> ${c}`);
+    for (let i = 0; i + 1 < good.length; i++) if (good[i] !== good[i + 1])
+      assert.strictEqual(R.readKeyCode(good.slice(0, i) + good[i + 1] + good[i] + good.slice(i + 2)), null, `swap ${i}`);
+  }
 });
