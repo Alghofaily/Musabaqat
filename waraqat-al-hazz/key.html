@@ -36,6 +36,12 @@
   .a { font-size: 20px; font-weight: 700; color: var(--ok); }
   h2 { margin: 18px 16px 0; font-size: 20px; color: var(--brass); border-bottom: 2px solid var(--brass); padding-bottom: 4px; }
   .msg { padding: 24px 16px; }
+  .codebox { padding: 28px 16px; display: grid; gap: 14px; justify-items: center; text-align: center; }
+  .codebox .ask { margin: 0; font-size: 20px; font-weight: 700; }
+  .codebox input { font: 700 34px/1.2 ui-monospace, Menlo, Consolas, monospace; width: min(100%, 13ch); direction: ltr; text-align: center; letter-spacing: 3px; text-transform: uppercase; padding: 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--panel); color: var(--text); box-sizing: content-box; }
+  .codebox input:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
+  .codebox button { font: inherit; font-size: 20px; font-weight: 700; padding: 12px 30px; border-radius: 10px; border: 0; background: var(--brass); color: #1a1000; cursor: pointer; }
+  .codebox .err { margin: 0; color: #ff6b73; font-weight: 700; min-height: 1.6em; }
 </style>
 </head>
 <body>
@@ -43,39 +49,69 @@
   <label class="go">اذهب إلى <select id="golv" aria-label="المستوى"></select> سؤال <input id="go" type="number" inputmode="numeric" min="1" aria-label="رقم السؤال في مستواه على شاشة اللعبة"></label></header>
 <p class="range" id="range"></p>
 <main id="main"><p class="msg">جارٍ فتح المفتاح…</p></main>
+<script src="questions.js"></script>
+<script src="order.js"></script>
 <script src="pack.js"></script>
 <script>
   (async () => {
-    const main = document.getElementById('main');
-    try {
-      const key = await WaraqaKey.unpack(location.hash.slice(1));
-      document.getElementById('code').textContent = key.code;
-      const LV = { 1: 'سهل', 2: 'متوسط', 3: 'صعب' }, sel = document.getElementById('golv'), box = document.createElement('div');
+    const GAME = 'W', ORD = WaraqaOrder, main = document.getElementById('main'), $ = id => document.getElementById(id), LV = { 1: 'سهل', 2: 'متوسط', 3: 'صعب' };
+    const msg = t => { const p = document.createElement('p'); p.className = 'msg'; p.textContent = t; main.replaceChildren(p); };
+    // One renderer for both ways in: the QR (the rows ride in the link) and the typed code (the rows are rebuilt here
+    // from the built-in bank and the seed). rows: [[level 1-3, number in that level, question, answer], ...]. Text only, never HTML.
+    function render(code, rows) {
+      $('code').textContent = code;
+      const sel = $('golv'), box = document.createElement('div'); sel.replaceChildren();
       for (const l of [1, 2, 3]) {
-        const rows = key.rows.filter(r => r[0] === l);
-        if (!rows.length) continue;
-        const h2 = document.createElement('h2'); h2.textContent = `${LV[l]}: الأسئلة ${rows[0][1]} إلى ${rows.at(-1)[1]}`;
+        const own = rows.filter(r => r[0] === l);
+        if (!own.length) continue;
+        const h2 = document.createElement('h2'); h2.textContent = `${LV[l]}: الأسئلة ${own[0][1]} إلى ${own.at(-1)[1]}`;
         const ol = document.createElement('ol');
-        for (const [, n, q, a] of rows) {
+        for (const [, n, q, a] of own) {
           const li = document.createElement('li'); li.id = `q${l}-${n}`; if (n % 10 === 0) li.className = 'ten';
-          for (const [cls, text] of [['n', n], ['q', q], ['a', a]]) { const s = document.createElement('span'); s.className = cls; s.textContent = text; li.append(s); } // text, never HTML: CSV rows are untrusted
+          for (const [cls, text] of [['n', n], ['q', q], ['a', a]]) { const s = document.createElement('span'); s.className = cls; s.textContent = text; li.append(s); }
           ol.append(li);
         }
         box.append(h2, ol); sel.append(new Option(LV[l], l));
       }
-      document.getElementById('range').textContent = 'طابق رمز المطابقة مع الرمز على شاشة اللعبة. لكل مستوى ترقيمه، كما يظهر على الشاشة.';
+      $('range').textContent = 'طابق رمز المطابقة مع الرمز على شاشة اللعبة. لكل مستوى ترقيمه، كما يظهر على الشاشة.';
       document.title = 'مفتاح الإجابات';
       main.replaceChildren(box);
       // the host picks the level and types the number on the stage; that line comes to the middle and is marked
       const find = () => {
         document.querySelector('li.hit')?.classList.remove('hit');
-        const li = document.getElementById(`q${sel.value}-${document.getElementById('go').value}`);
+        const li = $(`q${sel.value}-${$('go').value}`);
         if (li) { li.classList.add('hit'); li.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
       };
-      document.getElementById('go').addEventListener('input', find); sel.addEventListener('change', find);
-    } catch (e) {
-      main.innerHTML = '<p class="msg">هذا الرابط لا يحمل مفتاحاً صالحاً. صوّر الرمز من شاشة اللعبة مرة أخرى.</p>';
+      $('go').oninput = find; sel.onchange = find;
     }
+    // the typed code: '' after the key is shown, else the Arabic reason it was refused
+    const STAMP = ORD.matchCode(DEFAULT_BANK, 0).slice(0, 2);
+    function openCode(text) {
+      const c = ORD.readKeyCode(text);
+      if (!c) return 'هذا الرمز غير صحيح. تأكد من الحروف والأرقام.';
+      if (c.game !== GAME) return 'هذا الرمز للعبة أخرى.';
+      if (c.stamp !== STAMP) return 'هذا الرمز من نسخة أخرى من أسئلة اللعبة. استعمل رمز QR من شاشة اللعبة.';
+      const rows = [1, 2, 3].flatMap(l => { const n = ORD.levelRows(DEFAULT_BANK, l).length;
+        return ORD.levelOrder(DEFAULT_BANK, c.seed, l, 0, n).map((bi, i) => [l, i + 1, DEFAULT_BANK[bi][1], DEFAULT_BANK[bi][2]]); });
+      render(ORD.matchCode(DEFAULT_BANK, c.seed), rows);
+      history.replaceState(null, '', '#c=' + String(text).toUpperCase().replace(/[\s-]/g, '')); // a reload keeps the key
+      return '';
+    }
+    function codeBox(prefill = '', err = '') {
+      const input = document.createElement('input'), btn = document.createElement('button'), p = document.createElement('p'), e = document.createElement('p'), box = document.createElement('div');
+      Object.assign(input, { value: prefill, id: 'codein', autocomplete: 'off', spellcheck: false, inputMode: 'text', maxLength: 16 }); input.setAttribute('autocapitalize', 'characters'); input.dir = 'ltr'; input.setAttribute('aria-label', 'الرمز');
+      p.className = 'ask'; p.textContent = 'اكتب الرمز الظاهر على شاشة اللعبة'; e.className = 'err'; e.id = 'codeerr'; e.setAttribute('role', 'alert'); e.textContent = err;
+      btn.id = 'codego'; btn.textContent = 'افتح المفتاح';
+      const go = () => { const why = openCode(input.value); if (why) e.textContent = why; }; // the box keeps its text on an error
+      btn.onclick = go; input.onkeydown = ev => { if (ev.key === 'Enter') go(); };
+      box.className = 'codebox'; box.append(p, input, btn, e); main.replaceChildren(box); input.focus();
+    }
+    const hash = location.hash.slice(1);
+    if (hash.startsWith('c=')) { const why = openCode(hash.slice(2)); if (why) codeBox(hash.slice(2), why); }
+    else if (hash) {
+      try { const key = await WaraqaKey.unpack(hash); render(key.code, key.rows); }
+      catch (e) { msg('هذا الرابط لا يحمل مفتاحاً صالحاً. صوّر الرمز من شاشة اللعبة مرة أخرى.'); }
+    } else codeBox();
   })();
 </script>
 </body>

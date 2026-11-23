@@ -54,3 +54,40 @@ test('matchCode is 4 characters and changes when one bank cell or the seed chang
   const edited = bank.map(r => r.slice()); edited[3][4] = 'changed';
   assert.notStrictEqual(c, O.matchCode(edited, 7));
 });
+
+// ---- the short typed key code (keyCode / readKeyCode) ----
+test('keyCode: round trip for edge seeds, and typing ignores case, spaces and the dash', () => {
+  const bank = [['a', 'q1', 'x', 'y', 'z', 'w']];
+  for (const s of [0, 1, -1, 2 ** 31 - 1, -(2 ** 31), Date.now() | 0]) {
+    const code = O.keyCode('W', bank, s);
+    assert.strictEqual(code.length, 10);
+    assert.strictEqual(O.readKeyCode(code).seed, s | 0);
+    assert.strictEqual(O.readKeyCode(code).game, 'W');
+    const typed = (code.slice(0, 3) + ' - ' + code.slice(3)).toLowerCase();
+    assert.deepStrictEqual(O.readKeyCode(typed), O.readKeyCode(code));
+  }
+});
+
+test('readKeyCode: a wrong length or a forbidden letter (O 0 I 1 L) gives null', () => {
+  const good = O.keyCode('W', [['a', 'q', 'x', 'y', 'z', 'w']], 7);
+  assert.strictEqual(O.readKeyCode(good.slice(0, 9)), null);
+  assert.strictEqual(O.readKeyCode(good + '2'), null);
+  for (const bad of 'O0I1L') assert.strictEqual(O.readKeyCode(good.slice(0, 9) + bad), null, bad);
+  assert.strictEqual(O.readKeyCode(''), null);
+});
+
+test('keyCode: the bank stamp changes when one bank cell changes, and does not depend on the seed', () => {
+  const a = [['a', 'q1', 'x', 'y', 'z', 'w']], b = [['a', 'q1', 'x', 'y', 'z', 'v']];
+  assert.notStrictEqual(O.keyCode('W', a, 7).slice(1, 3), O.keyCode('W', b, 7).slice(1, 3));
+  assert.strictEqual(O.keyCode('W', a, 7).slice(1, 3), O.keyCode('W', a, 99).slice(1, 3));
+});
+
+test('keyCode: each level\'s order rebuilt from the typed code equals that level\'s own draws', () => {
+  const bank = []; for (const [lv, n] of [[1, 7], [2, 5], [3, 9]]) for (let i = 0; i < n; i++) bank.push(['c', `q${lv}-${i}`, 'a', 'b', 'c', 'd', String(lv)]);
+  const seed = -987654321, code = O.keyCode('W', bank, seed), s = O.readKeyCode(code).seed;
+  for (const lv of [1, 2, 3]) {
+    const rows = O.levelRows(bank, lv), n = rows.length, drawn = []; let deck = null;
+    for (let k = 0; k < 2 * n + 3; k++) { if (k % n === 0) deck = O.questionDeck(n, s + lv * 1000 + k / n); drawn.push(rows[deck[k % n]]); } // the game's drawQuestion
+    assert.deepStrictEqual(O.levelOrder(bank, s, lv, 0, 2 * n + 3), drawn, 'level ' + lv);
+  }
+});

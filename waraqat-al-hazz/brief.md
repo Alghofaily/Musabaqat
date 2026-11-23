@@ -45,6 +45,7 @@ Harder levels pay four times the easy ones, but a wrong answer earns nothing and
 - [x] Card board: 12 face-down cards dealt from the original's 13-card mix (±10, ±100, ±1000, nothing, play again, dove, lightning, fire, stop sign, bomb), each with its own drawn face and a flip
 - [x] Attack cards used now or kept; kept cards and doves shown on each team's podium and usable on that team's turn
 - [x] Question bank: the studio's shared default bank (2,602 questions: 451 easy, 574 medium, 1,577 hard, made by `tools/question-bank/`); add, delete, reset
+- [x] Typed key code (2026-11-23): the key screen can show a short code («أظهر رمزاً بدل QR») that the host types into `key.html`, which rebuilds the key from the built-in bank and the seed; over http(s) the QR carries only that code (small QR, the whole pass); with the host's own bank, a flash drive (file://) or a non-whole seed the full-payload QR stays.
 - [x] CSV import with Arabic headers السؤال، الخيار 1 (الإجابة)، الخيار 2، الخيار 3، الخيار 4، المستوى; a blank or wrong المستوى rejects the whole file with its lines; then add or replace
 - [x] Podium and standings; sounds with mute
 - [x] Logo intro on load, the Musabaqat family link (title and results screens), undo after a verdict or a deleted question

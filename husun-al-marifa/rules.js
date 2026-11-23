@@ -185,6 +185,23 @@
     return out;
   }
 
-  root.HusunRules = { makeMap, placeTeams, hit, attackBlock, newBattle, battleAnswer, applyBattle, eliminate, reachable, rollPrices, payout, isCapital, dist, hexCount, battalions, cannonCount, score, aliveTeams, questionDeck, questionOrder, matchCode };
+  // The short typed code for the host's phone key (key.html): the game letter (H, S or W), a 2-character stamp of the
+  // built-in bank (so a phone page with another bank refuses) and the seed in base 31 (7 characters, padded with the
+  // first letter, '2'). It holds no question and no answer: the phone rebuilds the key from the bank and the seed.
+  const KEY_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'; // no 0/O, 1/I/L, the same as matchCode
+  function keyCode(game, bank, seed) {
+    let n = seed >>> 0, s = '';
+    for (let i = 0; i < 7; i++) { s = KEY_ALPHABET[n % 31] + s; n = Math.floor(n / 31); }
+    return game + matchCode(bank, 0).slice(0, 2) + s;
+  }
+  // text a person typed -> { game, stamp, seed } or null (case, spaces and dashes ignored; wrong length or letters: null)
+  function readKeyCode(text) {
+    const t = String(text).toUpperCase().replace(/[\s-]/g, '');
+    if (t.length !== 10 || [...t].some(c => !KEY_ALPHABET.includes(c))) return null;
+    let n = 0; for (const c of t.slice(3)) n = n * 31 + KEY_ALPHABET.indexOf(c);
+    return { game: t[0], stamp: t.slice(1, 3), seed: n | 0 };
+  }
+
+  root.HusunRules = { makeMap, placeTeams, hit, attackBlock, newBattle, battleAnswer, applyBattle, eliminate, reachable, rollPrices, payout, isCapital, dist, hexCount, battalions, cannonCount, score, aliveTeams, questionDeck, questionOrder, matchCode, keyCode, readKeyCode };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.HusunRules;
 })(typeof window !== 'undefined' ? window : globalThis);

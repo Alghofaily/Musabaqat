@@ -41,6 +41,7 @@ Trades move prices (Ma3aliSahmuk's impact rule), so others' buys lift your holdi
 ## Features
 - [x] Setup screen: teams, cash, price, timers, question mode, play mode (sequential / fastest), end mode (manual / timed minutes / rounds), theme light/dark
 - [x] Question bank: the studio's shared default bank (2,602 Arabic questions in 13 categories, made by `tools/question-bank/`; levels ignored here); the host can add, delete and reset in a bank editor, saved in the browser
+- [x] Typed key code (2026-11-23): the key screen can show a short code («أظهر رمزاً بدل QR») that the host types into `key.html`, which rebuilds the key from the built-in bank and the seed; over http(s) the QR carries only that code (small QR, the whole pass); with the host's own bank, a flash drive (file://) or a non-whole seed the full-payload QR stays.
 - [x] Two question modes: 4 choices (teams answer on screen), or the question alone with right/wrong buttons and the answer revealed
 - [x] Market watch: 10 fictional companies in 5 sectors, with sparkline, price, change % and flashes
 - [x] Trade panel: buy/sell with a quantity, 2+2 limit, price impact, trading countdown

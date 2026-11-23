@@ -157,3 +157,36 @@ test('the key\'s order is the game\'s order, across passes through the bank', ()
   assert.deepStrictEqual(R.questionOrder(n, seed, 0, 3 * n), game);
   assert.deepStrictEqual(R.questionOrder(n, seed, 5, 6), game.slice(5, 11)); // a later key starts mid-pass
 });
+
+// ---- the short typed key code (keyCode / readKeyCode) ----
+test('keyCode: round trip for edge seeds, and typing ignores case, spaces and the dash', () => {
+  const bank = [['a', 'q1', 'x', 'y', 'z', 'w']];
+  for (const s of [0, 1, -1, 2 ** 31 - 1, -(2 ** 31), Date.now() | 0]) {
+    const code = R.keyCode('H', bank, s);
+    assert.strictEqual(code.length, 10);
+    assert.strictEqual(R.readKeyCode(code).seed, s | 0);
+    assert.strictEqual(R.readKeyCode(code).game, 'H');
+    const typed = (code.slice(0, 3) + ' - ' + code.slice(3)).toLowerCase();
+    assert.deepStrictEqual(R.readKeyCode(typed), R.readKeyCode(code));
+  }
+});
+
+test('readKeyCode: a wrong length or a forbidden letter (O 0 I 1 L) gives null', () => {
+  const good = R.keyCode('H', [['a', 'q', 'x', 'y', 'z', 'w']], 7);
+  assert.strictEqual(R.readKeyCode(good.slice(0, 9)), null);
+  assert.strictEqual(R.readKeyCode(good + '2'), null);
+  for (const bad of 'O0I1L') assert.strictEqual(R.readKeyCode(good.slice(0, 9) + bad), null, bad);
+  assert.strictEqual(R.readKeyCode(''), null);
+});
+
+test('keyCode: the bank stamp changes when one bank cell changes, and does not depend on the seed', () => {
+  const a = [['a', 'q1', 'x', 'y', 'z', 'w']], b = [['a', 'q1', 'x', 'y', 'z', 'v']];
+  assert.notStrictEqual(R.keyCode('H', a, 7).slice(1, 3), R.keyCode('H', b, 7).slice(1, 3));
+  assert.strictEqual(R.keyCode('H', a, 7).slice(1, 3), R.keyCode('H', a, 99).slice(1, 3));
+});
+
+test('keyCode: the order rebuilt from the typed code equals the game\'s own draws, across a pass boundary', () => {
+  const n = 6, seed = 123456, code = R.keyCode('H', [['a', 'q', 'x', 'y', 'z', 'w']], seed), drawn = []; let deck = R.questionDeck(n, seed);
+  for (let k = 0; k < 15; k++) { if (k > 0 && k % n === 0) deck = R.questionDeck(n, seed + k / n); drawn.push(deck[k % n]); } // the game's drawQuestion
+  assert.deepStrictEqual(R.questionOrder(n, R.readKeyCode(code).seed, 0, 15), drawn);
+});

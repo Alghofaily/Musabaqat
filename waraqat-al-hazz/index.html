@@ -189,6 +189,9 @@
   .qrbox { background: #fff; padding: 10px; border-radius: 8px; line-height: 0; width: 400px; height: 400px; max-width: 100%; display: grid; place-items: center; overflow: hidden; }
   .qrbox svg { width: 100%; height: 100%; transition: filter .25s ease-out; }
   .qrbox.veiled svg { filter: blur(16px); } /* unreadable by any camera until the host says the projector is hidden */
+  .codeview { display: grid; gap: 10px; justify-items: center; width: 100%; padding: 8px 0; }
+  .bigcode { font: 700 54px/1.1 ui-monospace, Menlo, Consolas, monospace; direction: ltr; unicode-bidi: isolate; letter-spacing: 4px; color: var(--gold); }
+  .codeview .addr { font-size: 22px; font-weight: 700; direction: ltr; unicode-bidi: isolate; word-break: break-all; }
   .keybtns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
   .chip.keychip { font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: default; }
   .chip.keychip:not([disabled]) { cursor: pointer; } .chip.keychip:not([disabled]):hover { color: var(--text); border-color: var(--gold); }
@@ -544,7 +547,7 @@ function reset() {
     // the question order: each level asks its own bank rows (lv) in a fixed order from seed0 (order.js), qi questions asked so far in each
     seed0, code: WO.matchCode(bank, seed0), lv: { 1: WO.levelRows(bank, 1), 2: WO.levelRows(bank, 2), 3: WO.levelRows(bank, 3) }, qi: { 1: 0, 2: 0, 3: 0 },
     // the phone key: keyTo[L] = questions of level L before that position are on it; keyAsk: the key screen is up
-    keyTo: { 1: 0, 2: 0, 3: 0 }, keyAsk: hostMode() === 'phone' ? { from: { 1: 0, 2: 0, 3: 0 }, step: 1 } : null, keyOff: false, keySnooze: -1,
+    keyTo: { 1: 0, 2: 0, 3: 0 }, keyAsk: hostMode() === 'phone' ? { from: { 1: 0, 2: 0, 3: 0 }, step: 1 } : null, keySnooze: -1,
   };
 }
 const inLevel = l => bank.reduce((a, r) => a + (r[6] === String(l)), 0);
@@ -1197,7 +1200,12 @@ function keyRows(from, counts) { // the questions each level will ask from posit
   return LEVELS.flatMap(L => counts[L] > 0 ? WO.questionOrder(state.lv[L].length, state.seed0 + L * 1000, from[L], counts[L]).map((k, i) => {
     const r = bank[state.lv[L][k]]; return [L, from[L] + i + 1, WaraqaKey.cut(r[1], tune.keyQuestionChars), WaraqaKey.cut(r[2], tune.keyAnswerChars)]; }) : []);
 }
-async function buildKey(from, cap = 400) { // the most questions per level (up to cap, one pass of the level) that fit one code of keyMaxVersion, then the smallest code that holds them
+async function buildKey(from, cap = 400) {
+  if (/^https?:$/.test(location.protocol) && codeOK()) { // the small QR: only the typed code in the link, the same page as typing it (over http the game and key.html share one bank)
+    const url = KEY_PAGE + '#c=' + typedCode().replace('-', ''), counts = {};
+    for (const L of LEVELS) counts[L] = passTo(L, from[L]) - from[L];
+    for (let t = 1; t <= 40; t++) { try { const q = qrcode(t, 'L'); q.addData(url, 'Byte'); q.make(); return { from, c: Math.max(...LEVELS.map(L => counts[L])), counts, small: true, svg: q.createSvgTag({ cellSize: 4, margin: 4, scalable: true }) }; } catch (e) { /* too long for t */ } }
+  } // the most questions per level (up to cap, one pass of the level) that fit one code of keyMaxVersion, then the smallest code that holds them
   const counts = c => ({ 1: Math.min(c, state.lv[1].length), 2: Math.min(c, state.lv[2].length), 3: Math.min(c, state.lv[3].length) });
   const fits = async c => { const url = KEY_PAGE + '#' + await WaraqaKey.pack({ code: state.code, rows: keyRows(from, counts(c)) });
     try { const q = qrcode(tune.keyMaxVersion, 'L'); q.addData(url, 'Byte'); q.make(); return url; } catch (e) { return null; } };
@@ -1207,12 +1215,17 @@ async function buildKey(from, cap = 400) { // the most questions per level (up t
   for (let t = 1; t <= tune.keyMaxVersion; t++) { try { const q = qrcode(t, 'L'); q.addData(url, 'Byte'); q.make(); return { from, c: lo, counts: counts(lo), svg: q.createSvgTag({ cellSize: 4, margin: 4, scalable: true }) }; } catch (e) { /* too long for t */ } }
   return null;
 }
-function phoneKey() { return hostMode() === 'phone' && state && !state.keyOff; }
+function phoneKey() { return hostMode() === 'phone' && state; }
+// The typed code (key.html with no QR) and the small QR work only with the built-in bank and a whole 32-bit seed, because
+// the phone rebuilds the key from DEFAULT_BANK and the seed (.claude/plans/key-typed-code.plan.md). They cover a whole pass of each level.
+const ownBank = () => WO.matchCode(bank, 0) !== WO.matchCode(DEFAULT_BANK, 0);
+const codeOK = () => Number.isInteger(state.seed0) && state.seed0 === (state.seed0 | 0) && !ownBank();
+const typedCode = () => { const c = WO.keyCode('W', DEFAULT_BANK, state.seed0); return c.slice(0, 3) + '-' + c.slice(3); };
+const keyAddress = () => KEY_PAGE.replace(/^https?:\/\//, '').replace(/#.*$/, ''); // the page's short address, as typed on a phone
+const passTo = (L, from) => { const n = state.lv[L].length; return n ? Math.ceil((from + 1) / n) * n : from; }; // the end of the pass of level L that holds question `from`
 const keyLeft = () => Math.min(...LEVELS.filter(L => state.lv[L].length).map(L => Math.max(0, state.keyTo[L] - state.qi[L]))); // the level closest to the end of the key
 function keyChip() { // header: the match code and what is left on the key; between turns it takes the next key (or a key again)
   const early = state.phase === 'level' && !state.keyAsk, take = () => { state.keyAsk = { from: Object.assign({}, state.qi), step: 1 }; renderAll(); };
-  if (state.keyOff) return h('button', { class: 'chip keychip', disabled: !early, title: 'خذ مفتاح الإجابات على جوالك', onclick: () => { state.keyOff = false; take(); } },
-    'بدون مفتاح', early ? h('span', { class: 'take' }, ' · اضغط لأخذ مفتاح') : null);
   const left = keyLeft(), keyed = LEVELS.some(L => state.keyTo[L] > 0), near = keyed && left <= tune.keyReserve + 10, can = early && keyed;
   return h('button', { class: 'chip keychip' + (near ? ' near' : ''), disabled: !can, title: can ? 'خذ مفتاح الأسئلة التالية الآن' : 'يطابق الرمز على جوال المقدّم', onclick: take },
     'رمز ', h('b', { class: 'num' }, state.code), keyed ? [' · بقي ', h('b', { class: 'num' }, left), ' في المفتاح'] : null, can ? h('span', { class: 'take' }, ' · خذ التالي') : null);
@@ -1220,7 +1233,7 @@ function keyChip() { // header: the match code and what is left on the key; betw
 function renderHostKey() {
   const ask = state.keyAsk, old = document.getElementById('hostkey'), fromKey = ask && JSON.stringify(ask.from);
   if (!ask) { old?.remove(); keyBuilt = null; return; }
-  if (old && old.dataset.step === String(ask.step) && old.dataset.from === fromKey && old.dataset.cap === String(ask.cap || 0)) return;
+  if (old && old.dataset.step === String(ask.step) && old.dataset.from === fromKey && old.dataset.cap === String(ask.cap || 0) && old.dataset.view === (ask.view || '')) return;
   old?.remove();
   const first = LEVELS.every(L => ask.from[L] === 0), remain = keyLeft();
   const close = () => { state.keyAsk = null; renderAll(); };
@@ -1233,27 +1246,31 @@ function renderHostKey() {
       h('div', { class: 'keywarn' }, 'أخفِ شاشة العرض أولاً: زر الإخفاء في جهاز العرض، أو Win+P ثم «شاشة الكمبيوتر فقط». في الرمز إجابات الأسئلة القادمة، ومن يصوّره من الجمهور يراها.'),
       box,
       h('div', { class: 'keybtns' }, show,
-        remain > 0 ? B(`لاحقاً (بقي ${remain} في المفتاح)`, '', () => { state.keySnooze = state.turns; close(); }) : null,
-        B('بدون مفتاح الآن', 'ghost', () => { state.keyOff = true; close(); })));
+        remain > 0 ? B(`لاحقاً (بقي ${remain} في المفتاح)`, '', () => { state.keySnooze = state.turns; close(); }) : null));
   } else {
-    modal.append(h('div', { style: 'font-size:18px', id: 'keyrange' }, 'جارٍ تجهيز الرمز…'), box,
+    const typed = ask.view === 'code' && codeOK(); // the typed code instead of the QR: the whole pass of each level, nothing to build
+    const shown = typed ? h('div', { class: 'codeview' }, h('div', { class: 'bigcode', id: 'typedcode' }, typedCode()), h('div', { class: 'addr', id: 'keyaddr' }, keyAddress()),
+      h('div', {}, 'رمز المطابقة ', h('b', { class: 'num', style: 'letter-spacing:3px' }, state.code))) : box;
+    modal.append(...[h('div', { style: 'font-size:18px', id: 'keyrange' }, typed ? 'افتح هذا العنوان على جوالك واكتب الرمز:' : 'جارٍ تجهيز الرمز…'), shown,
       h('div', { class: 'keybtns' },
-        B('تم المسح: أكمل المسابقة', 'gold', () => { for (const L of LEVELS) state.keyTo[L] = ask.from[L] + keyBuilt.counts[L]; close(); }, { 'data-primary': '1', disabled: true, id: 'keydone' }),
-        B('رمز أصغر', '', () => { state.keyAsk.cap = Math.max(3, Math.floor((keyBuilt?.c || 20) / 2)); keyBuilt = null; renderAll(); }, { id: 'keysmaller', disabled: true }),
-        B('رجوع (Esc)', 'ghost', () => { state.keyAsk.step = 1; renderAll(); })));
+        B('تم المسح: أكمل المسابقة', 'gold', () => { for (const L of LEVELS) state.keyTo[L] = typed || keyBuilt?.small ? passTo(L, ask.from[L]) : ask.from[L] + keyBuilt.counts[L]; close(); }, { 'data-primary': '1', disabled: !typed, id: 'keydone' }),
+        typed ? null : B('رمز أصغر', '', () => { state.keyAsk.cap = Math.max(3, Math.floor((keyBuilt?.c || 20) / 2)); keyBuilt = null; renderAll(); }, { id: 'keysmaller', disabled: true }),
+        codeOK() ? B(typed ? 'أظهر QR' : 'أظهر رمزاً بدل QR', '', () => { state.keyAsk.view = typed ? null : 'code'; renderAll(); }, { id: 'keyview' }) : null,
+        B('رجوع (Esc)', 'ghost', () => { state.keyAsk.step = 1; renderAll(); })),
+      ownBank() ? h('div', { class: 'muted', style: 'font-size:14px' }, 'الرمز المكتوب يعمل مع أسئلة اللعبة الأصلية فقط؛ مع أسئلتك استعمل رمز QR.') : null].filter(Boolean));
   }
   const cap = ask.cap || 400;
-  (keyBuilt && keyBuilt.from === ask.from && keyBuilt.cap === cap ? Promise.resolve(keyBuilt) : buildKey(ask.from, cap)).then(k => {
+  if (!(ask.step === 2 && ask.view === 'code' && codeOK())) (keyBuilt && keyBuilt.from === ask.from && keyBuilt.cap === cap ? Promise.resolve(keyBuilt) : buildKey(ask.from, cap)).then(k => {
     if (state.keyAsk !== ask || !modal.isConnected) return;
-    if (!k) { box.replaceChildren(h('b', { style: 'color:#13204f' }, 'تعذّر صنع الرمز. تابع «بدون مفتاح الآن»، أو ارفع keyMaxVersion في config.js.')); return; }
+    if (!k) { box.replaceChildren(h('b', { style: 'color:#13204f' }, 'تعذّر صنع الرمز. ارفع keyMaxVersion في config.js.')); return; }
     keyBuilt = Object.assign(k, { cap });
     box.innerHTML = k.svg;
     if (ask.step === 1) { show.disabled = false; return; }
-    document.getElementById('keyrange').replaceChildren('امسح الرمز بجوالك: ' + LEVELS.filter(L => k.counts[L]).map(L => `${LEVEL_NAMES[L]} ${ask.from[L] + 1} إلى ${ask.from[L] + k.counts[L]}`).join('، ') + ' · رمز المطابقة ', h('b', { class: 'num', style: 'letter-spacing:3px' }, state.code));
+    document.getElementById('keyrange').replaceChildren((k.small ? 'امسح الرمز بجوالك: مفتاح كامل لأسئلة اللعبة' : 'امسح الرمز بجوالك: ' + LEVELS.filter(L => k.counts[L]).map(L => `${LEVEL_NAMES[L]} ${ask.from[L] + 1} إلى ${ask.from[L] + k.counts[L]}`).join('، ')) + ' · رمز المطابقة ', h('b', { class: 'num', style: 'letter-spacing:3px' }, state.code));
     document.getElementById('keydone').disabled = false;
-    document.getElementById('keysmaller').disabled = k.c <= 5;
+    const sm = document.getElementById('keysmaller'); if (sm) { sm.hidden = !!k.small; sm.disabled = k.c <= 5; }
   });
-  ui.append(h('div', { class: 'ov', id: 'hostkey', 'data-step': String(ask.step), 'data-from': fromKey, 'data-cap': String(ask.cap || 0), role: 'dialog', 'aria-label': 'مفتاح الإجابات للمقدّم' }, modal));
+  ui.append(h('div', { class: 'ov', id: 'hostkey', 'data-step': String(ask.step), 'data-from': fromKey, 'data-cap': String(ask.cap || 0), 'data-view': ask.view || '', role: 'dialog', 'aria-label': 'مفتاح الإجابات للمقدّم' }, modal));
 }
 
 // ---- The host window (setup: شاشة المقدّم → نافذة على هذا الحاسوب; projector set to Extend) ----
