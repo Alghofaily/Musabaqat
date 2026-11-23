@@ -1,4 +1,4 @@
-# Game Brief: ورقة الحظ
+# Game Brief: ورقات الحظ
 
 ## In your words
 add new game luckyquiz.exe

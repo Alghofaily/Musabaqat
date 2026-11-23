@@ -3,7 +3,7 @@
 ## 1. The logo
 - **Idea:** three calligraphy dots, the cluster written over ث and ش. There is one dot per game, in that game's colour:
   - green for سوق المعرفة
-  - yellow for ورقة الحظ
+  - yellow for ورقات الحظ
   - blue for حصون المعرفة
 - **Versions:** horizontal lockup (primary) · stacked lockup · symbol only · wordmark only · tile icon.
 - **Reading order:** the lockup reads right to left. The symbol stands on the right and the name follows to its left.

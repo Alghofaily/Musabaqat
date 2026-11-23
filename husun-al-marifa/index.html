@@ -148,6 +148,11 @@
   .codeview { display: grid; gap: 10px; justify-items: center; width: 100%; padding: 8px 0; }
   .bigcode { font: 700 54px/1.1 ui-monospace, Menlo, Consolas, monospace; direction: ltr; unicode-bidi: isolate; letter-spacing: 4px; color: var(--brass); }
   .codeview .addr { font-size: 22px; font-weight: 700; direction: ltr; unicode-bidi: isolate; word-break: break-all; }
+  .hostmenu { position: absolute; left: 12px; z-index: 40; min-width: 300px; padding: 10px; display: grid; gap: 4px; }
+  .hostmenu .seg { justify-self: start; }
+  .hostmenu .btn.menurow { justify-content: flex-start; text-align: start; min-height: 44px; font-size: 16px; width: 100%; }
+  .hostmenu .menukeys { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 8px; display: grid; gap: 2px; font-size: 14px; }
+  .chip { white-space: nowrap; }
   .keybtns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
   .chip.keychip { font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: default; }
   .chip.keychip:not([disabled]) { cursor: pointer; } .chip.keychip:not([disabled]):hover { color: var(--text); border-color: var(--brass); }
@@ -282,7 +287,7 @@ let W = 1280, H = 720, TALL = false; // the stage in design pixels; fit() gives 
 const PIXEL = false;
 const FONT = "Plex, Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif";
 const TITLE = 'حصون المعرفة';
-const CONTROLS = ['الفأرة أو اللمس: كل شيء', '1-4: اختيار الإجابة', 'Enter: الزر الرئيسي', 'P: إيقاف مؤقت · M: كتم الصوت'];
+const CONTROLS = [ 'Esc: إغلاق القوائم والنوافذ', 'الفأرة أو اللمس: كل شيء', '1-4: اختيار الإجابة', 'Enter: الزر الرئيسي', 'P: إيقاف مؤقت · M: كتم الصوت'];
 const clock = window.GAME_CLOCK || { now: () => performance.now() / 1000 };
 const CHEAP = params.get('render') === 'cheap';
 let seed;
@@ -985,7 +990,7 @@ const FAMILY_URL = 'https://alghofaily.github.io/Musabaqat/';
 const FAMILY_MARK = '<svg aria-hidden="true" focusable="false" viewBox="0 0 686 256"><path fill="var(--mq-name)" transform="matrix(0.11905 0 0 0.11905 25.02 163.24)" d="M496 -332Q472 -332 455 -349Q438 -366 438 -390Q438 -414 455 -431Q472 -448 496 -448Q520 -448 537 -431Q554 -414 554 -390Q554 -366 537 -349Q520 -332 496 -332ZM323 -332Q299 -332 282 -349Q265 -366 265 -390Q265 -414 282 -431Q299 -448 323 -448Q347 -448 364 -431Q381 -414 381 -390Q381 -366 364 -349Q347 -332 323 -332ZM25 -0L109 -140L685 -140L685 -0L25 -0ZM605 -0L605 -140L685 -140L685 -309L825 -340L825 -23Q825 -11 815 -6Q805 -1 795 -0.5Q785 -0 785 -0L605 -0ZM915 -0Q915 -0 905 -0.5Q895 -1 885 -6Q875 -11 875 -23L875 -769L1015 -800L1015 -140L1095 -140L1095 -0L915 -0ZM1391 -542Q1367 -542 1350 -559Q1333 -576 1333 -600Q1333 -624 1350 -641Q1367 -658 1391 -658Q1415 -658 1432 -641Q1449 -624 1449 -600Q1449 -576 1432 -559Q1415 -542 1391 -542ZM1218 -542Q1194 -542 1177 -559Q1160 -576 1160 -600Q1160 -624 1177 -641Q1194 -658 1218 -658Q1242 -658 1259 -641Q1276 -624 1276 -600Q1276 -576 1259 -559Q1242 -542 1218 -542ZM1415 -0L1415 -140L1595 -140L1595 -0L1415 -0ZM1055 -0L1055 -140L1335 -140L1335 -268L1475 -340L1475 -23Q1475 -11 1465 -6Q1455 -1 1445 -0.5Q1435 -0 1435 -0L1055 -0ZM1306.3 -170Q1259.5 -170 1220.8 -193Q1182 -216 1158.5 -254.8Q1135 -293.6 1135 -339.8Q1135 -387 1158.5 -425.7Q1182 -464.4 1221 -487.2Q1260 -510 1306.5 -510Q1353 -510 1391 -487Q1429 -464 1452 -425.7Q1475 -387.3 1475 -340Q1475 -293 1452 -254.5Q1429 -216 1391 -193Q1353 -170 1306.3 -170ZM1306 -310Q1319 -310 1327 -318.7Q1335 -327.4 1335 -340Q1335 -352.6 1327 -361.3Q1319 -370 1306 -370Q1293 -370 1284 -361.3Q1275 -352.6 1275 -340Q1275 -327.4 1284 -318.7Q1293 -310 1306 -310ZM1658 208Q1634 208 1617 191Q1600 174 1600 150Q1600 126 1617 109Q1634 92 1658 92Q1682 92 1699 109Q1716 126 1716 150Q1716 174 1699 191Q1682 208 1658 208ZM1555 -0L1555 -140L1635 -140L1635 -309L1775 -340L1775 -23Q1775 -11 1765 -6Q1755 -1 1745 -0.5Q1735 -0 1735 -0L1555 -0ZM1865 -0Q1865 -0 1855 -0.5Q1845 -1 1835 -6Q1825 -11 1825 -23L1825 -769L1965 -800L1965 -140L2045 -140L2045 -0L1865 -0ZM2005 -0L2005 -140L2085 -140L2085 -309L2225 -340L2225 -140L2285 -140L2285 -359L2425 -390L2425 -140L2485 -140L2485 -409L2625 -440L2625 -140L2745 -140L2745 -0L2005 -0ZM2705 -0L2705 -140L2905 -140L2952 -0L2705 -0ZM2949.3 -0Q2902.5 -0 2863.8 -23Q2825 -46 2801.5 -84.8Q2778 -123.6 2778 -169.8Q2778 -217 2801.5 -255.7Q2825 -294.4 2864 -317.2Q2903 -340 2949.5 -340Q2996 -340 3034 -317Q3072 -294 3095 -255.7Q3118 -217.3 3118 -170Q3118 -123 3095 -84.5Q3072 -46 3034 -23Q2996 -0 2949.3 -0ZM2949 -140Q2962 -140 2970 -148.7Q2978 -157.4 2978 -170Q2978 -182.6 2970 -191.3Q2962 -200 2949 -200Q2936 -200 2927 -191.3Q2918 -182.6 2918 -170Q2918 -157.4 2927 -148.7Q2936 -140 2949 -140Z"/><g transform="translate(419.03 0)"><path fill="var(--mq-g)" d="M128 40.4L178.91 91.32L128 142.23L77.09 91.32Z"/><path fill="var(--mq-y)" d="M187.91 107.77L238.82 158.68L187.91 209.6L137 158.68Z"/><path fill="var(--mq-b)" d="M68.09 107.77L119 158.68L68.09 209.6L17.18 158.68Z"/></g></svg>';
 const familyLink = (at = '') => h('a', { class: at ? `family ${at}` : 'family', href: FAMILY_URL, target: '_blank', rel: 'noopener noreferrer', title: 'ألعاب مسابقات',
   'aria-label': 'ألعاب مسابقات: تفتح صفحة الألعاب في نافذة جديدة', html: FAMILY_MARK, onclick: e => e.currentTarget.blur() }); // blur: a later Enter goes back to the game
-function go(name) { scene = name; if (state) state.paused = false; ui.replaceChildren(); (scenes[name].enter || (() => {}))(); events.push({ scene: name }); }
+function go(name) { if (hostMenuOpen) { hostMenuOpen = false; document.removeEventListener('pointerdown', menuOutside, true); } scene = name; if (state) state.paused = false; ui.replaceChildren(); (scenes[name].enter || (() => {}))(); events.push({ scene: name }); }
 let refs = {};
 function renderAll() {
   if (scene !== 'play') return;
@@ -996,6 +1001,26 @@ function themeSeg(after) {
   return h('div', { class: 'seg' }, h('button', { class: theme === 'dark' ? 'on' : '', onclick: () => { setTheme('dark'); after(); } }, 'داكن'),
     h('button', { class: theme === 'light' ? 'on' : '', onclick: () => { setTheme('light'); after(); } }, 'فاتح'));
 }
+// The host's controls (theme, sound, pause, help, end) fold into one «⋯» menu during play, so the projector's header shows only the show.
+// It opens on click and closes on Esc or a click outside; P, M and Esc keep working.
+let hostMenuOpen = false;
+const menuOutside = e => { if (!e.target.closest('#hostmenu, #menubtn')) closeHostMenu(); };
+function closeHostMenu() { hostMenuOpen = false; document.getElementById('hostmenu')?.remove(); document.removeEventListener('pointerdown', menuOutside, true); if (scene === 'play' && refs.header) renderHeader(); }
+function toggleHostMenu() { if (hostMenuOpen) return closeHostMenu(); hostMenuOpen = true; document.addEventListener('pointerdown', menuOutside, true); renderHeader(); }
+function renderHostMenu() {
+  document.getElementById('hostmenu')?.remove();
+  if (!hostMenuOpen || scene !== 'play') return;
+  const row = (label, fn, cls = '') => B(label, 'ghost menurow ' + cls, fn);
+  const menu = h('div', { id: 'hostmenu', class: 'panel hostmenu', role: 'menu', style: `top:${refs.header.offsetHeight + 4}px` },
+    themeSeg(renderAll),
+    row('شرح اللعبة', () => { closeHostMenu(); showHelp(HELP_AT[state.phase] ?? 0); }),
+    hostMode() === 'window' ? row(presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم', openPresenter) : null,
+    row(muted ? 'الصوت: مكتوم (M)' : 'الصوت: يعمل (M)', () => setMuted(!muted)),
+    row(state.paused ? 'متابعة (P)' : 'إيقاف مؤقت (P)', () => { state.paused = !state.paused; renderHeader(); }),
+    row('إنهاء الحرب', () => { closeHostMenu(); confirmEnd(); }, 'danger'),
+    h('div', { class: 'menukeys' }, h('b', {}, 'الاختصارات'), ...CONTROLS.map(c => h('div', { class: 'muted' }, c))));
+  (document.getElementById('app') || ui).append(menu);
+}
 function renderHeader() {
   const end = settings.end === 'rounds' ? h('span', { class: 'chip' }, 'الجولة ', N(`${Math.min(state.round, settings.rounds)} / ${settings.rounds}`))
     : settings.end === 'timed' ? h('span', { class: 'chip', id: 'clockchip' }, 'الوقت المتبقي')
@@ -1004,13 +1029,8 @@ function renderHeader() {
     h('span', { class: 'chip muted' }, settings.qmode === 'choices' ? 'أربعة خيارات' : settings.qmode === 'own' ? 'أسئلتي أنا' : 'المقدّم يحكم'),
     state.lastCall ? h('span', { class: 'chip bad' }, 'انتهى الوقت · آخر دور') : null,
     hostMode() === 'phone' && state ? keyChip() : null,
-    h('span', { class: 'sp' }), themeSeg(renderAll),
-    h('span', { class: 'hgroup' },
-      hostMode() === 'window' ? B(presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم', 'ghost', openPresenter) : null,
-      B('شرح اللعبة', 'ghost', () => showHelp(HELP_AT[state.phase] ?? 0)),
-      B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', 'ghost', () => setMuted(!muted)),
-      B(state.paused ? 'متابعة' : 'إيقاف مؤقت', 'ghost', () => { state.paused = !state.paused; renderHeader(); }),
-      B('إنهاء الحرب', 'ghost danger', confirmEnd))].filter(Boolean));
+    h('span', { class: 'sp' }), B('⋯', 'ghost', toggleHostMenu, { id: 'menubtn', 'aria-label': 'قائمة المقدّم', 'aria-haspopup': 'menu', 'aria-expanded': String(hostMenuOpen), style: 'font-size:26px;min-width:52px;line-height:1' })].filter(Boolean));
+  if (hostMenuOpen) renderHostMenu();
 }
 function stat(label, v, cls = '') { return h('div', { class: 'stat' }, h('small', {}, label), h('b', { class: cls }, N(v))); }
 function vsBox(d) { // the forecast or the live battle: who fights with what, and how hard each side hits
@@ -1472,6 +1492,7 @@ function step() {
     const p = (document.getElementById('fallbeat') || document.getElementById('hostkey') || document.getElementById('importask') || document.getElementById('help') || ui).querySelector('[data-primary]:not([disabled])');
     if (p) p.click();
   }
+  if (pressed('Escape') && hostMenuOpen) closeHostMenu();
   if (pressed('Escape') && state && state.keyAsk && state.keyAsk.step === 2 && document.getElementById('hostkey')) { state.keyAsk.step = 1; renderAll(); }
   else if (pressed('Escape')) { document.getElementById('confirm')?.remove(); document.getElementById('importask')?.remove(); if (document.getElementById('help')) { document.getElementById('help').remove(); if (scene === 'play') state.paused = false; } }
   state.t += STEP;
@@ -1520,6 +1541,18 @@ const phoneKey = () => hostMode() === 'phone' && state;
 const ownBank = () => R.matchCode(bank, 0) !== R.matchCode(DEFAULT_BANK, 0);
 const codeOK = () => Number.isInteger(state.seed0) && state.seed0 === (state.seed0 | 0) && !ownBank();
 const typedCode = () => { const c = R.keyCode('H', DEFAULT_BANK, state.seed0); return c.slice(0, 3) + '-' + c.slice(3); };
+// The typed code is masked on the projector and shows only while the host HOLDS this button (pointer, or Space/Enter on it),
+// so a photo of the room never holds the key. The real code lives only in this closure, never in the page text until held.
+function holdToShowCode() {
+  const real = typedCode(), mask = real.replace(/[^-]/g, '•'), el = h('div', { class: 'bigcode', id: 'typedcode' }, mask);
+  const on = v => { el.textContent = v ? real : mask; };
+  const stop = e => e.stopPropagation(); // Space must not reach the game's pause key
+  const btn = B('اضغط مطوّلاً لإظهار رمز المفتاح', '', () => {}, { id: 'holdcode', style: 'user-select:none;touch-action:none',
+    onpointerdown: e => { e.currentTarget.setPointerCapture?.(e.pointerId); on(true); }, onpointerup: () => on(false), onpointercancel: () => on(false),
+    onpointerleave: () => on(false), onlostpointercapture: () => on(false), onblur: () => on(false), oncontextmenu: e => e.preventDefault(),
+    onkeydown: e => { stop(e); if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); on(true); } }, onkeyup: e => { stop(e); if (e.key === ' ' || e.key === 'Enter') on(false); } });
+  return [el, btn];
+}
 const keyAddress = () => KEY_PAGE.replace(/^https?:\/\//, '').replace(/#.*$/, ''); // the page's short address, as typed on a phone
 const passEnd = from => Math.ceil((from + 1) / bank.length) * bank.length; // the end of the pass that holds question `from`
 function keyChip() { // header: the match code and what is left on the key; between turns it takes the next key (or a key again)
@@ -1528,7 +1561,7 @@ function keyChip() { // header: the match code and what is left on the key; betw
   return h('button', { class: 'chip keychip' + (near ? ' near' : ''), disabled: !can,
     title: can ? 'خذ مفتاح الأسئلة التالية الآن' : 'يطابق الرمز على جوال المقدّم',
     onclick: () => { state.keyAsk = { from: state.qi, step: 1 }; renderAll(); } },
-    'رمز ', h('b', { class: 'num' }, state.code), state.keyTo > 0 ? [' · بقي ', h('b', { class: 'num' }, left), ' في المفتاح'] : null,
+    'رمز المطابقة ', h('b', { class: 'num' }, state.code), state.keyTo > 0 ? [' · بقي ', h('b', { class: 'num' }, left), ' في المفتاح'] : null,
     can ? h('span', { class: 'take' }, ' · خذ التالي') : null);
 }
 function renderHostKey() {
@@ -1550,13 +1583,13 @@ function renderHostKey() {
         remain > 0 ? B(`لاحقاً (بقي ${remain} في المفتاح)`, '', () => { state.keySnooze = state.turns; close(); }) : null));
   } else {
     const typed = ask.view === 'code' && codeOK(); // the typed code instead of the QR: the whole pass, nothing to build
-    const shown = typed ? h('div', { class: 'codeview' }, h('div', { class: 'bigcode', id: 'typedcode' }, typedCode()), h('div', { class: 'addr', id: 'keyaddr' }, keyAddress()),
+    const shown = typed ? h('div', { class: 'codeview' }, ...holdToShowCode(), h('div', { class: 'addr', id: 'keyaddr' }, keyAddress()),
       h('div', {}, 'رمز المطابقة ', h('b', { class: 'num', style: 'letter-spacing:3px' }, state.code))) : box;
-    modal.append(...[h('div', { style: 'font-size:18px', id: 'keyrange' }, typed ? 'افتح هذا العنوان على جوالك واكتب الرمز:' : 'جارٍ تجهيز الرمز…'), shown,
+    modal.append(...[h('div', { style: 'font-size:18px', id: 'keyrange' }, typed ? 'افتح هذا العنوان على جوالك واكتب رمز المفتاح:' : 'جارٍ تجهيز الرمز…'), shown,
       h('div', { class: 'keybtns' },
         B('تم المسح: أكمل المسابقة', 'pri', () => { state.keyTo = typed || keyBuilt?.small ? passEnd(ask.from) : ask.from + keyBuilt.count; close(); }, { 'data-primary': '1', disabled: !typed, id: 'keydone' }),
-        typed ? null : B('رمز أصغر', '', () => { state.keyAsk.cap = Math.max(5, Math.floor((keyBuilt?.count || 20) / 2)); keyBuilt = null; renderAll(); }, { id: 'keysmaller', disabled: true }),
-        codeOK() ? B(typed ? 'أظهر QR' : 'أظهر رمزاً بدل QR', '', () => { state.keyAsk.view = typed ? null : 'code'; renderAll(); }, { id: 'keyview' }) : null,
+        typed ? null : B('QR أصغر', '', () => { state.keyAsk.cap = Math.max(5, Math.floor((keyBuilt?.count || 20) / 2)); keyBuilt = null; renderAll(); }, { id: 'keysmaller', disabled: true }),
+        codeOK() ? B(typed ? 'أظهر QR' : 'أظهر رمز المفتاح بدل QR', '', () => { state.keyAsk.view = typed ? null : 'code'; renderAll(); }, { id: 'keyview' }) : null,
         B('رجوع (Esc)', 'ghost', () => { state.keyAsk.step = 1; renderAll(); })),
       ownBank() ? h('div', { class: 'muted', style: 'font-size:14px' }, 'الرمز المكتوب يعمل مع أسئلة اللعبة الأصلية فقط؛ مع أسئلتك استعمل رمز QR.') : null].filter(Boolean));
   }

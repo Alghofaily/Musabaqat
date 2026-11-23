@@ -1,7 +1,7 @@
 {
   "brand": "مسابقات",
   "tagline": "Musabaqat: team quiz games that run in the browser",
-  "brief": "The umbrella for a family of Arabic team quiz games (سوق المعرفة, ورقة الحظ, حصون المعرفة), played offline in the browser and shared as a GitHub repo and Pages site. The logo leads the link-preview card.",
+  "brief": "The umbrella for a family of Arabic team quiz games (سوق المعرفة, ورقات الحظ, حصون المعرفة), played offline in the browser and shared as a GitHub repo and Pages site. The logo leads the link-preview card.",
   "adjectives": ["lively", "communal", "Arabic", "simple"],
   "criteria": "Holds the three games together without copying one; avoids quiz clichés (question marks, bulbs, trophies, buzzers); reads in a 400 px link preview and at 16 px.",
   "mockups": ["social", "website", "favicon-tab", "readme", "app-icon", "sticker"],

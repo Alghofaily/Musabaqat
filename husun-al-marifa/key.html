@@ -36,7 +36,7 @@
   .msg { padding: 24px 16px; }
   .codebox { padding: 28px 16px; display: grid; gap: 14px; justify-items: center; text-align: center; }
   .codebox .ask { margin: 0; font-size: 20px; font-weight: 700; }
-  .codebox input { font: 700 34px/1.2 ui-monospace, Menlo, Consolas, monospace; width: min(100%, 13ch); direction: ltr; text-align: center; letter-spacing: 3px; text-transform: uppercase; padding: 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--panel); color: var(--text); box-sizing: content-box; }
+  .codebox input { font: 700 clamp(18px, 6vw, 28px)/1.2 ui-monospace, Menlo, Consolas, monospace; width: 100%; max-width: 14ch; direction: ltr; text-align: center; letter-spacing: 3px; text-transform: uppercase; padding: 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--panel); color: var(--text); box-sizing: content-box; }
   .codebox input:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
   .codebox button { font: inherit; font-size: 20px; font-weight: 700; padding: 12px 30px; border-radius: 10px; border: 0; background: var(--brass); color: #1a1000; cursor: pointer; }
   .codebox .err { margin: 0; color: #ff6b73; font-weight: 700; min-height: 1.6em; }
@@ -44,7 +44,7 @@
 </head>
 <body>
 <header><b>للمقدّم فقط</b><span>رمز المطابقة <span class="code" id="code">----</span></span>
-  <label class="go">اذهب إلى سؤال <input id="go" type="number" inputmode="numeric" min="1" aria-label="رقم السؤال على شاشة اللعبة"></label></header>
+  <label class="go" hidden>اذهب إلى سؤال <input id="go" type="number" inputmode="numeric" min="1" aria-label="رقم السؤال على شاشة اللعبة"></label></header>
 <p class="range" id="range"></p>
 <main id="main"><p class="msg">جارٍ فتح المفتاح…</p></main>
 <script src="questions.js"></script>
@@ -57,7 +57,7 @@
     // One renderer for both ways in: the QR (the rows ride in the link) and the typed code (the rows are rebuilt here
     // from the built-in bank and the seed). rows: [[number, question, answer], ...]. Text only, never HTML: CSV rows are untrusted.
     function render(code, rows) {
-      $('code').textContent = code;
+      $('code').textContent = code; $('go').closest('label').hidden = false; // the jump box only once a key is open
       const range = `الأسئلة ${rows[0][0]} إلى ${rows.at(-1)[0]}`;
       $('range').textContent = range + '. طابق رمز المطابقة مع الرمز على شاشة اللعبة.';
       document.title = 'مفتاح ' + range;
@@ -79,9 +79,9 @@
     const STAMP = ORD.matchCode(DEFAULT_BANK, 0).slice(0, 2);
     function openCode(text) {
       const c = ORD.readKeyCode(text);
-      if (!c) return 'هذا الرمز غير صحيح. تأكد من الحروف والأرقام.';
-      if (c.game !== GAME) return 'هذا الرمز للعبة أخرى.';
-      if (c.stamp !== STAMP) return 'هذا الرمز من نسخة أخرى من أسئلة اللعبة. استعمل رمز QR من شاشة اللعبة.';
+      if (!c) return 'رمز المفتاح غير صحيح. تأكد من الحروف والأرقام.';
+      if (c.game !== GAME) return 'رمز المفتاح هذا للعبة أخرى.';
+      if (c.stamp !== STAMP) return 'رمز المفتاح هذا من نسخة أخرى من أسئلة اللعبة. استعمل رمز QR من شاشة اللعبة.';
       const n = DEFAULT_BANK.length;
       render(ORD.matchCode(DEFAULT_BANK, c.seed), ORD.questionOrder(n, c.seed, 0, n).map((bi, i) => [i + 1, DEFAULT_BANK[bi][1], DEFAULT_BANK[bi][2]]));
       history.replaceState(null, '', '#c=' + String(text).toUpperCase().replace(/[\s-]/g, '')); // a reload keeps the key
@@ -90,7 +90,7 @@
     function codeBox(prefill = '', err = '') {
       const input = document.createElement('input'), btn = document.createElement('button'), p = document.createElement('p'), e = document.createElement('p'), box = document.createElement('div');
       Object.assign(input, { value: prefill, id: 'codein', autocomplete: 'off', spellcheck: false, inputMode: 'text', maxLength: 16 }); input.setAttribute('autocapitalize', 'characters'); input.dir = 'ltr'; input.setAttribute('aria-label', 'الرمز');
-      p.className = 'ask'; p.textContent = 'اكتب الرمز الظاهر على شاشة اللعبة'; e.className = 'err'; e.id = 'codeerr'; e.setAttribute('role', 'alert'); e.textContent = err;
+      p.className = 'ask'; p.textContent = 'اكتب رمز المفتاح الظاهر على شاشة اللعبة'; e.className = 'err'; e.id = 'codeerr'; e.setAttribute('role', 'alert'); e.textContent = err;
       btn.id = 'codego'; btn.textContent = 'افتح المفتاح';
       const go = () => { const why = openCode(input.value); if (why) e.textContent = why; }; // the box keeps its text on an error
       btn.onclick = go; input.onkeydown = ev => { if (ev.key === 'Enter') go(); };

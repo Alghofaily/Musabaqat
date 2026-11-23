@@ -8,7 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="assets/favicon.ico" sizes="32x32">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<title>ورقة الحظ</title>
+<title>ورقات الحظ</title>
 <style>
   @font-face { font-family: 'Cairo'; font-weight: 700; src: url(vendor/cairo-arabic-700.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
   @font-face { font-family: 'Cairo'; font-weight: 900; src: url(vendor/cairo-arabic-900.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
@@ -41,6 +41,7 @@
   .btn.ghost.danger { color: var(--bad); }
   .btn.ghost:hover { color: var(--text); }
   .btn:disabled { opacity: .35; cursor: default; }
+  .light .btn.gold:disabled { background: #ece3cc; background-image: none; color: #6b5420; border: 1px solid #c9b57a; box-shadow: none; opacity: 1; }
   .seg { display: inline-flex; background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 3px; }
   .seg button { padding: 7px 14px; min-height: 38px; background: transparent; font-size: 14px; font-weight: bold; color: var(--muted); }
   .seg button.on { background-color: var(--gold); background-image: linear-gradient(#ffe08a, var(--gold)); color: var(--ink); }
@@ -56,7 +57,7 @@
   .center { display: flex; align-items: center; justify-content: center; padding: 8px 12px; min-height: 0; }
   .show.stage { width: min(1200px, 100%); padding: 0; background: none; border-color: transparent; box-shadow: none; align-items: center; }
   .show { width: min(1120px, 100%); max-height: 100%; padding: 20px 28px; display: flex; flex-direction: column; gap: 14px; position: relative; box-sizing: border-box; }
-  .title { font-size: 26px; font-weight: bold; display: flex; align-items: center; gap: 12px; }
+  .title { font-size: 26px; font-weight: bold; display: flex; align-items: center; gap: 12px; white-space: nowrap; }
   .levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .lvl { display: grid; place-items: center; gap: 6px; padding: 22px 10px; border-radius: 12px; color: #1a1000; font-weight: bold; border: 0; box-shadow: 0 6px 0 rgba(0,0,0,.25); }
   .lvl b { font-size: 72px; line-height: 1; } .lvl > span { font-size: 26px; } .lvl small { font-size: 16px; font-weight: bold; }
@@ -106,6 +107,11 @@
   .banner.small b { font-size: 34px; } .banner.small .v { font-size: 30px; }
   .banner.medium b { font-size: 50px; } .banner.medium .v { font-size: 46px; }
   .banner.big { border-width: 4px; } .banner.big b { font-size: 70px; } .banner.big .v { font-size: 64px; }
+  /* an attack card is a weapon aimed at a rival, not the flipping team's loss: the game's gold with dark text, no red */
+  .banner.weapon { flex-wrap: wrap; background: linear-gradient(var(--gold), var(--gold2)); border-color: var(--ink); }
+  .banner.weapon b, .banner.weapon .v, .banner.weapon .to { color: var(--ink); }
+  .banner .to { font-weight: 900; line-height: 1.15; }
+  .banner.small .to { font-size: 24px; } .banner.medium .to { font-size: 32px; } .banner.big .to { font-size: 40px; }
   .banner.big.up { background: radial-gradient(circle at 50% 50%, #5a4200, var(--panel2) 70%); }
   .banner.big.down { border-color: var(--bad); background: radial-gradient(circle at 50% 50%, #5c0a12, var(--panel2) 70%); }
   .light .banner.big.up { background: radial-gradient(circle at 50% 50%, #ffe08a, var(--panel2) 70%); }
@@ -129,8 +135,8 @@
   .effect .txt { flex: 0 1 auto; font-size: 20px; line-height: 1.5; }
   .effect .btn { font-size: 20px; min-height: 52px; }
   .effect .title { font-size: 22px; flex: none; }
-  .tchips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-  .tchip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px 8px 10px; min-height: 44px; font-size: 17px; border-radius: 999px; background: var(--panel2); border: 2px solid var(--line); font-weight: bold; }
+  .tchips { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .tchip { display: inline-flex; align-items: center; gap: 10px; padding: 10px 24px 10px 16px; min-height: 64px; font-size: 26px; border-radius: 999px; background: var(--panel2); border: 2px solid var(--line); font-weight: bold; }
   .tchip:hover { border-color: var(--gold); }
 
   /* podiums */
@@ -170,7 +176,8 @@
   .box h3 { margin: 0; font-size: 16px; }
   .names { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .names input { width: 100%; box-sizing: border-box; direction: rtl; text-align: right; font-size: 14px; }
-  .banklist { overflow: auto; flex: 1; min-height: 0; }
+  .banklist { overflow: auto; flex: 1; min-height: 0; scrollbar-color: var(--line) var(--panel2); }
+  .screen, .show { scrollbar-color: var(--line) transparent; }
   .bq { display: grid; grid-template-columns: 80px 100px 1fr 180px 64px; gap: 10px; align-items: center; padding: 7px 12px; border-bottom: 1px solid var(--line); font-size: 14px; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0s !important; } }
   .toast { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 30; display: flex; align-items: center; gap: 14px; padding: 8px 10px 8px 18px; font-size: 16px; }
@@ -181,17 +188,23 @@
      a podium name stays on one line, cut with "…" (full name in its title). */
   .rstep .rname { display: block; max-width: 340px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .winner { font-size: 64px; font-weight: 900; line-height: 1.2; color: var(--goldtxt); text-align: center; text-wrap: balance; max-width: 1180px; flex-shrink: 0; opacity: 0; animation: stepIn .8s cubic-bezier(.16,1,.3,1) forwards; }
+  .rrest { opacity: 0; animation: stepIn .7s cubic-bezier(.16,1,.3,1) forwards; width: min(720px, 100%); padding: 6px 0; flex: none; }
   .tie { font-size: 14px; padding: 0 10px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); }
   .addq input, .addq select { direction: rtl; text-align: right; min-width: 0; }
   /* the host's answer key (phone) and its header chip */
   .keymodal { width: 760px; max-width: calc(100% - 24px); justify-items: center; }
-  .keywarn { font-size: 19px; font-weight: 700; color: var(--bad); line-height: 1.6; max-width: 640px; }
-  .qrbox { background: #fff; padding: 10px; border-radius: 8px; line-height: 0; width: 400px; height: 400px; max-width: 100%; display: grid; place-items: center; overflow: hidden; }
+  .keysteps { font-size: 17px; font-weight: 700; color: var(--text); line-height: 1.55; max-width: 640px; text-align: start; margin: 0; padding-inline-start: 28px; }
+  .qrbox { background: #fff; padding: 10px; border-radius: 8px; line-height: 0; width: 350px; height: 350px; max-width: 100%; display: grid; place-items: center; overflow: hidden; }
   .qrbox svg { width: 100%; height: 100%; transition: filter .25s ease-out; }
   .qrbox.veiled svg { filter: blur(16px); } /* unreadable by any camera until the host says the projector is hidden */
   .codeview { display: grid; gap: 10px; justify-items: center; width: 100%; padding: 8px 0; }
   .bigcode { font: 700 54px/1.1 ui-monospace, Menlo, Consolas, monospace; direction: ltr; unicode-bidi: isolate; letter-spacing: 4px; color: var(--gold); }
   .codeview .addr { font-size: 22px; font-weight: 700; direction: ltr; unicode-bidi: isolate; word-break: break-all; }
+  .hostmenu { position: absolute; left: 12px; z-index: 40; min-width: 300px; padding: 10px; display: grid; gap: 4px; }
+  .hostmenu .seg { justify-self: start; }
+  .hostmenu .btn.menurow { justify-content: flex-start; text-align: start; min-height: 44px; font-size: 16px; width: 100%; }
+  .hostmenu .menukeys { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 8px; display: grid; gap: 2px; font-size: 14px; }
+  .chip { white-space: nowrap; }
   .keybtns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
   .chip.keychip { font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: default; }
   .chip.keychip:not([disabled]) { cursor: pointer; } .chip.keychip:not([disabled]):hover { color: var(--text); border-color: var(--gold); }
@@ -204,7 +217,8 @@
   .tall header { flex-wrap: wrap; align-content: center; row-gap: 6px; padding: 6px 10px; }
   .tall header .ttl, .tall header .seg { display: none; }
   .tall header .hgroup { padding-inline-start: 0; margin-inline-start: 0; border: 0; flex-wrap: wrap; }
-  .tall .center { padding: 6px; }
+  .tall .center { padding: 6px; align-items: flex-start; } /* the panel sits at the top, no empty stage above it */
+  .tall .qteam { display: none; } /* the podium already shows whose turn it is */
   .tall .show { padding: 14px 16px; gap: 10px; overflow-y: auto; } .tall .show.stage { padding: 0; overflow: visible; }
   .tall .levels { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .tall .lvl { grid-template-columns: auto auto auto 1fr; justify-items: start; padding: 10px 16px; gap: 4px 14px; }
@@ -230,7 +244,7 @@
   .tall .banklist { flex: none; overflow: visible; }
   .tall .family.end ~ .screen { padding-bottom: 96px; } /* the family link sits under the buttons, not on them */
   .tall .rrow { width: 100%; gap: 8px !important; } .tall .rstep { width: auto !important; flex: 1; min-width: 0; }
-  .tall .rstep .rname { max-width: 100%; }
+  .tall .rstep .rname { max-width: 100%; min-width: 0; } .tall .rstep > b { min-width: 0; max-width: 100%; } /* a long team name is cut with … inside its own column */
   .tall .winner { max-width: 100%; }
   .tall .figs { grid-template-columns: repeat(3, 1fr) !important; }
   /* Intro: a spotlight comes up, the luck card turns face-on into it, then the name pops in gold.
@@ -270,7 +284,7 @@
 <script src="vendor/qrcode.js"></script>
 <script>
 'use strict';
-// ورقة الحظ: a host-run team quiz show. A team picks how hard its question is, answers on the
+// ورقات الحظ: a host-run team quiz show. A team picks how hard its question is, answers on the
 // clock, and a right answer earns the level's points and one flip from twelve face-down cards
 // (the card mix and effects of luckyquiz.exe). UI is DOM over a canvas stage; logic runs on the step.
 
@@ -281,8 +295,8 @@ const STEP = 1 / 60;
 let W = 1280, H = 720, TALL = false; // the stage's size follows the screen (fit)
 const PIXEL = false;
 const FONT = "Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif";
-const TITLE = 'ورقة الحظ';
-const CONTROLS = ['الفأرة أو اللمس: كل شيء', '1-3: المستوى · 1-4: الإجابة', 'Enter: الزر الرئيسي', 'P: إيقاف مؤقت · M: كتم الصوت'];
+const TITLE = 'ورقات الحظ';
+const CONTROLS = [ 'Esc: إغلاق القوائم والنوافذ', 'الفأرة أو اللمس: كل شيء', '1-3: المستوى · 1-4: الإجابة', 'Enter: الزر الرئيسي', 'P: إيقاف مؤقت · M: كتم الصوت'];
 const clock = window.GAME_CLOCK || { now: () => performance.now() / 1000 };
 const CHEAP = params.get('render') === 'cheap';
 let seed;
@@ -620,7 +634,7 @@ function select(k) { // first press marks a choice; the same choice again (or En
   state.sel = k; sfx.click(); renderShow();
 }
 function undo() {
-  if (!undoSnap || state.phase !== 'reveal') return;
+  if (!undoSnap || (state.phase !== 'reveal' && state.phase !== 'cards') || document.getElementById('dove')) return; // after a verdict, or after picking a strike's target
   const t = state.t; state = undoSnap; state.t = t; undoSnap = null; sfx.click(); events.push({ undo: true }); renderAll();
 }
 function answer(right, picked = null) {
@@ -667,9 +681,10 @@ function showBanner() {
   if (!refs.board || state.pick < 0 || refs.board.querySelector('.banner')) return;
   const type = state.card, c = CARDS[type], v = impact(type), tier = v >= tune.impactBig ? 'big' : v >= tune.impactMedium ? 'medium' : 'small';
   const loss = (c.kind === 'points' && c.pts < 0) || c.kind === 'attack';
-  const val = c.kind === 'points' ? sign(c.pts) : c.hit ? `−${tune[c.hit].toLocaleString('en-US')}` : null;
-  refs.board.append(h('div', { class: `banner ${tier} ${loss ? 'down' : 'up'}`, role: 'status' }, h('b', {}, c.name),
-    val ? h('span', { class: 'v ' + (loss ? 'bad' : 'good') }, N(val)) : null));
+  const val = c.kind === 'points' ? sign(c.pts) : c.hit ? `−${tune[c.hit].toLocaleString('en-US')}` : null, weapon = c.kind === 'attack';
+  const to = !weapon ? null : type === 'stop' ? `خصم تختارونه يغيب ${turnsWord(tune.stopTurns)}` : c.target === 'one' ? 'لخصم تختارونه' : 'لكل خصم'; // who takes it
+  refs.board.append(h('div', { class: `banner ${tier} ${weapon ? 'weapon' : loss ? 'down' : 'up'}`, role: 'status' }, h('b', {}, weapon && val ? c.name + ':' : c.name),
+    val ? h('span', { class: 'v ' + (weapon ? '' : loss ? 'bad' : 'good') }, N(val)) : null, to ? h('span', { class: 'to' }, to) : null));
   if (c.kind === 'points' && c.pts < 0) state.hits[state.cur] = { kind: 'hit', t: state.t };
   if (tier === 'big' && !matchMedia('(prefers-reduced-motion: reduce)').matches) { refs.board.classList.remove('shake'); void refs.board.offsetWidth; refs.board.classList.add('shake'); }
   if (c.kind === 'points' && state.deltas[state.cur]) state.deltas[state.cur].t = state.t; // the float starts with the banner, not hidden behind the flip
@@ -688,7 +703,7 @@ function useNow() {
   strike(type, state.cur, others(state.cur), struck);
 }
 function keepCard() { state.kept[state.cur][state.card]++; state.lines = [`احتفظ ${state.names[state.cur]} بورقة ${CARDS[state.card].name}`]; state.cardStage = 'done'; renderEffect(); renderPodiums(); }
-function hitTarget(t) { strike(state.card, state.cur, [t], struck); }
+function hitTarget(t) { undoSnap = structuredClone(state); undoUntil = state.t + tune.undoSeconds; strike(state.card, state.cur, [t], struck); } // the pick can be undone for undoSeconds
 function struck(lines) { state.lines = lines; state.cardStage = 'done'; renderEffect(); renderPodiums(); } // the flipped card's attack is over
 function endTurn() { advance(state.phase === 'cards' && state.card === 'again'); }
 function nextTeam() { // who plays after this turn (benched teams passed over), for the podium tag
@@ -697,6 +712,7 @@ function nextTeam() { // who plays after this turn (benched teams passed over), 
 }
 function advance(again) { // next team, passing over benched ones; play again keeps the same team
   undoSnap = null; state.turns++; state.notes = [];
+  state.deltas = state.deltas.map(() => null); state.hits = state.hits.map(() => null); // the floats of this turn are gone before the next team plays
   if (!again) {
     let c = state.cur;
     for (let k = 0; k < state.n * (tune.stopTurns + 1) + 1; k++) { // bounded: each pass over a benched team lowers its bench
@@ -716,7 +732,7 @@ function useKept(type) { // a kept card, used from the podium on the team's own 
   close();
   ui.append(h('div', { class: 'ov', id: 'usecard' }, h('div', { class: 'modal' },
     cardEl(type, 'open static mine big'), h('b', { style: 'font-size:20px' }, c.name), h('div', { class: 'muted' }, cardDesc(type)),
-    c.target === 'one' ? h('div', { class: 'tchips' }, ...others(me).map(t => h('button', { class: 'tchip', onclick: () => { sfx.click(); fire([t]); } }, shield(t, 18), state.names[t])))
+    c.target === 'one' ? h('div', { class: 'tchips' }, ...others(me).map(t => h('button', { class: 'tchip', onclick: () => { sfx.click(); fire([t]); } }, shield(t, 30), state.names[t])))
       : B('استخدمها الآن', 'gold', () => fire(others(me)), { 'data-primary': '1' }),
     B('إلغاء', '', close))));
 }
@@ -734,24 +750,39 @@ const FAMILY_URL = 'https://alghofaily.github.io/Musabaqat/';
 const FAMILY_MARK = '<svg aria-hidden="true" focusable="false" viewBox="0 0 686 256"><path fill="var(--mq-name)" transform="matrix(0.11905 0 0 0.11905 25.02 163.24)" d="M496 -332Q472 -332 455 -349Q438 -366 438 -390Q438 -414 455 -431Q472 -448 496 -448Q520 -448 537 -431Q554 -414 554 -390Q554 -366 537 -349Q520 -332 496 -332ZM323 -332Q299 -332 282 -349Q265 -366 265 -390Q265 -414 282 -431Q299 -448 323 -448Q347 -448 364 -431Q381 -414 381 -390Q381 -366 364 -349Q347 -332 323 -332ZM25 -0L109 -140L685 -140L685 -0L25 -0ZM605 -0L605 -140L685 -140L685 -309L825 -340L825 -23Q825 -11 815 -6Q805 -1 795 -0.5Q785 -0 785 -0L605 -0ZM915 -0Q915 -0 905 -0.5Q895 -1 885 -6Q875 -11 875 -23L875 -769L1015 -800L1015 -140L1095 -140L1095 -0L915 -0ZM1391 -542Q1367 -542 1350 -559Q1333 -576 1333 -600Q1333 -624 1350 -641Q1367 -658 1391 -658Q1415 -658 1432 -641Q1449 -624 1449 -600Q1449 -576 1432 -559Q1415 -542 1391 -542ZM1218 -542Q1194 -542 1177 -559Q1160 -576 1160 -600Q1160 -624 1177 -641Q1194 -658 1218 -658Q1242 -658 1259 -641Q1276 -624 1276 -600Q1276 -576 1259 -559Q1242 -542 1218 -542ZM1415 -0L1415 -140L1595 -140L1595 -0L1415 -0ZM1055 -0L1055 -140L1335 -140L1335 -268L1475 -340L1475 -23Q1475 -11 1465 -6Q1455 -1 1445 -0.5Q1435 -0 1435 -0L1055 -0ZM1306.3 -170Q1259.5 -170 1220.8 -193Q1182 -216 1158.5 -254.8Q1135 -293.6 1135 -339.8Q1135 -387 1158.5 -425.7Q1182 -464.4 1221 -487.2Q1260 -510 1306.5 -510Q1353 -510 1391 -487Q1429 -464 1452 -425.7Q1475 -387.3 1475 -340Q1475 -293 1452 -254.5Q1429 -216 1391 -193Q1353 -170 1306.3 -170ZM1306 -310Q1319 -310 1327 -318.7Q1335 -327.4 1335 -340Q1335 -352.6 1327 -361.3Q1319 -370 1306 -370Q1293 -370 1284 -361.3Q1275 -352.6 1275 -340Q1275 -327.4 1284 -318.7Q1293 -310 1306 -310ZM1658 208Q1634 208 1617 191Q1600 174 1600 150Q1600 126 1617 109Q1634 92 1658 92Q1682 92 1699 109Q1716 126 1716 150Q1716 174 1699 191Q1682 208 1658 208ZM1555 -0L1555 -140L1635 -140L1635 -309L1775 -340L1775 -23Q1775 -11 1765 -6Q1755 -1 1745 -0.5Q1735 -0 1735 -0L1555 -0ZM1865 -0Q1865 -0 1855 -0.5Q1845 -1 1835 -6Q1825 -11 1825 -23L1825 -769L1965 -800L1965 -140L2045 -140L2045 -0L1865 -0ZM2005 -0L2005 -140L2085 -140L2085 -309L2225 -340L2225 -140L2285 -140L2285 -359L2425 -390L2425 -140L2485 -140L2485 -409L2625 -440L2625 -140L2745 -140L2745 -0L2005 -0ZM2705 -0L2705 -140L2905 -140L2952 -0L2705 -0ZM2949.3 -0Q2902.5 -0 2863.8 -23Q2825 -46 2801.5 -84.8Q2778 -123.6 2778 -169.8Q2778 -217 2801.5 -255.7Q2825 -294.4 2864 -317.2Q2903 -340 2949.5 -340Q2996 -340 3034 -317Q3072 -294 3095 -255.7Q3118 -217.3 3118 -170Q3118 -123 3095 -84.5Q3072 -46 3034 -23Q2996 -0 2949.3 -0ZM2949 -140Q2962 -140 2970 -148.7Q2978 -157.4 2978 -170Q2978 -182.6 2970 -191.3Q2962 -200 2949 -200Q2936 -200 2927 -191.3Q2918 -182.6 2918 -170Q2918 -157.4 2927 -148.7Q2936 -140 2949 -140Z"/><g transform="translate(419.03 0)"><path fill="var(--mq-g)" d="M128 40.4L178.91 91.32L128 142.23L77.09 91.32Z"/><path fill="var(--mq-y)" d="M187.91 107.77L238.82 158.68L187.91 209.6L137 158.68Z"/><path fill="var(--mq-b)" d="M68.09 107.77L119 158.68L68.09 209.6L17.18 158.68Z"/></g></svg>';
 const familyLink = (at = '') => h('a', { class: at ? `family ${at}` : 'family', href: FAMILY_URL, target: '_blank', rel: 'noopener noreferrer', title: 'ألعاب مسابقات',
   'aria-label': 'ألعاب مسابقات: تفتح صفحة الألعاب في نافذة جديدة', html: FAMILY_MARK, onclick: e => e.currentTarget.blur() }); // blur: a later Enter goes back to the game
-function go(name) { scene = name; state.paused = false; ui.replaceChildren(); (scenes[name].enter || (() => {}))(); events.push({ scene: name }); }
+function go(name) { if (hostMenuOpen) { hostMenuOpen = false; document.removeEventListener('pointerdown', menuOutside, true); } scene = name; state.paused = false; ui.replaceChildren(); (scenes[name].enter || (() => {}))(); events.push({ scene: name }); }
 let refs = {};
 function renderAll() { if (scene !== 'play') return; renderHeader(); renderShow(); renderPodiums(); renderHostKey(); tellPresenter(); saveGame(); }
 function themeSeg(after) {
   return h('div', { class: 'seg' }, h('button', { class: theme === 'dark' ? 'on' : '', onclick: () => { setTheme('dark'); after(); } }, 'داكن'),
     h('button', { class: theme === 'light' ? 'on' : '', onclick: () => { setTheme('light'); after(); } }, 'فاتح'));
 }
+// The host's controls (theme, sound, pause, help, end) fold into one «⋯» menu during play, so the projector's header shows only the show.
+// It opens on click and closes on Esc or a click outside; P, M and Esc keep working.
+let hostMenuOpen = false;
+const menuOutside = e => { if (!e.target.closest('#hostmenu, #menubtn')) closeHostMenu(); };
+function closeHostMenu() { hostMenuOpen = false; document.getElementById('hostmenu')?.remove(); document.removeEventListener('pointerdown', menuOutside, true); if (scene === 'play' && refs.header) renderHeader(); }
+function toggleHostMenu() { if (hostMenuOpen) return closeHostMenu(); hostMenuOpen = true; document.addEventListener('pointerdown', menuOutside, true); renderHeader(); }
+function renderHostMenu() {
+  document.getElementById('hostmenu')?.remove();
+  if (!hostMenuOpen || scene !== 'play') return;
+  const row = (label, fn, cls = '') => B(label, 'ghost menurow ' + cls, fn);
+  const menu = h('div', { id: 'hostmenu', class: 'panel hostmenu', role: 'menu', style: `top:${refs.header.offsetHeight + 4}px` },
+    themeSeg(renderAll),
+    hostMode() === 'window' ? row(presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم', openPresenter) : null,
+    row(muted ? 'الصوت: مكتوم (M)' : 'الصوت: يعمل (M)', () => setMuted(!muted)),
+    row(state.paused ? 'متابعة (P)' : 'إيقاف مؤقت (P)', () => { state.paused = !state.paused; renderHeader(); }),
+    row('إنهاء المسابقة', () => { closeHostMenu(); confirmEnd(); }, 'danger'),
+    h('div', { class: 'menukeys' }, h('b', {}, 'الاختصارات'), ...CONTROLS.map(c => h('div', { class: 'muted' }, c))));
+  (document.getElementById('app') || ui).append(menu);
+}
 function renderHeader() {
   const end = settings.end === 'rounds' ? h('span', { class: 'chip' }, 'الجولة ', N(`${Math.min(state.round, settings.rounds)} / ${settings.rounds}`))
     : settings.end === 'timed' ? h('span', { class: 'chip', id: 'clockchip' }, 'الوقت المتبقي') : h('span', { class: 'chip' }, 'الجولة ', N(state.round), ' · إنهاء يدوي');
   refs.header.replaceChildren(...[h('span', { html: LOGO(0.8), style: 'display:flex' }), h('b', { class: 'ttl', style: 'font-size:22px' }, TITLE), end,
     h('span', { class: 'chip muted ttl' }, settings.qmode === 'choices' ? 'أربعة خيارات' : settings.qmode === 'own' ? 'أسئلتي أنا' : 'المقدّم يحكم'),
-    hostMode() === 'phone' ? keyChip() : null, h('span', { class: 'sp' }), themeSeg(renderAll),
-    h('span', { class: 'hgroup' },
-      hostMode() === 'window' ? B(presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم', 'ghost', openPresenter) : null,
-      B(muted ? 'الصوت: مكتوم' : 'الصوت: يعمل', 'ghost', () => setMuted(!muted)),
-      B(state.paused ? 'متابعة' : 'إيقاف مؤقت', 'ghost', () => { state.paused = !state.paused; renderHeader(); }),
-      B('إنهاء المسابقة', 'ghost danger', confirmEnd))].filter(Boolean));
+    hostMode() === 'phone' ? keyChip() : null, h('span', { class: 'sp' }), B('⋯', 'ghost', toggleHostMenu, { id: 'menubtn', 'aria-label': 'قائمة المقدّم', 'aria-haspopup': 'menu', 'aria-expanded': String(hostMenuOpen), style: 'font-size:26px;min-width:52px;line-height:1' })].filter(Boolean));
+  if (hostMenuOpen) renderHostMenu();
 }
 function teamTitle(i, prefix) { return h('div', { class: 'title' }, prefix ? h('span', { class: 'muted', style: 'font-size:18px' }, prefix) : null, shield(i, 30), state.names[i]); }
 function renderShow() {
@@ -777,7 +808,7 @@ function renderShow() {
     box.dataset.size = q.text.length > 110 || longest > 45 ? 'l' : q.text.length > 70 || longest > 30 ? 'm' : '';
     const parts = [h('div', { style: 'display:flex;gap:14px;align-items:center' }, done ? null : timerBox(),
       h('div', { style: 'flex:1' }, h('div', { style: 'display:flex;gap:8px' }, h('span', { class: 'chip' }, LEVEL_NAMES[state.level], ' · ', N(levelPts(state.level)), ' درجة'), q.own ? h('span', { class: 'chip muted' }, 'أسئلتي أنا') : [h('span', { class: 'chip' }, 'سؤال ', N(q.n)), h('span', { class: 'chip muted' }, q.cat)]),
-        h('div', { class: 'q', style: 'margin-top:8px' }, q.own ? 'سؤالك أنت: اسأله بصوتك، ثم احكم' : q.text)), teamTitle(me))];
+        h('div', { class: 'q', style: 'margin-top:8px' }, q.own ? 'سؤالك أنت: اسأله بصوتك، ثم احكم' : q.text)), h('span', { class: 'qteam' }, teamTitle(me)))];
     if (settings.qmode === 'choices') {
       parts.push(h('div', { class: 'choices' }, ...q.choices.map((txt, k) => {
         const cls = done && k === q.right ? ' right' : done && k === state.picked ? ' wrong' : !done && k === state.sel ? ' sel' : '';
@@ -822,9 +853,9 @@ function renderEffectBody() {
   const head = h('div', { class: 'txt' }, cardDesc(type),
     state.lines.length ? h('div', { style: 'font-weight:bold' }, state.lines.join(' · ')) : null);
   if (state.cardStage === 'choose') e.replaceChildren(head, B('استخدمها الآن', 'gold', useNow, { 'data-primary': '1', style: 'font-size:17px' }), B('احتفظ بها', '', keepCard, { style: 'font-size:17px' }));
-  else if (state.cardStage === 'target') e.replaceChildren(head, h('div', {}, h('div', { class: 'muted', style: 'font-size:13px;margin-bottom:6px' }, 'اختر الفريق:'),
-    h('div', { class: 'tchips' }, ...others(me).map(t => h('button', { class: 'tchip', onclick: () => { sfx.click(); hitTarget(t); } }, shield(t, 18), state.names[t])))));
-  else e.replaceChildren(head, B(type === 'again' ? 'العب مرة أخرى' : 'التالي', 'gold', endTurn, { 'data-primary': '1', style: 'font-size:18px' }));
+  else if (state.cardStage === 'target') e.replaceChildren(head, h('div', {}, h('div', { class: 'muted', style: 'font-size:28px;font-weight:900;margin-bottom:10px' }, 'اختر الفريق:'),
+    h('div', { class: 'tchips' }, ...others(me).map(t => h('button', { class: 'tchip', onclick: () => { sfx.click(); hitTarget(t); } }, shield(t, 30), state.names[t])))));
+  else e.replaceChildren(...[head, undoSnap && state.phase === 'cards' ? B('تراجع (Z)', 'ghost', undo, { id: 'undobtn', style: 'font-size:16px' }) : null, B(type === 'again' ? 'العب مرة أخرى' : 'التالي', 'gold', endTurn, { 'data-primary': '1', style: 'font-size:18px' })].filter(Boolean)); // no null child: replaceChildren would write the word
 }
 const SHORT = { dove: 'الحمامة', lightning: 'البرق', fire: 'النار', stop: 'المنع', nuke: 'القنبلة' }; // chip labels that fit a podium
 function renderPodiums() {
@@ -1030,7 +1061,7 @@ const scenes = {
         bank.unshift(row); saveBank(); go('bank');
       };
       ui.append(h('div', { class: 'screen' },
-        h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('b', { style: 'font-size:26px' }, 'بنك الأسئلة'), h('span', { class: 'chip' }, N(bank.length), ' سؤال'),
+        h('div', { style: 'display:flex;align-items:center;gap:12px;flex-wrap:wrap' }, h('b', { style: 'font-size:26px' }, 'بنك الأسئلة'), h('span', { class: 'chip' }, N(bank.length), ' سؤال'),
           h('span', { class: 'chip muted' }, [1, 2, 3].map(l => `${LEVEL_NAMES[l]} ${inLevel(l)}`).join(' · ')), h('span', { style: 'flex:1' }),
           B('استعادة الأسئلة الأصلية', '', confirmRestore), B('رجوع', 'ghost', () => go('title'), { 'data-primary': '1' })),
         h('div', { class: 'grid2' },
@@ -1098,7 +1129,7 @@ const scenes = {
       ui.append(familyLink('end')); // bottom-left: the winner headline owns the top row
       if (!state.final) state.final = [...Array(state.n).keys()].map(i => ({ i, pts: state.pts[i] })).sort((a, b) => b.pts - a.pts);
       const groups = rankGroups(state.final), top = groups.slice(0, 3), rest = groups.slice(3);
-      const D = tune.resultsStep, at = g => (top.length - 1 - g) * D + 0.3; // 3rd, then 2nd, then 1st
+      const D = tune.resultsStep, restAt = 0.3, at = g => (top.length - 1 - g) * D + 0.3 + (rest.length ? D : 0); // the rows below 3rd come first, then 3rd, 2nd, 1st
       const heights = [130, 96, 70], medal = ['#f6c343', '#b8c2d6', '#cd8a4a'], names = g => g.teams.map(e => state.names[e.i]).join(' و');
       revealAt = at(0);
       ui.append(h('div', { class: 'screen', style: 'align-items:center;justify-content:center;gap:14px' },
@@ -1109,10 +1140,10 @@ const scenes = {
             g === 0 ? h('span', { html: TROPHY }) : null,
             ...grp.teams.map(e => h('b', { style: `display:flex;gap:8px;align-items:center;font-size:${g === 0 ? 24 : 19}px` }, shield(e.i, g === 0 ? 34 : 26), h('span', { class: 'rname', title: state.names[e.i] }, state.names[e.i]))),
             grp.teams.length > 1 ? h('span', { class: 'tie' }, 'تعادل') : null,
-            h('span', { class: 'num', style: 'font-weight:900;font-size:24px' }, fmt(grp.pts)),
+            h('span', { class: 'num', style: 'font-weight:900;font-size:24px' }, N(fmt(grp.pts))),
             h('div', { style: `width:100%;height:${heights[g]}px;border-radius:12px 12px 0 0;background:linear-gradient(${medal[g]}, ${medal[g]}cc);display:grid;place-items:center;font-size:52px;font-weight:900;color:#3a2600` }, N(grp.rank))); })),
-        rest.length ? h('div', { class: 'panel rstep', style: `width:560px;padding:4px 0;animation-delay:${at(0) + D}s` }, ...rest.flatMap(g => g.teams.map(e => h('div', { style: 'display:flex;align-items:center;gap:12px;padding:3px 16px;font-size:15px' },
-          h('span', { class: 'muted', style: 'width:24px' }, N(g.rank)), shield(e.i, 18), h('span', { style: 'flex:1' }, state.names[e.i]), h('span', { class: 'num' }, fmt(e.pts)))))) : null,
+        rest.length ? h('div', { class: 'panel rrest', style: `animation-delay:${restAt}s` }, ...rest.flatMap(g => g.teams.map(e => h('div', { style: 'display:flex;align-items:center;gap:14px;padding:6px 22px;font-size:30px;font-weight:900' },
+          h('span', { class: 'muted', style: 'width:40px' }, N(g.rank)), shield(e.i, 30), h('span', { style: 'flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis' }, state.names[e.i]), h('span', {}, N(fmt(e.pts)))))) ) : null,
         h('div', { style: 'display:flex;gap:12px' }, B('مسابقة جديدة بنفس الإعدادات', 'gold', () => { reset(); go('play'); }, { 'data-primary': '1' }), B('الشاشة الرئيسية', '', () => go('title')))));
       resultsT0 = state.t;
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) confetti = []; else confetti = Array.from({ length: CHEAP ? 0 : 130 }, () => ({ x: vrng() * W, y: -vrng() * H, v: 60 + vrng() * 90, s: 5 + vrng() * 6, c: vrng() < 0.6 ? '#f6c343' : TEAM_COLORS[(vrng() * state.n) | 0], a: vrng() * 6, w: 1 + vrng() * 3 }));
@@ -1170,6 +1201,7 @@ function step() {
     const p = (document.querySelector('.ov:not(#pause)') || ui).querySelector('[data-primary]:not([disabled])');
     if (p) p.click();
   }
+  if (pressed('Escape') && hostMenuOpen) closeHostMenu();
   if (pressed('Escape') && state.keyAsk && state.keyAsk.step === 2 && document.getElementById('hostkey')) { state.keyAsk.step = 1; renderAll(); }
   else if (pressed('Escape')) ['confirm', 'importask', 'usecard', 'help'].forEach(id => document.getElementById(id)?.remove());
   state.t += STEP;
@@ -1221,6 +1253,18 @@ function phoneKey() { return hostMode() === 'phone' && state; }
 const ownBank = () => WO.matchCode(bank, 0) !== WO.matchCode(DEFAULT_BANK, 0);
 const codeOK = () => Number.isInteger(state.seed0) && state.seed0 === (state.seed0 | 0) && !ownBank();
 const typedCode = () => { const c = WO.keyCode('W', DEFAULT_BANK, state.seed0); return c.slice(0, 3) + '-' + c.slice(3); };
+// The typed code is masked on the projector and shows only while the host HOLDS this button (pointer, or Space/Enter on it),
+// so a photo of the room never holds the key. The real code lives only in this closure, never in the page text until held.
+function holdToShowCode() {
+  const real = typedCode(), mask = real.replace(/[^-]/g, '•'), el = h('div', { class: 'bigcode', id: 'typedcode' }, mask);
+  const on = v => { el.textContent = v ? real : mask; };
+  const stop = e => e.stopPropagation(); // Space must not reach the game's pause key
+  const btn = B('اضغط مطوّلاً لإظهار رمز المفتاح', '', () => {}, { id: 'holdcode', style: 'user-select:none;touch-action:none',
+    onpointerdown: e => { e.currentTarget.setPointerCapture?.(e.pointerId); on(true); }, onpointerup: () => on(false), onpointercancel: () => on(false),
+    onpointerleave: () => on(false), onlostpointercapture: () => on(false), onblur: () => on(false), oncontextmenu: e => e.preventDefault(),
+    onkeydown: e => { stop(e); if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); on(true); } }, onkeyup: e => { stop(e); if (e.key === ' ' || e.key === 'Enter') on(false); } });
+  return [el, btn];
+}
 const keyAddress = () => KEY_PAGE.replace(/^https?:\/\//, '').replace(/#.*$/, ''); // the page's short address, as typed on a phone
 const passTo = (L, from) => { const n = state.lv[L].length; return n ? Math.ceil((from + 1) / n) * n : from; }; // the end of the pass of level L that holds question `from`
 const keyLeft = () => Math.min(...LEVELS.filter(L => state.lv[L].length).map(L => Math.max(0, state.keyTo[L] - state.qi[L]))); // the level closest to the end of the key
@@ -1228,7 +1272,7 @@ function keyChip() { // header: the match code and what is left on the key; betw
   const early = state.phase === 'level' && !state.keyAsk, take = () => { state.keyAsk = { from: Object.assign({}, state.qi), step: 1 }; renderAll(); };
   const left = keyLeft(), keyed = LEVELS.some(L => state.keyTo[L] > 0), near = keyed && left <= tune.keyReserve + 10, can = early && keyed;
   return h('button', { class: 'chip keychip' + (near ? ' near' : ''), disabled: !can, title: can ? 'خذ مفتاح الأسئلة التالية الآن' : 'يطابق الرمز على جوال المقدّم', onclick: take },
-    'رمز ', h('b', { class: 'num' }, state.code), keyed ? [' · بقي ', h('b', { class: 'num' }, left), ' في المفتاح'] : null, can ? h('span', { class: 'take' }, ' · خذ التالي') : null);
+    'رمز المطابقة ', h('b', { class: 'num' }, state.code), keyed ? [' · بقي ', h('b', { class: 'num' }, left), ' في المفتاح'] : null, can ? h('span', { class: 'take' }, ' · خذ التالي') : null);
 }
 function renderHostKey() {
   const ask = state.keyAsk, old = document.getElementById('hostkey'), fromKey = ask && JSON.stringify(ask.from);
@@ -1243,19 +1287,19 @@ function renderHostKey() {
   const modal = h('div', { class: 'modal keymodal' });
   if (ask.step === 1) {
     modal.append(h('b', { style: 'font-size:24px' }, first ? 'مفتاح الإجابات للمقدّم' : 'مفتاح الأسئلة التالية'),
-      h('div', { class: 'keywarn' }, 'أخفِ شاشة العرض أولاً: زر الإخفاء في جهاز العرض، أو Win+P ثم «شاشة الكمبيوتر فقط». في الرمز إجابات الأسئلة القادمة، ومن يصوّره من الجمهور يراها.'),
+      h('ol', { class: 'keysteps' }, h('li', {}, 'أخفِ شاشة العرض: زر الإخفاء في جهاز العرض، أو Win+P ثم «شاشة الكمبيوتر فقط».'), h('li', {}, 'ثم اضغط «جهاز العرض مخفي: أظهر الرمز». في الرمز إجابات الأسئلة القادمة، ومن يصوّره من الجمهور يراها.')),
       box,
       h('div', { class: 'keybtns' }, show,
         remain > 0 ? B(`لاحقاً (بقي ${remain} في المفتاح)`, '', () => { state.keySnooze = state.turns; close(); }) : null));
   } else {
     const typed = ask.view === 'code' && codeOK(); // the typed code instead of the QR: the whole pass of each level, nothing to build
-    const shown = typed ? h('div', { class: 'codeview' }, h('div', { class: 'bigcode', id: 'typedcode' }, typedCode()), h('div', { class: 'addr', id: 'keyaddr' }, keyAddress()),
+    const shown = typed ? h('div', { class: 'codeview' }, ...holdToShowCode(), h('div', { class: 'addr', id: 'keyaddr' }, keyAddress()),
       h('div', {}, 'رمز المطابقة ', h('b', { class: 'num', style: 'letter-spacing:3px' }, state.code))) : box;
-    modal.append(...[h('div', { style: 'font-size:18px', id: 'keyrange' }, typed ? 'افتح هذا العنوان على جوالك واكتب الرمز:' : 'جارٍ تجهيز الرمز…'), shown,
+    modal.append(...[h('div', { style: 'font-size:18px', id: 'keyrange' }, typed ? 'افتح هذا العنوان على جوالك واكتب رمز المفتاح:' : 'جارٍ تجهيز الرمز…'), shown,
       h('div', { class: 'keybtns' },
         B('تم المسح: أكمل المسابقة', 'gold', () => { for (const L of LEVELS) state.keyTo[L] = typed || keyBuilt?.small ? passTo(L, ask.from[L]) : ask.from[L] + keyBuilt.counts[L]; close(); }, { 'data-primary': '1', disabled: !typed, id: 'keydone' }),
-        typed ? null : B('رمز أصغر', '', () => { state.keyAsk.cap = Math.max(3, Math.floor((keyBuilt?.c || 20) / 2)); keyBuilt = null; renderAll(); }, { id: 'keysmaller', disabled: true }),
-        codeOK() ? B(typed ? 'أظهر QR' : 'أظهر رمزاً بدل QR', '', () => { state.keyAsk.view = typed ? null : 'code'; renderAll(); }, { id: 'keyview' }) : null,
+        typed ? null : B('QR أصغر', '', () => { state.keyAsk.cap = Math.max(3, Math.floor((keyBuilt?.c || 20) / 2)); keyBuilt = null; renderAll(); }, { id: 'keysmaller', disabled: true }),
+        codeOK() ? B(typed ? 'أظهر QR' : 'أظهر رمز المفتاح بدل QR', '', () => { state.keyAsk.view = typed ? null : 'code'; renderAll(); }, { id: 'keyview' }) : null,
         B('رجوع (Esc)', 'ghost', () => { state.keyAsk.step = 1; renderAll(); })),
       ownBank() ? h('div', { class: 'muted', style: 'font-size:14px' }, 'الرمز المكتوب يعمل مع أسئلة اللعبة الأصلية فقط؛ مع أسئلتك استعمل رمز QR.') : null].filter(Boolean));
   }
