@@ -1,0 +1,523 @@
+# Haql al-Alghaam logo kit and favicon. Built with the logo-design skill; regenerate masters with assets/logo/build_kit.py.
+- path: assets/favicon.svg
+  origin: ai
+  tool: "derived from assets/logo/masters/symbol-small-color-dark.svg (build_kit.py small cut) on a rounded #23291c tile"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: true
+- path: assets/logo/OFL.txt
+  origin: licensed
+  tool: "cp from ~/projects/Musabaqat-games/fonts/OFL-ReemKufi.txt"
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/build_kit.py
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-horizontal-black-1200.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-horizontal-black.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-horizontal-mono-23291c-1200.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-horizontal-mono-23291c.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-horizontal-mono-ef6a2e-1200.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-horizontal-mono-ef6a2e.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-horizontal-white-1200.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-horizontal-white.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-stacked-black-1200.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-stacked-black.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-stacked-mono-23291c-1200.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-stacked-mono-23291c.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-stacked-mono-ef6a2e-1200.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-stacked-mono-ef6a2e.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-stacked-white-1200.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-lockup-stacked-white.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-wordmark-black-1200.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-wordmark-black.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-wordmark-mono-23291c-1200.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-wordmark-mono-23291c.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-wordmark-mono-ef6a2e-1200.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-wordmark-mono-ef6a2e.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-wordmark-white-1200.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/lockups/haql-wordmark-white.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/masters/lockup-horizontal-color-dark.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/masters/lockup-horizontal-color-light.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/masters/lockup-stacked-color-dark.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/masters/lockup-stacked-color-light.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/masters/symbol-color-dark.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/masters/symbol-color-light.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/masters/symbol-small-color-dark.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/masters/symbol-small-color-light.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/masters/wordmark-color-dark.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/masters/wordmark-color-light.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/name.json
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/overview.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png); the name is Reem Kufi Bold outlined (fontTools/HarfBuzz) into name.json"
+  model: claude-sonnet-5-5
+  source: {vendor: "The Reem Kufi Project Authors", product: "Reem Kufi (glyph outlines)", url: "https://github.com/aliftype/reem-kufi"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-app-icon-1024.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-app-icon-512.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-app-icon.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-black-1024.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-black-512.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-black.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-favicon-1024.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-favicon-512.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-favicon.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-mono-23291c-1024.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-mono-23291c-512.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-mono-23291c.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-square-1024.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-square-512.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-square.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-white-1024.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-white-512.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/symbol/haql-symbol-white.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: false
+- path: assets/logo/web/apple-touch-icon.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: true
+- path: assets/logo/web/favicon-16.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: true
+- path: assets/logo/web/favicon-32.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: true
+- path: assets/logo/web/favicon-48.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: true
+- path: assets/logo/web/favicon.ico
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: true
+- path: assets/logo/web/favicon.svg
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: true
+- path: assets/logo/web/head-snippet.html
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: true
+- path: assets/logo/web/icon-192.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: true
+- path: assets/logo/web/icon-512.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: true
+- path: assets/logo/web/maskable-512.png
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: true
+- path: assets/logo/web/site.webmanifest
+  origin: ai
+  tool: "build_kit.py / logo-design skill scripts (export_variants, concept_sheet, render_png)"
+  model: claude-sonnet-5-5
+  date: 2026-11-24
+  ships: true
+
+- path: vendor/plex-arabic-500.woff2
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans-arabic@5.3.0 (files/ subset of the package)"
+  source: {vendor: "IBM Corp.", product: "IBM Plex Sans Arabic (via the Fontsource package @fontsource/ibm-plex-sans-arabic 5.3.0)", url: "https://fontsource.org/fonts/ibm-plex-sans-arabic"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: vendor/plex-arabic-700.woff2
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans-arabic@5.3.0 (files/ subset of the package)"
+  source: {vendor: "IBM Corp.", product: "IBM Plex Sans Arabic (via the Fontsource package @fontsource/ibm-plex-sans-arabic 5.3.0)", url: "https://fontsource.org/fonts/ibm-plex-sans-arabic"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: vendor/plex-latin-500.woff2
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans-arabic@5.3.0 (files/ subset of the package)"
+  source: {vendor: "IBM Corp.", product: "IBM Plex Sans Arabic (via the Fontsource package @fontsource/ibm-plex-sans-arabic 5.3.0)", url: "https://fontsource.org/fonts/ibm-plex-sans-arabic"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: vendor/plex-latin-700.woff2
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans-arabic@5.3.0 (files/ subset of the package)"
+  source: {vendor: "IBM Corp.", product: "IBM Plex Sans Arabic (via the Fontsource package @fontsource/ibm-plex-sans-arabic 5.3.0)", url: "https://fontsource.org/fonts/ibm-plex-sans-arabic"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+
+- path: vendor/plex-OFL-LICENSE.txt
+  origin: licensed
+  tool: "curl from cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans-arabic@5.3.0 (the package LICENSE file, which carries the copyright notice and the OFL 1.1 text)"
+  source: {vendor: "IBM Corp.", product: "IBM Plex Sans Arabic (via the Fontsource package @fontsource/ibm-plex-sans-arabic 5.3.0)", url: "https://fontsource.org/fonts/ibm-plex-sans-arabic"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-15
+  ships: true
+- path: vendor/qrcode.js
+  origin: licensed
+  tool: "npm pack qrcode-generator@2.0.4, dist/qrcode.js unchanged (md5 fbb6b69bce6abf116d6eb147ad5484a5); read for network, eval and storage calls: none"
+  source: {vendor: "Kazuhiko Arase", product: "qrcode-generator 2.0.4", url: "https://github.com/kazuhikoarase/qrcode-generator"}
+  licence: {id: MIT}  # licence text: the header of vendor/qrcode.js
+  date: 2026-11-23
+  ships: true

@@ -29,17 +29,17 @@ document.documentElement.dataset.theme = (() => { try { return localStorage.getI
 :root {
   /* light theme */
   --bg: #fbfaf6; --surface: #fff; --surface-2: #f3f1ea; --line: #e4dfd2; --ink: #0b1220; --muted: #4a5568;
-  --green: #077a4f; --gold: #8a5e00; --blue: #2c56a8; --copper: #9a5c14;  /* game colours as text, each ≥4.5:1 on paper and surface-2 */
+  --green: #077a4f; --gold: #8a5e00; --blue: #2c56a8; --copper: #9a5c14; --olive: #5c6a12;  /* game colours as text, each ≥4.5:1 on paper and surface-2 */
   --beam: #f6c34322; --beam-2: #4f7fd81c; --floor: #0b122010; --head: #fbfaf6d9;
   --lift: 0 14px 28px -16px #0b122040;                            /* one neutral elevation for raised things */
   --lit: 13%;                                                     /* how strong a game's beam is; paper needs less */
   color-scheme: light;
   /* both themes */
-  --on: #0b1220; --fill-green: #16c784; --fill-gold: #f6c343; --fill-blue: #4f7fd8; --fill-copper: #d9822b;
+  --on: #0b1220; --fill-green: #16c784; --fill-gold: #f6c343; --fill-blue: #4f7fd8; --fill-copper: #d9822b; --fill-olive: #a8b83c;
 }
 :root[data-theme=dark] {
   --bg: #0b1220; --surface: #121b2d; --surface-2: #1a2540; --line: #24304a; --ink: #f7f3ea; --muted: #a9b2c3;
-  --green: #16c784; --gold: #f6c343; --blue: #7ea2e8; --copper: #e9954a;
+  --green: #16c784; --gold: #f6c343; --blue: #7ea2e8; --copper: #e9954a; --olive: #c3d15c;
   --beam: #f6c34326; --beam-2: #7ea2e81f; --floor: #4f7fd826; --head: #0b1220d9;
   --lift: 0 14px 28px -16px #000c;
   --lit: 26%;
@@ -52,6 +52,7 @@ document.documentElement.dataset.theme = (() => { try { return localStorage.getI
 .gold  { --c: var(--gold);  --fill: var(--fill-gold); }
 .blue  { --c: var(--blue);  --fill: var(--fill-blue); }
 .copper { --c: var(--copper); --fill: var(--fill-copper); }
+.olive { --c: var(--olive); --fill: var(--fill-olive); }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--bg); color: var(--ink); font-family: Plex, system-ui, sans-serif; font-size: 17px; line-height: 1.75; }
@@ -99,8 +100,8 @@ header nav a:hover { color: var(--ink); }
 .stage h1 span, .finale h2 span { color: var(--gold); }
 .stage .lead { font-size: clamp(17px, 2vw, 20px); color: var(--muted); max-width: 36em; margin: 0 auto 28px; }
 
-/* The line-up: the four games as lit cues, used in the hero and the finale */
-.lineup { display: grid; grid-template-columns: repeat(4, minmax(0, 230px)); justify-content: center; gap: 14px; margin: 0 auto; padding: 0; list-style: none; }
+/* The line-up: the five games as lit cues, used in the hero and the finale */
+.lineup { display: grid; grid-template-columns: repeat(5, minmax(0, 230px)); justify-content: center; gap: 14px; margin: 0 auto; padding: 0; list-style: none; }
 .lineup a { display: grid; justify-items: center; align-content: start; gap: 2px; min-height: 44px; height: 100%; padding: 16px 12px 14px; border-radius: 18px;
   text-decoration: none; background: var(--surface); border: 1px solid var(--line); transition: transform .2s, border-color .2s; }
 .lineup a:hover { transform: translateY(-3px); border-color: var(--c); }
@@ -121,13 +122,13 @@ section { scroll-margin-top: 84px; padding: 72px 0; }
 .compare .row { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .compare .row:last-child { border-bottom: 0; }
 .compare h3 { font-size: 17px; color: var(--muted); }
-.scale { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; }
+.scale { position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); text-align: center; }
 .scale::before { content: ""; position: absolute; top: 9px; inset-inline: 12%; border-top: 2px dashed var(--line); }
 .scale li { position: relative; font-size: 15px; line-height: 1.4; color: var(--c); }
 .scale li::before { content: ""; display: block; width: 14px; height: 14px; margin: 2px auto 8px; background: var(--fill); transform: rotate(45deg); }
 .scale small { display: block; color: var(--muted); font-size: 13px; }
 .compare .ends { grid-column: 2; display: flex; justify-content: space-between; margin: -6px 0 0; font-size: 13px; color: var(--muted); }
-.wins { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; font-size: 15px; line-height: 1.6; color: var(--muted); text-align: center; }
+.wins { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; font-size: 14px; line-height: 1.6; color: var(--muted); text-align: center; }
 .wins b { display: block; color: var(--c); font-weight: 500; }
 
 /* Games: each one an on-air moment, its screenshot lit by a beam in its own colour */
@@ -232,6 +233,7 @@ footer .dev a { display: inline-block; padding: 10px 0; }
 @media (max-width: 600px) {
   .wrap { padding: 0 18px; }
   .lineup { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .lineup li:last-child:nth-child(odd) { grid-column: 1 / -1; justify-self: center; width: calc(50% - 4px); }
   .lineup a { padding: 12px 6px 10px; border-radius: 14px; }
   .lineup img { width: 36px; height: 36px; margin-bottom: 4px; }
   .lineup b { font-size: 16px; }
@@ -375,12 +377,13 @@ const intro = (() => {
       <img class="mark only-light" src="brand/masters/symbol-light.svg" alt="">
       <span class="on-air">ألعاب مسابقات للفرق</span>
       <h1>جاهزين <span>للمسابقة؟</span></h1>
-      <p class="lead">أربع مسابقات معلومات لفريقين أو أكثر، تُعرض على البروجكتر ويديرها المقدّم من لابتوب واحد. افتحوا اللعبة في المتصفح وابدؤوا، بلا تثبيت ولا حسابات.</p>
-      <ul class="lineup" aria-label="الألعاب الأربع">
+      <p class="lead">خمس مسابقات معلومات لفريقين أو أكثر، تُعرض على البروجكتر ويديرها المقدّم من لابتوب واحد. افتحوا اللعبة في المتصفح وابدؤوا، بلا تثبيت ولا حسابات.</p>
+      <ul class="lineup" aria-label="الألعاب الخمس">
         <li><a class="green" href="#souq"><img src="souq-al-marifa/assets/favicon.svg" alt=""><b>سوق المعرفة</b><span>٣٠–٦٠ دقيقة</span><span>متوسطة</span></a></li>
         <li><a class="gold" href="#waraqa"><img src="waraqat-al-hazz/assets/favicon.svg" alt=""><b>ورقات الحظ</b><span>٢٠–٤٠ دقيقة</span><span>سهلة</span></a></li>
         <li><a class="blue" href="#husun"><img src="husun-al-marifa/assets/favicon.svg" alt=""><b>حصون المعرفة</b><span>٤٥–٧٥ دقيقة</span><span>متقدمة</span></a></li>
         <li><a class="copper" href="#duroob"><img src="duroob/assets/favicon.svg" alt=""><b>دروب</b><span>٢٠–٤٥ دقيقة</span><span>متوسطة</span></a></li>
+        <li><a class="olive" href="#haql"><img src="haql-al-alghaam/assets/favicon.svg" alt=""><b>حقل الألغام</b><span>٢٠–٤٠ دقيقة</span><span>سهلة</span></a></li>
       </ul>
       <p class="hero-more">أول مرة؟ <a href="#how">هكذا تجهّزون المسابقة في دقيقة</a></p>
     </div>
@@ -390,13 +393,14 @@ const intro = (() => {
     <div class="wrap">
       <div class="title"><h2>اختاروا لعبة الليلة</h2><p>كلها مسابقات معلومات، ولكل واحدة إيقاعها وطريقتها في الفوز.</p></div>
 
-      <div class="compare" role="group" aria-label="مقارنة سريعة بين الألعاب الأربع">
+      <div class="compare" role="group" aria-label="مقارنة سريعة بين الألعاب الخمس">
         <div class="row">
           <h3>الإيقاع</h3>
           <ol class="scale" aria-label="من الأهدأ إلى الأصخب">
             <li class="green">سوق المعرفة<small>حسابات وصفقات</small></li>
             <li class="copper">دروب<small>سباق وحواجز</small></li>
             <li class="blue">حصون المعرفة<small>توتر المعارك</small></li>
+            <li class="olive">حقل الألغام<small>مخاطرة وانفجارات</small></li>
             <li class="gold">ورقات الحظ<small>مفاجأة كل دور</small></li>
           </ol>
           <p class="ends" aria-hidden="true"><span>أهدأ</span><span>أصخب</span></p>
@@ -405,6 +409,7 @@ const intro = (() => {
           <h3>المدة</h3>
           <ol class="scale" aria-label="من الأقصر إلى الأطول، تقريباً">
             <li class="gold">ورقات الحظ<small>٢٠–٤٠ دقيقة</small></li>
+            <li class="olive">حقل الألغام<small>٢٠–٤٠ دقيقة</small></li>
             <li class="copper">دروب<small>٢٠–٤٥ دقيقة</small></li>
             <li class="green">سوق المعرفة<small>٣٠–٦٠ دقيقة</small></li>
             <li class="blue">حصون المعرفة<small>٤٥–٧٥ دقيقة</small></li>
@@ -415,6 +420,7 @@ const intro = (() => {
           <h3>الشرح</h3>
           <ol class="scale" aria-label="من الأسهل شرحاً إلى الأعمق">
             <li class="gold">ورقات الحظ<small>سهلة</small></li>
+            <li class="olive">حقل الألغام<small>سهلة</small></li>
             <li class="green">سوق المعرفة<small>متوسطة</small></li>
             <li class="copper">دروب<small>متوسطة</small></li>
             <li class="blue">حصون المعرفة<small>متقدمة</small></li>
@@ -428,6 +434,7 @@ const intro = (() => {
             <li class="gold"><b>ورقات الحظ</b> أعلى الدرجات، والأوراق قد تقلبها</li>
             <li class="blue"><b>حصون المعرفة</b> آخر عاصمة صامدة، ومن سقطت عاصمته خرج</li>
             <li class="copper"><b>دروب</b> أكثر العدّائين عبوراً، ولكل عدّاء يصل إلى الحافة المقابلة نقطة</li>
+            <li class="olive"><b>حقل الألغام</b> أعلى نقاط، واللغم يخصم وقد ينزل الفريق تحت الصفر</li>
           </ul>
         </div>
       </div>
@@ -519,6 +526,28 @@ const intro = (() => {
           </details>
         </div>
       </article>
+
+      <article class="show olive" id="haql">
+        <figure class="screen"><img src="screens/haql-al-alghaam.png" width="1280" height="720" loading="lazy" alt="لقطة من حقل الألغام: حقل من مربعات بعضها مفتوح وفيه أرقام الألغام المجاورة، وبجانبه نقاط الفرق"></figure>
+        <div class="info">
+          <div class="ep"><img src="haql-al-alghaam/assets/favicon.svg" alt="">حظ وتخمين</div>
+          <h3>حقل الألغام</h3>
+          <p class="desc">مسابقة معلومات على حقل ألغام: الإجابة الصحيحة تفتح مربعاً، فإما نقاط ورقم يدل على الألغام حوله، وإما لغم يخصم نقاطاً وينفجر فيفتح ما حوله. وحين تنفتح المربعات الآمنة يبدأ حقل جديد والنقاط باقية.</p>
+          <ul class="tags"><li>٢٠–٤٠ دقيقة تقريباً</li><li>سهلة</li><li>حقل من ٦ في ٦ إلى ١٠ في ١٠</li></ul>
+          <p class="bank">٢٬٦٠٢ سؤال جاهز في ثلاثة عشر تصنيفاً، من فريقين إلى ستة فرق. <a href="templates/questions-template.csv" download="أسئلتي.csv">نزّلوا قالب الأسئلة</a></p>
+          <a class="btn play" href="haql-al-alghaam/">ابدؤوا اللعب
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
+          <p class="phone-note">صُمّمت للعرض من لابتوب موصول بشاشة كبيرة، وشاشة الجوال تضيق بها.</p>
+          <details class="how"><summary>كيف تُلعب؟</summary>
+            <ol>
+              <li>يُطرح السؤال على الفريق صاحب الدور.</li>
+              <li>الإجابة الصحيحة تفتح له مربعاً واحداً من الحقل.</li>
+              <li>المربع الآمن يعطيه نقاطاً ويُظهر عدد الألغام حوله، واللغم يخصم نقاطاً وينفجر فيفتح المربعات المجاورة.</li>
+              <li>إذا انفتحت كل المربعات الآمنة بدأ حقل جديد، والفائز صاحب أعلى نقاط في النهاية.</li>
+            </ol>
+          </details>
+        </div>
+      </article>
     </div>
   </section>
 
@@ -548,7 +577,7 @@ const intro = (() => {
       </ul>
       <div class="tpl">
         <a class="btn line" href="templates/questions-template.csv" download="أسئلتي.csv">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>قالب سوق المعرفة وحصون المعرفة ودروب</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>قالب سوق المعرفة وحصون المعرفة ودروب وحقل الألغام</a>
         <a class="btn line" href="templates/questions-template-waraqat.csv" download="أسئلتي.csv">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>قالب ورقات الحظ (مع المستوى)</a>
       </div>
@@ -571,7 +600,7 @@ const intro = (() => {
         <div>
           <a class="btn gold" href="https://github.com/Alghofaily/Musabaqat/archive/refs/heads/main.zip">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>نزّلوا كل الألعاب</a>
-          <small>ملف ZIP بحجم ٤ ميغابايت تقريباً. فيه المستودع كاملاً: الألعاب الأربع كل واحدة في مجلدها، مع ملفات الشعار وهذه الصفحة.</small>
+          <small>ملف ZIP بحجم ٤ ميغابايت تقريباً. فيه المستودع كاملاً: الألعاب الخمس كل واحدة في مجلدها، مع ملفات الشعار وهذه الصفحة.</small>
         </div>
       </div>
     </div>
@@ -583,7 +612,7 @@ const intro = (() => {
       <div class="faq">
         <details><summary>هل نحتاج إلى إنترنت؟</summary><p>نعم لفتح الألعاب من هذا الموقع. أما <a href="#offline">النسخة المنزّلة</a> فتعمل بلا إنترنت.</p></details>
         <details><summary>هل نحتاج إلى تثبيت برنامج أو إنشاء حساب؟</summary><p>لا. تعمل الألعاب في أي متصفح حديث: Chrome أو Edge أو Firefox أو Safari.</p></details>
-        <details><summary>كم فريقاً يمكن أن يلعب؟</summary><p>من فريقين إلى ستة فرق في سوق المعرفة وورقات الحظ وحصون المعرفة، ومن فريقين إلى أربعة في دروب، ولكل فريق اسم تختارونه.</p></details>
+        <details><summary>كم فريقاً يمكن أن يلعب؟</summary><p>من فريقين إلى ستة فرق في سوق المعرفة وورقات الحظ وحصون المعرفة وحقل الألغام، ومن فريقين إلى أربعة في دروب، ولكل فريق اسم تختارونه.</p></details>
         <details><summary>كيف نضيف أسئلتنا الخاصة؟</summary><p>نزّلوا <a href="#questions">قالب الأسئلة</a> واملؤوه في Excel، واحفظوه بصيغة CSV UTF-8، ثم استوردوه من شاشة «بنك الأسئلة» داخل اللعبة بإضافته إلى الأسئلة الحالية أو استبدالها.</p></details>
         <details><summary>هل تُحفظ أسئلتنا وإعداداتنا؟</summary><p>نعم، في المتصفح نفسه على الجهاز نفسه. على جهاز أو متصفح آخر استوردوا الملف مرة أخرى.</p></details>
         <details><summary>ما أفضل طريقة للعرض؟</summary><p>لابتوب موصول ببروجكتر أو شاشة كبيرة. المقدّم يدير اللعبة من اللابتوب والفرق تشاهد وتجيب.</p></details>
@@ -602,6 +631,7 @@ const intro = (() => {
         <li><a class="gold" href="waraqat-al-hazz/"><img src="waraqat-al-hazz/assets/favicon.svg" alt=""><b>ورقات الحظ</b><span>ابدؤوا اللعب</span></a></li>
         <li><a class="blue" href="husun-al-marifa/"><img src="husun-al-marifa/assets/favicon.svg" alt=""><b>حصون المعرفة</b><span>ابدؤوا اللعب</span></a></li>
         <li><a class="copper" href="duroob/"><img src="duroob/assets/favicon.svg" alt=""><b>دروب</b><span>ابدؤوا اللعب</span></a></li>
+        <li><a class="olive" href="haql-al-alghaam/"><img src="haql-al-alghaam/assets/favicon.svg" alt=""><b>حقل الألغام</b><span>ابدؤوا اللعب</span></a></li>
       </ul>
       <p class="phone-note">صُمّمت للعرض من لابتوب موصول بشاشة كبيرة، وشاشة الجوال تضيق بها.</p>
     </div>

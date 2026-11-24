@@ -11,6 +11,7 @@
 - [<img src="waraqat-al-hazz/assets/favicon.svg" width="24" height="24" align="absmiddle" alt=""> ورقات الحظ](https://alghofaily.github.io/Musabaqat/waraqat-al-hazz/)
 - [<img src="husun-al-marifa/assets/favicon.svg" width="24" height="24" align="absmiddle" alt=""> حصون المعرفة](https://alghofaily.github.io/Musabaqat/husun-al-marifa/)
 - [<img src="duroob/assets/favicon.svg" width="24" height="24" align="absmiddle" alt=""> دروب](https://alghofaily.github.io/Musabaqat/duroob/)
+- [<img src="haql-al-alghaam/assets/favicon.svg" width="24" height="24" align="absmiddle" alt=""> حقل الألغام](https://alghofaily.github.io/Musabaqat/haql-al-alghaam/)
 
 ## الألعاب
 
@@ -22,6 +23,7 @@
 | <img src="waraqat-al-hazz/assets/favicon.svg" width="48" height="48" alt="شعار ورقات الحظ"> | ورقات الحظ | [`waraqat-al-hazz`](waraqat-al-hazz/) | مسابقة على طريقة البرامج التلفزيونية: اختر مستوى سؤالك، أجب صحيحاً، ثم اقلب ورقة حظ قد تربحك ألف درجة أو تضرب بها الفرق الأخرى. |
 | <img src="husun-al-marifa/assets/favicon.svg" width="48" height="48" alt="شعار حصون المعرفة"> | حصون المعرفة | [`husun-al-marifa`](husun-al-marifa/) | حرب معلومات للفرق على خريطة سداسية: الإجابة الصحيحة تكسب المال، والمال يشتري كتائب ومدافع وحصوناً، والمعارك تُحسم بأسئلة متتالية حتى تسقط العواصم. |
 | <img src="duroob/assets/favicon.svg" width="48" height="48" alt="شعار دروب"> | دروب | [`duroob`](duroob/) | سباق معلومات لفريقين إلى أربعة على لوحة بالحواجز: كل إجابة صحيحة تشتري حركة واحدة، خطوة نحو الحافة المقابلة أو حاجزاً في طريق المنافس، وكل عدّاء يعبر يكسب نقطة. |
+| <img src="haql-al-alghaam/assets/favicon.svg" width="48" height="48" alt="شعار حقل الألغام"> | حقل الألغام | [`haql-al-alghaam`](haql-al-alghaam/) | مسابقة معلومات للفرق على حقل ألغام: كل إجابة صحيحة تفتح مربعاً واحداً، فالمربع الآمن يكسب النقاط واللغم يخصمها وينفجر فيكشف ما حوله، والفريق صاحب أعلى رصيد يفوز. |
 
 </div>
 
