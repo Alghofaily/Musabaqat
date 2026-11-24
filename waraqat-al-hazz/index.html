@@ -1328,22 +1328,35 @@ function notice(text) { // a short notice with its own close button (the popup b
   const el = h('div', { class: 'panel toast', role: 'status' }, text, B('حسناً', 'gold', () => el.remove())); ui.append(el);
 }
 function openPresenter() { // from a click only: browsers block pop-ups opened any other way
+  closeHostMenu(); // the menu that held this button must not stay open on the projector
   if (presenterOpen()) { presenter.focus(); return; }
   presenter = window.open('presenter.html', 'waraqa-presenter', 'popup,width=960,height=720');
-  if (!presenter) setTimeout(() => { if (scene === 'play') notice('منع المتصفح نافذة المقدّم. اسمح بالنوافذ المنبثقة لهذه الصفحة، ثم اضغط «افتح شاشة المقدّم» في الأعلى.'); }, 0);
+  if (!presenter) setTimeout(() => { if (scene === 'play') notice('منع المتصفح نافذة المقدّم. اسمح بالنوافذ المنبثقة لهذه الصفحة، ثم اضغط «افتح شاشة المقدّم» من ⋯ في الأعلى.'); }, 0);
   else if (scene === 'play') renderHeader();
 }
+let adoptAsk = null; // the window of a host window from before a reload that has said hello
+function adoptPresenter() { // from a click or key only
+  const w = adoptAsk; adoptAsk = null;
+  if (w && !w.closed) { presenter = w; tellPresenter(); }
+}
+for (const ev of ['pointerdown', 'keydown']) addEventListener(ev, () => { if (adoptAsk && !presenterOpen()) adoptPresenter(); }, true);
 function tellPresenter() {
   if (!presenterOpen()) return;
   const playing = scene === 'play' && state, q = playing && state.q, p = playing ? state.phase : '';
   const asking = (p === 'question' || p === 'reveal') && q;
   const primary = p === 'level' ? null : ui.querySelector('[data-primary]:not([disabled])');
+  const card = playing && p === 'cards' && state.card && state.cardStage !== 'pick' && !state.revealing ? state.card : null, acts = [];
+  if (card && state.cardStage === 'choose') acts.push({ label: 'استخدمها الآن', cmd: 'use' }, { label: 'احتفظ بها', cmd: 'keep' });
+  if (card && state.cardStage === 'target') others(state.cur).forEach(t => acts.push({ label: 'على ' + state.names[t], cmd: 'target', k: t }));
+  const undoLeft = playing && undoSnap && (p === 'reveal' || p === 'cards') ? Math.max(0, Math.ceil(undoUntil - state.t)) : 0;
+  if (p === 'cards' && undoLeft) acts.push({ label: `تراجع · ${undoLeft}`, cmd: 'undo' });
   presenter.postMessage({ type: 'state', scene, phase: p, paused: playing ? state.paused : false,
-    round: playing ? state.round : 0, team: playing ? state.names[state.cur] : '', answering: asking ? state.names[state.cur] : '',
+    round: playing ? state.round : 0, team: playing ? state.names[state.cur] : '', teamNo: playing ? state.cur + 1 : 0, teamColor: playing ? TEAM_COLORS[state.cur] : '', answering: asking ? state.names[state.cur] : '',
     levels: LEVELS.map(k => ({ k, name: LEVEL_NAMES[k], pts: levelPts(k), n: levelOK(k) ? 1 : 0 })),
     q: asking ? { n: q.n, own: !!q.own, level: LEVEL_NAMES[state.level], text: q.text, answer: q.choices[q.right], right: q.right + 1, choices: q.choices } : null,
-    qmode: settings.qmode, done: p === 'reveal', timer: asking ? Math.ceil(state.timer) : null,
-    primary: primary ? primary.textContent.trim() : '', judge: !!ui.querySelector('[data-judge]') }, '*');
+    qmode: settings.qmode, done: p === 'reveal', result: p === 'reveal' ? state.result : null, undo: p === 'reveal' ? undoLeft : 0, timer: asking ? Math.ceil(state.timer) : null,
+    ctx: card ? CARDS[card].name + ': ' + cardDesc(card) + (state.lines.length ? '\n' + state.lines.join(' · ') : '') : '', acts,
+    primary: primary ? primary.textContent.trim() : '', judge: !!ui.querySelector('[data-judge="right"]:not([disabled])') }, '*');
 }
 setInterval(() => { // the snapshot's timer, and the header's "connected" label when the host window opens or closes
   tellPresenter();
@@ -1353,13 +1366,20 @@ setInterval(() => { // the snapshot's timer, and the header's "connected" label 
   }
 }, 1000);
 addEventListener('message', e => {
-  if (!presenterOpen() || e.source !== presenter) return; // only the window this game opened
   const m = e.data || {};
+  if (m.type === 'hello' && !presenterOpen()) { try { if (e.source && e.source !== window && e.source.name === 'waraqa-presenter') adoptAsk = e.source; } catch { if (location.protocol === 'file:') adoptAsk = e.source; } return; } // a host window from before a reload says hello: take it back on the next click
+  if (!presenterOpen() || e.source !== presenter) return; // only the window this game opened
   if (m.type === 'hello') return tellPresenter();
-  if (m.type !== 'cmd' || scene !== 'play' || state.paused) return;
+  if (m.type !== 'cmd' || scene !== 'play') return;
+  if (m.cmd === 'pause') { state.paused = !state.paused; renderHeader(); return; }
+  if (state.paused || state.keyAsk || document.querySelector('.ov:not(#pause)')) return;
   if (m.cmd === 'enter') hit.add('Enter');
   else if ((m.cmd === 'choice' || m.cmd === 'level') && m.k >= 1 && m.k <= 4) hit.add('Digit' + m.k); // the same keys the game reads: a level in the level phase, a choice in a question
   else if (m.cmd === 'judge' && (m.v === 'right' || m.v === 'wrong')) ui.querySelector(`[data-judge="${m.v}"]:not([disabled])`)?.click();
+  else if (m.cmd === 'undo') undo();
+  else if (m.cmd === 'use' && state.phase === 'cards' && state.cardStage === 'choose' && !state.revealing) useNow();
+  else if (m.cmd === 'keep' && state.phase === 'cards' && state.cardStage === 'choose' && !state.revealing) keepCard();
+  else if (m.cmd === 'target' && state.phase === 'cards' && state.cardStage === 'target' && others(state.cur).includes(m.k)) hitTarget(m.k);
 });
 
 // ---- What a check can read and drive (?manual=1 stops the loop; players never see it) ----

@@ -1292,21 +1292,32 @@ function renderHostKey() {
 let presenter = null;
 const presenterOpen = () => !!presenter && !presenter.closed;
 function openPresenter() { // from a click only: browsers block pop-ups opened any other way
+  closeHostMenu(); // the menu that held this button must not stay open on the projector
   if (presenterOpen()) { presenter.focus(); return; }
   presenter = window.open('presenter.html', 'souq-presenter', 'popup,width=960,height=720');
-  if (!presenter) setTimeout(() => { if (scene === 'play') { state.msg = 'منع المتصفح نافذة المقدّم. اسمح بالنوافذ المنبثقة لهذه الصفحة، ثم اضغط «افتح شاشة المقدّم» في الأعلى.'; state.msgGood = false; renderAll(); } }, 0);
+  if (!presenter) setTimeout(() => { if (scene === 'play') { state.msg = 'منع المتصفح نافذة المقدّم. اسمح بالنوافذ المنبثقة لهذه الصفحة، ثم اضغط «افتح شاشة المقدّم» من ⋯ في الأعلى.'; state.msgGood = false; renderAll(); } }, 0);
   else if (scene === 'play') renderHeader();
 }
+let adoptAsk = null; // the window of a host window from before a reload that has said hello
+function adoptPresenter() { // from a click or key only
+  const w = adoptAsk; adoptAsk = null;
+  if (w && !w.closed) { presenter = w; tellPresenter(); }
+}
+for (const ev of ['pointerdown', 'keydown']) addEventListener(ev, () => { if (adoptAsk && !presenterOpen()) adoptPresenter(); }, true);
 function tellPresenter() {
   if (!presenterOpen()) return;
   const playing = scene === 'play' && state, q = playing && state.q, p = playing ? state.phase : '';
-  const asking = (p === 'question' || p === 'reveal') && q && !q.own;
+  const asking = (p === 'question' || p === 'reveal') && q; // the host's own questions too: the presenter shows «سؤالك أنت»
   const primary = ui.querySelector('[data-primary]:not([disabled])');
+  const ti = !playing ? -1 : asking ? (state.answeredBy ?? state.cur) : state.cur, n = playing && state.news;
+  const ctx = p === 'news' && n ? [n.text, ...(n.kind === 'sector' ? n.moves.map(([co, a, b]) => `${COMPANIES[co].name}: ${pct((b - a) / a)}`) : n.kind === 'dividend' ? n.paid.map(([i, amt]) => `${state.names[i]}: +${fmt(amt)}`) : [])].join('\n') : '';
   presenter.postMessage({ type: 'state', scene, phase: p, paused: playing ? state.paused : false,
-    round: playing ? state.round : 0, team: playing ? state.names[state.cur] : '', answering: asking && state.answeredBy != null ? state.names[state.answeredBy] : '',
-    q: asking ? { n: q.n, text: q.text, answer: q.choices[q.right], right: q.right + 1, choices: q.choices } : null,
-    qmode: settings.qmode, done: p === 'reveal', timer: asking ? Math.ceil(state.timer) : null,
-    primary: primary ? primary.textContent.trim() : '', judge: !!ui.querySelector('[data-judge]') }, '*');
+    round: playing ? state.round : 0, team: playing ? state.names[state.cur] : '', teamNo: ti + 1, teamColor: ti >= 0 ? TEAM_COLORS[ti] : '',
+    answering: asking && state.answeredBy != null ? state.names[state.answeredBy] : '',
+    q: asking ? (q.own ? { n: 0, own: true } : { n: q.n, text: q.text, answer: q.choices[q.right], right: q.right + 1, choices: q.choices }) : null,
+    qmode: settings.qmode, done: p === 'reveal', result: p === 'reveal' ? state.result : null, undo: undo && p === 'reveal' ? Math.max(0, Math.ceil(undo.until - state.t)) : 0,
+    timer: asking ? Math.ceil(state.timer) : null, ctx, acts: [],
+    primary: primary ? primary.textContent.trim() : '', judge: !!ui.querySelector('[data-judge="right"]:not([disabled])') }, '*');
 }
 setInterval(() => { // the snapshot's timer, and the header's "connected" label when the host window opens or closes
   tellPresenter();
@@ -1316,13 +1327,17 @@ setInterval(() => { // the snapshot's timer, and the header's "connected" label 
   }
 }, 1000);
 addEventListener('message', e => {
-  if (!presenterOpen() || e.source !== presenter) return; // only the window this game opened
   const m = e.data || {};
+  if (m.type === 'hello' && !presenterOpen()) { try { if (e.source && e.source !== window && e.source.name === 'souq-presenter') adoptAsk = e.source; } catch { if (location.protocol === 'file:') adoptAsk = e.source; } return; } // a host window from before a reload says hello: take it back on the next click
+  if (!presenterOpen() || e.source !== presenter) return; // only the window this game opened
   if (m.type === 'hello') return tellPresenter();
-  if (m.type !== 'cmd' || scene !== 'play' || state.paused) return;
+  if (m.type !== 'cmd' || scene !== 'play') return;
+  if (m.cmd === 'pause') { state.paused = !state.paused; renderHeader(); return; }
+  if (state.paused) return;
   if (m.cmd === 'enter') hit.add('Enter');
   else if (m.cmd === 'choice' && m.k >= 1 && m.k <= 4) hit.add('Digit' + m.k);
   else if (m.cmd === 'judge' && (m.v === 'right' || m.v === 'wrong')) ui.querySelector(`[data-judge="${m.v}"]:not([disabled])`)?.click();
+  else if (m.cmd === 'undo') undoVerdict();
 });
 
 // ---- What a check can read and drive (?manual=1 stops the loop; players never see it) ----

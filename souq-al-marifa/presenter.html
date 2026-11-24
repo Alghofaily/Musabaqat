@@ -21,27 +21,43 @@
   header b { color: var(--brass); }
   .light { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--bad); margin-inline-end: 8px; }
   .light.on { background: var(--ok); }
-  main { padding: 22px 26px; display: grid; gap: 14px; }
-  .who { color: var(--muted); font-size: 18px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  #firstrun { display: flex; gap: 14px; align-items: center; justify-content: center; flex-wrap: wrap; padding: 10px 22px; background: var(--brass); color: var(--bg); font-weight: 700; }
+  #firstrun button { background: var(--bg); color: var(--text); border-color: var(--bg); min-height: 40px; padding: 6px 16px; }
+  main { padding: 22px 26px; display: grid; gap: 14px; max-width: 940px; margin-inline: auto; align-content: start; }
+  main.blur .ans b { filter: blur(10px); }
+  .stack { display: grid; gap: 14px; transition: opacity .15s; } .stack.dim { opacity: .45; }
+  .lost { padding: 26px 24px; border: 2px solid var(--bad); border-radius: 12px; background: var(--panel); font-size: 24px; font-weight: 700; line-height: 1.6; text-align: center; }
+  .pausebar { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding: 12px 18px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); font-weight: 700; }
+  .ctx { padding: 10px 16px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); font-size: 21px; font-weight: 700; line-height: 1.55; }
+  .who { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 18px; }
   .who b { color: var(--text); }
+  .badge { display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding: 0 6px; border-radius: 8px; font-weight: 700; font-size: 16px; direction: ltr; }
   .row { display: flex; gap: 18px; align-items: flex-start; }
   .n { flex: none; min-width: 96px; text-align: center; border-inline-end: 1px solid var(--line); padding-inline-end: 16px; }
   .n small { display: block; color: var(--muted); font-size: 15px; font-weight: 700; }
   .n b { font-size: 56px; line-height: 1.05; color: var(--brass); direction: ltr; display: inline-block; }
   .q { font-size: 24px; font-weight: 700; line-height: 1.45; }
-  .ans { background: var(--panel); border: 1px solid var(--line); border-inline-start: 6px solid var(--ok); border-radius: 10px; padding: 12px 18px; }
+  .ans { background: var(--panel); border: 1px solid var(--line); border-inline-start: 6px solid var(--ok); border-radius: 10px; padding: 12px 18px; min-height: 150px; }
   .ans small { color: var(--muted); font-size: 15px; font-weight: 700; }
   .ans b { display: block; font-size: 36px; color: var(--ok); line-height: 1.3; }
   .ans .k { color: var(--text); font-size: 18px; }
+  .slot { min-height: 96px; display: flex; gap: 14px; }
   .btns { display: flex; flex-wrap: wrap; gap: 10px; }
   button { font-family: inherit; font-weight: 700; font-size: 19px; line-height: 1.3; padding: 12px 20px; min-height: 48px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); cursor: pointer; }
   button:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
+  button:disabled { opacity: .4; cursor: default; }
   button.pri { background: var(--brass); color: var(--bg); border-color: var(--brass); }
+  button.verdict { flex: 1 1 0; min-height: 96px; font-size: 30px; }
   button.good { background: #12483f; border-color: var(--ok); }
   button.bad { background: #4a1f25; border-color: var(--bad); }
-  button.choice { flex: 1 1 40%; text-align: start; display: flex; gap: 10px; align-items: center; }
+  button.choice { flex: 1 1 40%; text-align: start; display: flex; gap: 10px; align-items: center; min-height: 64px; }
   button.choice .k { background: var(--bg); border-radius: 6px; padding: 0 10px; direction: ltr; }
   button.choice.right { border-color: var(--ok); }
+  .recorded { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 20px; border-radius: 12px; font-size: 34px; font-weight: 700; border: 3px solid var(--line); }
+  .recorded.right { border-color: var(--ok); color: var(--ok); } .recorded.wrong, .recorded.time { border-color: var(--bad); color: var(--bad); }
+  .recorded button { font-size: 20px; }
+  .hint { min-height: 28px; color: var(--brass); font-size: 18px; font-weight: 700; }
   .note { color: var(--muted); font-size: 17px; }
   .timer { color: var(--brass); font-weight: 700; direction: ltr; display: inline-block; }
 </style>
@@ -52,62 +68,89 @@
   <span id="round"></span>
   <span><span class="light" id="light"></span><span id="status">غير متصلة</span></span>
 </header>
-<main id="main"><p class="note">افتح هذه النافذة من «ابدأ التداول» أو من زر «افتح شاشة المقدّم» في اللعبة.</p></main>
+<div id="firstrun" hidden><span>انقل هذه النافذة إلى شاشة الحاسوب، لا جهاز العرض</span><button id="seen">فهمت</button></div>
+<div id="live" class="sr" aria-live="polite"></div>
+<div class="hint" id="hint" role="status" style="max-width:940px;margin-inline:auto;padding:6px 26px 0"></div>
+<main id="main"><p class="note">افتح هذه النافذة من «ابدأ» أو من «⋯ ← افتح شاشة المقدّم» في اللعبة.</p></main>
 <script>
-  const game = window.opener, main = document.getElementById('main');
+  const game = window.opener, main = document.getElementById('main'), $ = id => document.getElementById(id);
   const PHASE = { ready: 'بداية الدور', question: 'السؤال', reveal: 'النتيجة', news: 'خبر عاجل', trade: 'التداول' };
-  const h = (tag, props = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(props)) if (k.startsWith('on')) e[k] = v; else if (k === 'class') e.className = v; else e.setAttribute(k, v);
+  const h = (tag, props = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(props)) if (k.startsWith('on')) e[k] = v; else if (k === 'class') e.className = v; else if (k === 'disabled') e.disabled = !!v; else if (k === 'style') e.style.cssText = v; else e.setAttribute(k, v);
     e.append(...kids.filter(x => x != null && x !== false)); return e; }; // text only, never HTML: questions can come from the host's CSV
-  const send = m => { if (game && !game.closed) game.postMessage(Object.assign({ type: 'cmd' }, m), '*'); };
-  let last = 0, snap = null;
+  let last = 0, snap = null, connected = false, armedAt = 0, judgingKey = '', hintTimer = 0, wasLive = null;
+  const say = t => { $('live').textContent = ''; setTimeout(() => { $('live').textContent = t; }, 30); }; // aria-live: a verdict or a lost connection is read out
+  const send = m => { if (connected) game.postMessage(Object.assign({ type: 'cmd' }, m), '*'); };
+  const hint = t => { $('hint').textContent = t; clearTimeout(hintTimer); hintTimer = setTimeout(() => { $('hint').textContent = ''; }, 2500); };
+  const ink = c => { const n = parseInt(String(c).replace('#', ''), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; return (r * 299 + g * 587 + b * 114) / 1000 > 150 ? '#111' : '#fff'; };
+  const act = (label, cls, fn, extra = {}) => h('button', Object.assign({ class: cls, onclick: e => { e.currentTarget.blur(); fn(); }, disabled: !connected }, extra), label); // blur: a later key never re-presses it
+  const RES = { right: 'صحيحة', wrong: 'خاطئة', time: 'انتهى الوقت' };
+
+  // A verdict is armed 600 ms after the judging screen comes up, so a double click on the previous step cannot land on it.
+  const verdict = v => { if (!snap || !snap.judge || snap.done || snap.paused || !connected) return; if (Date.now() < armedAt) return hint('لحظة…'); send({ cmd: 'judge', v }); };
+  const judging = s => !!(s.judge && !s.done && s.q);
 
   function render(s) {
-    document.getElementById('round').textContent = s.scene === 'play' && s.round ? `الجولة ${s.round}` : '';
+    snap = s;
+    $('round').textContent = s.scene === 'play' && s.round ? `الجولة ${s.round}` : '';
+    if (!connected) { main.replaceChildren(h('div', { class: 'lost', role: 'alert' }, 'انقطع الاتصال باللعبة. في نافذة اللعبة: ⋯ ← افتح شاشة المقدّم')); return; }
     if (s.scene !== 'play') { main.replaceChildren(h('p', { class: 'note' }, s.scene === 'results' ? 'انتهت المسابقة. النتائج على جهاز العرض.' : 'المسابقة لم تبدأ بعد.')); return; }
-    if (s.paused) { main.replaceChildren(h('p', { class: 'note' }, 'اللعبة متوقفة مؤقتاً. تابعها من نافذة اللعبة.')); return; }
-    const parts = [];
-    const enter = s.primary && !s.judge ? h('button', { class: 'pri', onclick: () => send({ cmd: 'enter' }) }, s.primary, ' (Enter)') : null;
+    const parts = [], body = [], isJ = judging(s);
+    if (s.paused) parts.push(h('div', { class: 'pausebar' }, h('span', {}, 'اللعبة متوقفة مؤقتاً'), act('متابعة', 'pri', () => send({ cmd: 'pause' }))));
+    if (s.ctx) body.push(h('div', { class: 'ctx' }, ...String(s.ctx).split('\n').map(l => h('div', {}, l))));
     if (s.q) {
-      parts.push(h('div', { class: 'who' }, s.done ? 'أجاب: ' : 'يجيب الآن: ', h('b', {}, s.answering), s.timer != null && !s.done ? h('span', {}, ' · الوقت ', h('span', { class: 'timer' }, String(s.timer))) : null));
-      parts.push(h('div', { class: 'row' }, h('div', { class: 'n' }, h('small', {}, 'سؤال'), h('b', {}, String(s.q.n))), h('div', { class: 'q' }, s.q.text)));
-      parts.push(h('div', { class: 'ans' }, h('small', {}, 'الإجابة الصحيحة'), h('b', {}, s.q.answer),
-        s.qmode === 'choices' ? h('span', { class: 'k' }, `الخيار ${s.q.right} على الشاشة`) : null));
-      if (!s.done && s.qmode === 'choices') {
-        parts.push(h('div', { class: 'note' }, 'اضغط الخيار الذي اختاره الفريق (أو 1–4):'));
-        parts.push(h('div', { class: 'btns' }, ...s.q.choices.map((c, i) => h('button', { class: 'choice' + (i + 1 === s.q.right ? ' right' : ''), onclick: () => send({ cmd: 'choice', k: i + 1 }) },
-          h('span', { class: 'k' }, String(i + 1)), c))));
+      const badge = s.teamColor ? h('span', { class: 'badge', style: `background:${s.teamColor};color:${ink(s.teamColor)}` }, String(s.teamNo)) : null;
+      body.push(h('div', { class: 'who' }, badge, h('span', {}, s.done ? 'أجاب: ' : 'يجيب الآن: '), h('b', {}, s.answering), s.timer != null && !s.done ? h('span', {}, ' · الوقت ', h('span', { class: 'timer' }, String(s.timer))) : null));
+      body.push(h('div', { class: 'row' }, h('div', { class: 'n' }, h('small', {}, s.q.level ? s.q.level + ' · سؤال' : 'سؤال'), h('b', {}, s.q.n ? String(s.q.n) : '—')), h('div', { class: 'q' }, s.q.own ? 'سؤالك أنت: اسأله بصوتك، ثم احكم' : s.q.text)));
+      body.push(s.q.own ? h('div', { class: 'ans' }, h('small', {}, 'بدون بنك'), h('b', { style: 'color:var(--text)' }, 'الإجابة عندك أنت'))
+        : h('div', { class: 'ans' }, h('small', {}, 'الإجابة الصحيحة'), h('b', {}, s.q.answer), s.qmode === 'choices' ? h('span', { class: 'k' }, `الخيار ${s.q.right} على الشاشة`) : null));
+      // the fixed slot below the answer card: the verdict buttons, the recorded verdict, or the choices, so a longer answer never moves them
+      const slot = h('div', { class: 'slot' });
+      if (s.done && s.result) {
+        slot.append(h('div', { class: 'recorded ' + s.result, role: 'status' }, h('span', {}, s.qmode === 'choices' || !s.answering ? `${s.answering ? 'أجاب ' + s.answering + ': ' : ''}${RES[s.result]}` : `سُجّلت: ${RES[s.result]}`),
+          s.undo > 0 ? act(`تراجع · ${s.undo}`, '', () => send({ cmd: 'undo' })) : null));
+      } else if (isJ) {
+        slot.append(act('صحيحة', 'verdict good', () => verdict('right')), act('خاطئة', 'verdict bad', () => verdict('wrong')));
+      } else if (!s.done && s.qmode === 'choices') {
+        const grid = h('div', { class: 'btns', style: 'flex:1' }, ...s.q.choices.map((c, i) => act([h('span', { class: 'k' }, String(i + 1)), c], 'choice' + (i + 1 === s.q.right ? ' right' : ''), () => send({ cmd: 'choice', k: i + 1 }))));
+        slot.append(grid);
       }
-      if (!s.done && s.judge) parts.push(h('div', { class: 'btns' },
-        h('button', { class: 'good', onclick: () => send({ cmd: 'judge', v: 'right' }) }, 'إجابة صحيحة (Enter)'),
-        h('button', { class: 'bad', onclick: () => send({ cmd: 'judge', v: 'wrong' }) }, 'إجابة خاطئة')));
+      body.push(slot);
+    } else if (s.phase === 'level' && s.levels) {
+      body.push(h('div', { class: 'who' }, h('span', {}, 'الدور على: '), h('b', {}, s.team), h('span', {}, ' · اختيار المستوى')));
+      body.push(h('div', { class: 'btns' }, ...s.levels.map(l => act(`${l.k}: ${l.name} · ${l.pts} درجة`, 'pri', () => send({ cmd: 'level', k: l.k }), { disabled: !connected || !l.n }))));
     } else {
-      parts.push(h('div', { class: 'who' }, 'الدور على: ', h('b', {}, s.team), ' · ', PHASE[s.phase] || ''));
-      parts.push(h('p', { class: 'note' }, 'التداول والأخبار من نافذة اللعبة على جهاز العرض. السؤال التالي يظهر هنا مع إجابته.'));
+      const badge = s.teamColor ? h('span', { class: 'badge', style: `background:${s.teamColor};color:${ink(s.teamColor)}` }, String(s.teamNo)) : null;
+      body.push(h('div', { class: 'who' }, badge, h('span', {}, 'الدور على: '), h('b', {}, s.team), h('span', {}, ' · ' + (PHASE[s.phase] || ''))));
+      if (!s.ctx) body.push(h('p', { class: 'note' }, 'ما يجري الآن يظهر على جهاز العرض. السؤال التالي يظهر هنا مع إجابته.'));
     }
-    if (enter) parts.push(h('div', { class: 'btns' }, enter));
-    main.replaceChildren(...parts);
+    const btns = [];
+    if (s.primary && !isJ && s.phase !== 'level') btns.push(act(s.primary, 'pri', () => send({ cmd: 'enter' })));
+    for (const a of s.acts || []) if (a.label !== s.primary) btns.push(act(a.label, '', () => send({ cmd: a.cmd, k: a.k }))); // the primary button is already there
+    if (btns.length) body.push(h('div', { class: 'btns' }, ...btns));
+    main.replaceChildren(...parts, h('div', { class: 'stack' + (s.paused ? ' dim' : '') }, ...body));
+    main.classList.toggle('blur', !sessionStorage.getItem('presenter-seen'));
+    const live = s.done && s.result ? 'rec:' + s.result + ':' + (s.q ? s.q.n : '') : '';
+    if (live && live !== wasLive) say(s.qmode === 'choices' ? `${s.answering || ''}: ${RES[s.result]}` : `سُجّلت: ${RES[s.result]}`); wasLive = live;
   }
 
+  function onState(m) {
+    const key = judging(m) ? (m.q.n + '|' + (m.q.text || '')) : '';
+    if (key && key !== judgingKey) armedAt = Date.now() + 600; // a fresh judging screen: ignore verdicts for 600 ms
+    judgingKey = key; last = Date.now(); connected = true;
+    const k = JSON.stringify(m); if (k !== (onState.k || '')) { onState.k = k; render(m); } // the timer ticks every second: redraw only on change
+  }
+  function refreshLink() { // the light, the status words, and the banner when the game goes quiet
+    const on = !!game && !game.closed && Date.now() - last < 2500;
+    $('light').classList.toggle('on', on); $('status').textContent = on ? 'متصلة باللعبة' : 'انقطع الاتصال: تابع من نافذة اللعبة';
+    if (on !== connected) { connected = on; say(on ? 'عاد الاتصال باللعبة' : 'انقطع الاتصال باللعبة'); render(snap || { scene: 'title' }); }
+  }
+  if (!sessionStorage.getItem('presenter-seen')) { $('firstrun').hidden = false; $('seen').onclick = () => { sessionStorage.setItem('presenter-seen', '1'); $('firstrun').hidden = true; main.classList.remove('blur'); }; }
   if (game) {
-    addEventListener('message', e => {
-      if (e.source !== game) return; // only the game that opened this window
-      const m = e.data || {};
-      if (m.type !== 'state') return;
-      last = Date.now();
-      const key = JSON.stringify(m); if (key !== snap) { snap = key; render(m); } // the timer ticks every second: redraw only on change
-    });
-    // this window usually has the focus, so the host's keys come here: pass the game's own shortcuts on
-    addEventListener('keydown', e => {
-      if (e.repeat) return;
-      if (e.code === 'Enter' || e.code === 'NumpadEnter') { if (!(e.target instanceof Element && e.target.closest('button'))) send({ cmd: 'enter' }); }
-      else { const k = /^(Digit|Numpad)([1-4])$/.exec(e.code); if (k) send({ cmd: 'choice', k: +k[2] }); }
-    });
+    addEventListener('message', e => { if (e.source !== game) return; const m = e.data || {}; if (m.type === 'state') onState(m); }); // only the game that opened this window
+    // click only: this window has no keyboard shortcuts, so a stray key can never record or skip anything
     game.postMessage({ type: 'hello' }, '*');
-    setInterval(() => {
-      const on = !game.closed && Date.now() - last < 2500;
-      document.getElementById('light').classList.toggle('on', on);
-      document.getElementById('status').textContent = on ? 'متصلة باللعبة' : 'انقطع الاتصال: تابع من نافذة اللعبة';
-    }, 500);
+    setInterval(() => { refreshLink(); if (!connected && game && !game.closed) game.postMessage({ type: 'hello' }, '*'); }, 2000); // asks again every 2 s while it is cut off
+    setInterval(refreshLink, 500);
   }
 </script>
 </body>

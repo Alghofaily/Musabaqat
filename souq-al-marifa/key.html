@@ -18,65 +18,114 @@
   @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-latin-500.woff2) format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
   @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-latin-700.woff2) format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
   :root { --bg: #0b1220; --panel: #121a2b; --line: #1f2a40; --text: #e6edf7; --muted: #8a99b4; --brass: #f5b301; --ok: #16c784; }
+  * { box-sizing: border-box; }
   body { margin: 0; font: 500 17px/1.5 'Plex', Tahoma, 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); font-variant-numeric: tabular-nums; }
-  header { position: sticky; top: 0; z-index: 1; background: var(--panel); border-bottom: 2px solid var(--brass); padding: 10px 16px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 12px; }
+  [hidden] { display: none !important; }
+  header { position: sticky; top: 0; z-index: 2; background: var(--panel); border-bottom: 2px solid var(--brass); padding: 10px max(16px, calc((100vw - 760px) / 2)); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px 12px; }
+  header b { color: var(--brass); }
+  header button#other { font: inherit; font-size: 14px; font-weight: 700; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
   .go { flex-basis: 100%; display: flex; gap: 8px; align-items: center; font-size: 15px; color: var(--muted); }
   .go input { font: inherit; font-size: 22px; font-weight: 700; width: 5.5ch; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text); direction: ltr; text-align: center; }
-  .go input:focus-visible { outline: 3px solid var(--brass); outline-offset: 1px; }
-  header b { color: var(--brass); }
+  .go input:focus-visible, header button:focus-visible { outline: 3px solid var(--brass); outline-offset: 1px; }
   .code { font-size: 24px; letter-spacing: 4px; direction: ltr; display: inline-block; color: var(--brass); font-weight: 700; }
-  .range { padding: 10px 16px 0; color: var(--muted); font-size: 15px; }
+  .range { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 13px; text-wrap: balance; }
+  .jump { flex-basis: 100%; margin: 0; min-height: 0; font-size: 15px; font-weight: 700; color: var(--muted); text-wrap: balance; }
+  .jump.warn { color: #ff6b73; }
+  main { max-width: 760px; margin-inline: auto; }
   ol { list-style: none; margin: 0; padding: 6px 12px 48px; }
-  li { display: grid; grid-template-columns: 4ch 1fr; gap: 2px 10px; padding: 10px 4px; border-bottom: 1px solid var(--line); scroll-margin-top: 140px; }
-  li.ten { border-bottom: 2px solid var(--brass); } /* a rule every ten questions, to keep one's place */
+  li { display: grid; grid-template-columns: 4ch 1fr; gap: 2px 10px; padding: 10px 4px; border-bottom: 1px solid var(--line); scroll-margin-top: 200px; }
+  li.ten { border-bottom: 2px solid var(--brass); }
   li.hit { background: var(--panel); border-radius: 8px; outline: 2px solid var(--brass); }
+  li.hit .a { font-size: 26px; }
+  li.end { display: block; text-align: center; color: var(--muted); font-weight: 700; padding: 18px 4px; border-bottom: 0; }
   .n { font-size: 22px; font-weight: 700; color: var(--brass); grid-row: span 2; direction: ltr; text-align: center; }
   .q { color: var(--muted); font-size: 14px; }
   .a { font-size: 20px; font-weight: 700; color: var(--ok); }
   .msg { padding: 24px 16px; }
   .codebox { padding: 28px 16px; display: grid; gap: 14px; justify-items: center; text-align: center; }
   .codebox .ask { margin: 0; font-size: 20px; font-weight: 700; }
-  .codebox input { font: 700 clamp(18px, 6vw, 28px)/1.2 ui-monospace, Menlo, Consolas, monospace; width: 100%; max-width: 14ch; direction: ltr; text-align: center; letter-spacing: 3px; text-transform: uppercase; padding: 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--panel); color: var(--text); box-sizing: content-box; }
+  .codebox input { font: 700 clamp(18px, 6vw, 28px)/1.2 ui-monospace, Menlo, Consolas, monospace; width: 100%; max-width: 14ch; direction: ltr; text-align: center; letter-spacing: 3px; text-transform: uppercase; padding: 10px; border-radius: 10px; border: 2px solid var(--line); background: var(--panel); color: var(--text); }
   .codebox input:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
   .codebox button { font: inherit; font-size: 20px; font-weight: 700; padding: 12px 30px; border-radius: 10px; border: 0; background: var(--brass); color: #1a1000; cursor: pointer; }
   .codebox .err { margin: 0; color: #ff6b73; font-weight: 700; min-height: 1.6em; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 </style>
 </head>
 <body>
-<header><b>للمقدّم فقط</b><span>رمز المطابقة <span class="code" id="code">----</span></span>
-  <label class="go" hidden>اذهب إلى سؤال <input id="go" type="number" inputmode="numeric" min="1" aria-label="رقم السؤال على شاشة اللعبة"></label></header>
-<p class="range" id="range"></p>
+<header>
+  <b>للمقدّم فقط</b>
+  <span id="codewrap" hidden>رمز المطابقة <span class="code" id="code"></span></span>
+  <button id="other" type="button" hidden>رمز آخر</button>
+  <p class="range" id="range" hidden></p>
+  <label class="go" hidden>اذهب إلى سؤال <input id="go" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="رقم السؤال على شاشة اللعبة"></label>
+  <p class="jump" id="jump"></p>
+</header>
+<div id="live" class="sr" aria-live="polite"></div>
 <main id="main"><p class="msg">جارٍ فتح المفتاح…</p></main>
 <script src="questions.js"></script>
 <script src="order.js"></script>
 <script src="pack.js"></script>
 <script>
   (async () => {
-    const GAME = 'S', ORD = SouqOrder, main = document.getElementById('main'), $ = id => document.getElementById(id);
-    const msg = t => { const p = document.createElement('p'); p.className = 'msg'; p.textContent = t; main.replaceChildren(p); };
+    const GAME = 'S', ORD = SouqOrder;
+    const main = document.getElementById('main'), $ = id => document.getElementById(id), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const say = t => { $('live').textContent = ''; setTimeout(() => { $('live').textContent = t; }, 30); }; // aria-live: a hit or a miss is read out
+    const STAMP = ORD.matchCode(DEFAULT_BANK, 0).slice(0, 2);
+    // an open key shows its match code, its range and the jump box in the sticky header; closing it clears them
+    function header(open, range) {
+      $('codewrap').hidden = $('other').hidden = $('range').hidden = document.querySelector('.go').hidden = !open; $('range').textContent = open ? range : '';
+      if ($('lvbtns')) $('lvbtns').hidden = !open;
+      $('jump').textContent = ''; $('jump').className = 'jump'; $('go').value = '';
+      if (!open) { document.title = 'مفتاح الإجابات — للمقدّم فقط'; $('code').textContent = ''; }
+    }
+    function codeBox(intro = '', prefill = '', err = '') {
+      const input = document.createElement('input'), btn = document.createElement('button'), p = document.createElement('p'), e = document.createElement('p'), box = document.createElement('div');
+      Object.assign(input, { value: prefill, id: 'codein', autocomplete: 'off', spellcheck: false, inputMode: 'text', maxLength: 16 }); input.setAttribute('autocapitalize', 'characters'); input.dir = 'ltr'; input.setAttribute('aria-label', 'رمز المفتاح');
+      p.className = 'ask'; p.textContent = 'اكتب رمز المفتاح الظاهر على شاشة اللعبة'; e.className = 'err'; e.id = 'codeerr'; e.setAttribute('role', 'alert'); e.textContent = err;
+      btn.id = 'codego'; btn.textContent = 'افتح المفتاح';
+      const go = () => { const why = openCode(input.value); if (why) e.textContent = why; }; // the box keeps its text on an error
+      btn.onclick = go; input.onkeydown = ev => { if (ev.key === 'Enter') go(); };
+      box.className = 'codebox'; if (intro) { const m = document.createElement('p'); m.className = 'msg'; m.textContent = intro; m.style.padding = '0'; box.append(m); }
+      box.append(p, input, btn, e); header(false); main.replaceChildren(box); input.focus();
+    }
+    $('other').onclick = () => { history.replaceState(null, '', location.pathname + location.search); codeBox(); }; // another key: back to the code box
+    function jumpInput(find) { // digits only; Enter closes the phone's keyboard
+      const el = $('go');
+      el.oninput = () => { const v = el.value.replace(/\D/g, ''); if (v !== el.value) el.value = v; find(v); };
+      el.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } else if (e.key.length === 1 && !/[0-9]/.test(e.key) && !e.ctrlKey && !e.metaKey) e.preventDefault(); };
+    }
+    const miss = t => { $('jump').textContent = t; $('jump').className = 'jump warn'; say(t); };
+    const hitMsg = t => { $('jump').textContent = ''; $('jump').className = 'jump'; say(t); };
+    const scroll = (li, smooth = true) => li.scrollIntoView({ block: 'center', behavior: reduce || !smooth ? 'auto' : 'smooth' });
+    function startFromHash() {
+      const hash = location.hash.slice(1);
+      if (hash.startsWith('c=')) { const why = openCode(hash.slice(2)); if (why) codeBox('', hash.slice(2), why); return; }
+      if (hash) return fromQR(hash);
+      codeBox();
+    }
     // One renderer for both ways in: the QR (the rows ride in the link) and the typed code (the rows are rebuilt here
     // from the built-in bank and the seed). rows: [[number, question, answer], ...]. Text only, never HTML: CSV rows are untrusted.
     function render(code, rows) {
-      $('code').textContent = code; $('go').closest('label').hidden = false; // the jump box only once a key is open
-      const range = `الأسئلة ${rows[0][0]} إلى ${rows.at(-1)[0]}`;
-      $('range').textContent = range + '. طابق رمز المطابقة مع الرمز على شاشة اللعبة.';
-      document.title = 'مفتاح ' + range;
+      const last = rows.at(-1)[0], range = `الأسئلة ${rows[0][0]} إلى ${last}`;
+      $('code').textContent = code; header(true, range + ' · طابق رمز المطابقة مع شاشة اللعبة'); document.title = 'مفتاح ' + range;
       const ol = document.createElement('ol');
       for (const [n, q, a] of rows) {
         const li = document.createElement('li'); li.id = 'q' + n; if (n % 10 === 0) li.className = 'ten';
         for (const [cls, text] of [['n', n], ['q', q], ['a', a]]) { const s = document.createElement('span'); s.className = cls; s.textContent = text; li.append(s); }
         ol.append(li);
       }
+      const end = document.createElement('li'); end.className = 'end'; end.id = 'qend'; end.textContent = `نهاية المفتاح: السؤال ${last}`; ol.append(end);
       main.replaceChildren(ol);
-      // the host types the number on the stage; that line comes to the middle and is marked
-      $('go').oninput = e => {
+      // the host types the number on the stage; that line comes to the middle and is marked, or the page says the stage is past the key
+      jumpInput(v => {
         document.querySelector('li.hit')?.classList.remove('hit');
-        const li = $('q' + e.target.value);
-        if (li) { li.classList.add('hit'); li.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
-      };
+        if (!v) return hitMsg('');
+        const li = $('q' + +v);
+        if (li) { li.classList.add('hit'); hitMsg(`السؤال ${+v}`); scroll(li); }
+        else { miss(`السؤال ${+v} ليس في هذا المفتاح، المفتاح يصل إلى ${last}. اعرض رمز QR التالي من شاشة اللعبة.`); scroll($('qend'), false); }
+      });
     }
     // the typed code: '' after the key is shown, else the Arabic reason it was refused
-    const STAMP = ORD.matchCode(DEFAULT_BANK, 0).slice(0, 2);
     function openCode(text) {
       const c = ORD.readKeyCode(text);
       if (!c) return 'رمز المفتاح غير صحيح. تأكد من الحروف والأرقام.';
@@ -87,21 +136,11 @@
       history.replaceState(null, '', '#c=' + String(text).toUpperCase().replace(/[\s-]/g, '')); // a reload keeps the key
       return '';
     }
-    function codeBox(prefill = '', err = '') {
-      const input = document.createElement('input'), btn = document.createElement('button'), p = document.createElement('p'), e = document.createElement('p'), box = document.createElement('div');
-      Object.assign(input, { value: prefill, id: 'codein', autocomplete: 'off', spellcheck: false, inputMode: 'text', maxLength: 16 }); input.setAttribute('autocapitalize', 'characters'); input.dir = 'ltr'; input.setAttribute('aria-label', 'الرمز');
-      p.className = 'ask'; p.textContent = 'اكتب رمز المفتاح الظاهر على شاشة اللعبة'; e.className = 'err'; e.id = 'codeerr'; e.setAttribute('role', 'alert'); e.textContent = err;
-      btn.id = 'codego'; btn.textContent = 'افتح المفتاح';
-      const go = () => { const why = openCode(input.value); if (why) e.textContent = why; }; // the box keeps its text on an error
-      btn.onclick = go; input.onkeydown = ev => { if (ev.key === 'Enter') go(); };
-      box.className = 'codebox'; box.append(p, input, btn, e); main.replaceChildren(box); input.focus();
-    }
-    const hash = location.hash.slice(1);
-    if (hash.startsWith('c=')) { const why = openCode(hash.slice(2)); if (why) codeBox(hash.slice(2), why); }
-    else if (hash) {
+    async function fromQR(hash) {
       try { const key = await SouqKey.unpack(hash); render(key.code, key.rows); }
-      catch (e) { msg('هذا الرابط لا يحمل مفتاحاً صالحاً. صوّر الرمز من شاشة اللعبة مرة أخرى.'); }
-    } else codeBox();
+      catch (e) { codeBox('هذا الرابط لا يحمل مفتاحاً صالحاً. صوّر الرمز من شاشة اللعبة مرة أخرى، أو اكتب رمز المفتاح هنا.'); }
+    }
+    startFromHash();
   })();
 </script>
 </body>
