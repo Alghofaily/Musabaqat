@@ -10,6 +10,7 @@
 - [<img src="souq-al-marifa/assets/favicon.svg" width="24" height="24" align="absmiddle" alt=""> سوق المعرفة](https://alghofaily.github.io/Musabaqat/souq-al-marifa/)
 - [<img src="waraqat-al-hazz/assets/favicon.svg" width="24" height="24" align="absmiddle" alt=""> ورقات الحظ](https://alghofaily.github.io/Musabaqat/waraqat-al-hazz/)
 - [<img src="husun-al-marifa/assets/favicon.svg" width="24" height="24" align="absmiddle" alt=""> حصون المعرفة](https://alghofaily.github.io/Musabaqat/husun-al-marifa/)
+- [<img src="duroob/assets/favicon.svg" width="24" height="24" align="absmiddle" alt=""> دروب](https://alghofaily.github.io/Musabaqat/duroob/)
 
 ## الألعاب
 
@@ -20,6 +21,7 @@
 | <img src="souq-al-marifa/assets/favicon.svg" width="48" height="48" alt="شعار سوق المعرفة"> | سوق المعرفة | [`souq-al-marifa`](souq-al-marifa/) | مسابقة معلومات للفرق على شاشة تداول أسهم حية: الإجابة الصحيحة تكسب المال، والمال يُستثمر في السوق، والفريق الأغنى يفوز. |
 | <img src="waraqat-al-hazz/assets/favicon.svg" width="48" height="48" alt="شعار ورقات الحظ"> | ورقات الحظ | [`waraqat-al-hazz`](waraqat-al-hazz/) | مسابقة على طريقة البرامج التلفزيونية: اختر مستوى سؤالك، أجب صحيحاً، ثم اقلب ورقة حظ قد تربحك ألف درجة أو تضرب بها الفرق الأخرى. |
 | <img src="husun-al-marifa/assets/favicon.svg" width="48" height="48" alt="شعار حصون المعرفة"> | حصون المعرفة | [`husun-al-marifa`](husun-al-marifa/) | حرب معلومات للفرق على خريطة سداسية: الإجابة الصحيحة تكسب المال، والمال يشتري كتائب ومدافع وحصوناً، والمعارك تُحسم بأسئلة متتالية حتى تسقط العواصم. |
+| <img src="duroob/assets/favicon.svg" width="48" height="48" alt="شعار دروب"> | دروب | [`duroob`](duroob/) | سباق معلومات لفريقين إلى أربعة على لوحة بالحواجز: كل إجابة صحيحة تشتري حركة واحدة، خطوة نحو الحافة المقابلة أو حاجزاً في طريق المنافس، وكل عدّاء يعبر يكسب نقطة. |
 
 </div>
 

@@ -1,0 +1,1569 @@
+<!doctype html>
+<!-- PROTOTYPE - NOT FOR PRODUCTION -->
+<!-- Question: is a quiz where each answer buys one move on a board you can block more tense than plain points? -->
+<!-- Date: 2026-11-24 -->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<title>دروب</title>
+<style>
+  @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-arabic-500.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-arabic-700.woff2) format('woff2'); unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }
+  @font-face { font-family: 'Plex'; font-weight: 500; src: url(vendor/plex-latin-500.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: 'Plex'; font-weight: 700; src: url(vendor/plex-latin-700.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  /* Tokens. Logo palette: Night #1a1714, Limestone #efe6d4, Lantern #e8a33d, Dark lantern #a8661a. Restyle here only. */
+  .dark { --bg: #1a1714; --panel: #231f1b; --panel2: #2b2621; --line: #3d362e; --text: #efe6d4; --muted: #a89f8d; --accent: #e8a33d; --onaccent: #1a1714; --hover: #342d26;
+    --good: #7fcf9a; --goodbg: rgba(127,207,154,.14); --bad: #ff7b6b; --badbg: rgba(255,123,107,.13); --grid: rgba(239,230,212,.04);
+    --tile: #332c25; --tile2: #3b332b; --stone: #8d8372; --night: #1a1714;
+    --plate: #26211c; --tile-hi: rgba(239,230,212,.13); --tile-lo: rgba(0,0,0,.34); --joint: rgba(239,230,212,.055); --pool: rgba(232,163,61,.2); --vig: rgba(0,0,0,.5); --lan: .17;
+    /* team colours, warm and earthy at close lightness: lapis, pomegranate, verdigris, amethyst (contrast on Night 5.4, 4.8, 8.3, 8.2) */
+    --t0: #5b8bea; --t1: #e4553f; --t2: #4cc4a8; --t3: #dc98e0; --onteam: #1a1714; }
+  .light { --bg: #efe6d4; --panel: #f7f1e4; --panel2: #e9dfca; --line: #cdc0a6; --text: #1a1714; --muted: #5f5648; --accent: #a8661a; --onaccent: #fff; --hover: #e2d6bd;
+    --good: #1d7a45; --goodbg: rgba(29,122,69,.12); --bad: #b3261e; --badbg: rgba(179,38,30,.1); --grid: rgba(26,23,20,.045);
+    --tile: #ddd1b8; --tile2: #d5c8ad; --stone: #6f6657; --night: #1a1714;
+    --plate: #c9bc9f; --tile-hi: rgba(255,255,255,.55); --tile-lo: rgba(60,40,10,.2); --joint: rgba(26,23,20,.09); --pool: rgba(232,163,61,.28); --vig: rgba(90,60,20,.18); --lan: .12;
+    --t0: #214a98; --t1: #b3321f; --t2: #0b7a62; --t3: #a846b8; --onteam: #fff; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+  * { scrollbar-color: var(--line) transparent; scrollbar-width: thin; }
+  ::selection { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+  body { font-family: 'Plex', Tahoma, 'Segoe UI', 'DejaVu Sans', Arial, sans-serif; font-weight: 500; font-variant-numeric: tabular-nums; }
+  #stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: var(--bg); color: var(--text); --hh: 60px; }
+  #game { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #ui { position: absolute; inset: 0; direction: rtl; }
+  button { font: inherit; cursor: pointer; border: 0; border-radius: 6px; color: inherit; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  input, select { font: inherit; color: var(--text); background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; outline: none; min-height: 40px; box-sizing: border-box; }
+  input:focus, select:focus { border-color: var(--accent); }
+  .num { direction: ltr; unicode-bidi: isolate; display: inline-block; }
+  .up { color: var(--good); } .down { color: var(--bad); } .muted { color: var(--muted); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+  .ph { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--line); font-weight: bold; font-size: 15px; gap: 10px; }
+  .btn { padding: 10px 18px; min-height: 44px; font-weight: 700; font-size: 16px; background: var(--panel2); border: 1px solid var(--line); }
+  .btn:hover { background: var(--hover); }
+  .btn.pri { background: var(--accent); color: var(--onaccent); border-color: transparent; }
+  .btn.buy { background: var(--good); color: #fff; border-color: transparent; }
+  .dark .btn.buy { color: #0c1d13; }
+  .btn.sell { background: var(--bad); color: #fff; border-color: transparent; }
+  .dark .btn.sell { color: #2a0a06; }
+  .btn.ghost { background: transparent; color: var(--muted); }
+  .btn.ghost.danger { color: var(--bad); }
+  .btn.ghost:hover { color: var(--text); }
+  .btn.on { background: var(--accent); color: var(--onaccent); border-color: transparent; }
+  .btn:disabled { opacity: .35; cursor: default; }
+  .seg { display: inline-flex; flex-wrap: wrap; background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 3px; gap: 3px; }
+  .seg button { padding: 7px 14px; min-height: 38px; background: transparent; font-size: 14px; font-weight: 700; color: var(--muted); }
+  .seg button.on { background: var(--accent); color: var(--onaccent); }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 4px; background: var(--panel2); border: 1px solid var(--line); font-size: 14px; font-weight: 700; white-space: nowrap; }
+  .tbadge { display: inline-grid; place-items: center; flex: none; border-radius: 22%; background: var(--c); color: var(--onteam); font-weight: 700; line-height: 1; }
+
+  /* play screen */
+  #app { position: absolute; inset: 0; display: grid; grid-template-rows: var(--hh) 1fr; }
+  header { display: flex; align-items: center; gap: 12px; padding: 0 14px; background: var(--panel); border-bottom: 1px solid var(--line); }
+  header .sp { flex: 1; }
+  header .btn { min-height: 44px; padding: 8px 14px; font-size: 14px; }
+  /* Board as hero: in the ready and action phases the board takes the whole height and the card is a slim rail;
+     in the question phase the question takes the stage and the board steps aside, dimmed. */
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; grid-template-rows: minmax(0, 1fr) auto; gap: 8px; padding: 8px; min-height: 0; }
+  main > #bd { grid-column: 1; grid-row: 1 / span 2; display: flex; flex-direction: column; min-height: 0; position: relative; background: transparent; border: 0; transition: opacity .25s ease-out, filter .25s ease-out; }
+  main > .card { grid-column: 2; grid-row: 1; }
+  main > #lb { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; gap: 6px; }
+  body:not(.tall) main[data-ph=q] { grid-template-columns: minmax(0, 1fr) 372px; }
+  body:not(.tall) main[data-ph=q] > .card { grid-column: 1; grid-row: 1 / span 2; }
+  body:not(.tall) main[data-ph=q] > #bd { grid-column: 2; grid-row: 1; align-self: start; pointer-events: none; }
+  body:not(.tall) main[data-ph=q] .bwrap { opacity: .6; filter: saturate(.7); }
+  body:not(.tall) main[data-ph=q] .bwrap { flex: none; aspect-ratio: 1 / 1; }
+  .bmsg { position: absolute; top: 10px; inset-inline-start: 10px; width: max-content; z-index: 3; display: flex; align-items: center; gap: 12px; padding: 6px 8px 6px 16px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); box-shadow: 0 6px 18px rgba(0,0,0,.35); font-size: 18px; font-weight: 700; max-width: min(40%, 340px); }
+  .bmsg:empty { display: none; }
+  .bmsg .btn { min-height: 34px; padding: 4px 12px; font-size: 14px; }
+  .bwrap { position: relative; flex: 1; min-height: 0; }
+  .bwrap svg { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: manipulation; user-select: none; overflow: visible; }
+  .pulse { animation: pulse 1.3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes pulse { 50% { opacity: .55; transform: scale(.88); } }
+  .flash { animation: flash .5s cubic-bezier(.16,1,.3,1); transform-box: fill-box; transform-origin: center; }
+  @keyframes flash { from { opacity: 0; transform: scale(.3); } to { opacity: 1; transform: none; } }
+  /* board motion: a wall drops from above and lands (200ms) while its shadow tightens, the cells it separates flash; a runner slides (200ms);
+     a scored goal edge bursts; a banner in the team colour crosses the board (1.2s). Reduced motion: the banner shows still, nothing moves. */
+  .wdrop { animation: wdrop .22s linear both; transform-box: fill-box; transform-origin: center; }
+  @keyframes wdrop { 0% { opacity: 0; transform: translateY(-26px) scale(1.4); animation-timing-function: cubic-bezier(.55, 0, .9, .5); }
+    16% { opacity: 1; animation-timing-function: linear; }
+    72% { opacity: 1; transform: translateY(0) scale(1); animation-timing-function: cubic-bezier(.2, .8, .3, 1); }
+    86% { transform: scale(1.05, .93); animation-timing-function: cubic-bezier(.2, .8, .3, 1); } 100% { opacity: 1; transform: none; } }
+  .wsh { animation: wsh .22s linear both; transform-box: fill-box; transform-origin: center; }
+  @keyframes wsh { 0% { opacity: .05; transform: translate(14px, 22px) scale(1.35); animation-timing-function: cubic-bezier(.55, 0, .9, .5); } 72% { opacity: .5; transform: none; } 100% { opacity: .5; transform: none; } }
+  .cflash { animation: cflash .55s ease-out both; }
+  @keyframes cflash { 0% { opacity: 0; } 22% { opacity: .75; } 100% { opacity: 0; } }
+  .rslide { animation: rslide .2s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes rslide { from { transform: translate(var(--dx), var(--dy)); } to { transform: none; } }
+  .rpop { animation: rpop .22s cubic-bezier(.16,1,.3,1) both; transform-box: fill-box; transform-origin: center; }
+  @keyframes rpop { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: none; } }
+  .epulse { animation: epulse .8s ease-out both; }
+  @keyframes epulse { 0% { filter: brightness(1); } 30% { filter: brightness(1.7); } 100% { filter: brightness(1); } }
+  .eburst { animation: eburst .9s cubic-bezier(.16,1,.3,1) both; transform-box: fill-box; transform-origin: center; }
+  @keyframes eburst { 0% { opacity: 1; transform: scale(1, 1); } 100% { opacity: 0; transform: scale(var(--sx), var(--sy)); } }
+  .reveal { animation: reveal .3s cubic-bezier(.16,1,.3,1) both; transform-box: fill-box; transform-origin: center; }
+  @keyframes reveal { 0% { opacity: 0; transform: scale(.3); } 60% { opacity: 1; transform: scale(1.14); } 100% { opacity: 1; transform: none; } }
+  .pbanner { position: absolute; left: 50%; top: 40%; z-index: 4; display: flex; align-items: baseline; gap: 22px; padding: 12px 44px 16px; border-radius: 16px; pointer-events: none; white-space: nowrap;
+    background: var(--c); color: var(--onteam); font-size: 68px; font-weight: 700; line-height: 1.15; transform: translate(-50%, -50%);
+    box-shadow: 0 18px 44px rgba(0,0,0,.55), inset 0 4px 0 rgba(255,255,255,.32), inset 0 -6px 0 rgba(0,0,0,.22); animation: pbanner 1.2s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes pbanner { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.6); } 14% { opacity: 1; transform: translate(-50%, -50%) scale(1.07); } 24% { transform: translate(-50%, -50%) scale(1); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -66%) scale(1); } }
+  .lbp.bump { animation: bump .8s cubic-bezier(.16,1,.3,1); }
+  .lbp.bump .pts { animation: bumpn .8s cubic-bezier(.16,1,.3,1); transform-origin: right center; }
+  @keyframes bump { 0% { box-shadow: 0 0 0 0 var(--c); } 25% { box-shadow: 0 0 0 5px var(--c); transform: scale(1.04); } 100% { box-shadow: 0 0 0 0 transparent; transform: none; } }
+  @keyframes bumpn { 0% { transform: scale(1); } 30% { transform: scale(1.5); color: var(--c); } 100% { transform: scale(1); } }
+  .egl { opacity: .95; }
+  .lbp { min-width: 0; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 2px 10px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); }
+  .lbp.cur { background: color-mix(in srgb, var(--c) 26%, var(--panel)); border-color: color-mix(in srgb, var(--c) 55%, var(--line)); }
+  .lbp .nm { font-weight: bold; font-size: 17px; min-width: 0; }
+  .lbp.cur .l2 { color: color-mix(in srgb, var(--text) 78%, var(--muted)); }
+  .lbp .l2 { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--muted); }
+  .lbp .l3 { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+  .lbp .pts { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; min-width: 1.4em; text-align: end; }
+  .ico { display: inline-flex; align-items: center; gap: 3px; color: var(--text); font-weight: 700; }
+  .ico svg { width: 18px; height: 18px; fill: currentColor; }
+  .st { padding: 1px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; background: var(--badbg); color: var(--bad); }
+  .st.neutral { background: var(--panel); color: var(--muted); border: 1px solid var(--line); }
+  .card { position: relative; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+  .card .body { flex: 1; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; min-height: 0; overflow: auto; }
+  .card .ph { font-size: 16px; padding: 10px 16px; }
+  .card.turn { border-color: var(--team); box-shadow: inset 0 0 0 1px var(--team); }
+  .card.turn > .ph { background: color-mix(in srgb, var(--team) 18%, var(--panel)); border-bottom-color: color-mix(in srgb, var(--team) 50%, var(--line)); }
+  .q { font-size: 28px; font-weight: bold; line-height: 1.45; }
+  .choices { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; flex: 1; grid-auto-rows: minmax(0, 1fr); }
+  .choice { display: flex; align-items: center; gap: 10px; padding: 8px 16px; background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; font-weight: 700; font-size: 20px; text-align: right; min-height: 0; }
+  .choice:hover:not(:disabled) { border-color: var(--accent); }
+  .choice .k { flex: none; width: 34px; height: 34px; border-radius: 4px; background: var(--line); display: grid; place-items: center; font-size: 17px; }
+  .choice.right { background: var(--goodbg); border-color: var(--good); } .choice.wrong { background: var(--badbg); border-color: var(--bad); }
+  .choice.dim { opacity: .35; } .choice:disabled { cursor: default; }
+  .choice .mark { margin-inline-start: auto; flex: none; display: grid; } .choice .mark svg { width: 34px; height: 34px; }
+  .choice.right .mark { color: var(--good); } .choice.wrong .mark { color: var(--bad); }
+  .card[data-size=m] .q { font-size: 24px; } .card[data-size=m] .choice { font-size: 18px; }
+  .card[data-size=l] .q { font-size: 20px; line-height: 1.4; } .card[data-size=l] .choice { font-size: 16px; padding: 6px 12px; }
+  .card[data-done] .q { font-size: 22px; } .card[data-done] .choice { padding-block: 5px; } .card[data-done] .body { gap: 8px; }
+  body:not(.tall) main[data-ph=q] .q { font-size: 40px; line-height: 1.4; }
+  body:not(.tall) main[data-ph=q] .choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body:not(.tall) main[data-ph=q] .choice { font-size: 26px; padding: 10px 20px; }
+  body:not(.tall) main[data-ph=q] .choice .k { width: 44px; height: 44px; font-size: 22px; }
+  body:not(.tall) main[data-ph=q] .card[data-size=m] .q { font-size: 32px; } body:not(.tall) main[data-ph=q] .card[data-size=m] .choice { font-size: 22px; }
+  body:not(.tall) main[data-ph=q] .card[data-size=l] .q { font-size: 26px; } body:not(.tall) main[data-ph=q] .card[data-size=l] .choice { font-size: 19px; }
+  body:not(.tall) main[data-ph=q] .card[data-done] .q { font-size: 30px; }
+  body:not(.tall) main[data-ph=q] .card[data-judge] .qbig { font-size: 54px; }
+  body:not(.tall) main[data-ph=q] .card[data-judge][data-size=m] .qbig { font-size: 42px; } body:not(.tall) main[data-ph=q] .card[data-judge][data-size=l] .qbig { font-size: 32px; }
+  body:not(.tall) main[data-ph=q] .ring { width: 104px; height: 104px; } body:not(.tall) main[data-ph=q] .ring b { font-size: 34px; }
+  .chip.catchip { font-size: 18px; padding: 5px 14px; color: var(--text); background: color-mix(in srgb, var(--accent) 20%, var(--panel2)); border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+  .card[data-judge] .qbig { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 36px; line-height: 1.4; }
+  .card[data-judge][data-size=m] .qbig { font-size: 30px; } .card[data-judge][data-size=l] .qbig { font-size: 25px; }
+  .answer { padding: 12px 14px; border-radius: 6px; background: var(--goodbg); border: 1px solid var(--good); font-weight: bold; font-size: 22px; }
+  .teams { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tchip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px 8px 10px; min-height: 44px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--line); font-weight: bold; font-size: 14px; }
+  .tchip.on { border-color: var(--c); box-shadow: 0 0 0 2px var(--c) inset; }
+  .ring { position: relative; width: 84px; height: 84px; flex: none; }
+  .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 26px; }
+  .verdict { font-size: 46px; font-weight: 700; line-height: 1; }
+  .readyteam { display: grid; justify-items: center; gap: 8px; text-align: center; }
+  .qband { display: none; }
+  body:not(.tall) main[data-ph=q] .qband { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; gap: 14px; padding: 8px 4px; overflow: hidden; }
+  .qband .t1 { font-size: 24px; color: var(--muted); line-height: 1.2; } .qband .t2 { font-size: 36px; font-weight: 700; line-height: 1.2; }
+  .readyteam .nm0 { font-size: 30px; font-weight: 700; line-height: 1.2; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .note { padding: 10px 14px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--line); font-size: 17px; font-weight: 700; line-height: 1.5; }
+  .note.warn { border-color: var(--accent); }
+  .acts { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .tall .acts { grid-template-columns: 1fr 1fr; }
+  .acts .btn { font-size: 17px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .acts .btn svg { width: 22px; height: 22px; fill: currentColor; flex: none; }
+  .hint { font-size: 30px; line-height: 1.3; font-weight: 700; }
+  .bighint { flex: 1; min-height: 0; display: grid; place-items: center; text-align: center; font-size: 28px; line-height: 1.4; font-weight: 700; color: var(--text); padding: 6px 0; text-wrap: balance; }
+  .bighint .num { font-size: 1em; }
+  .pvmsg { min-height: 26px; font-size: 19px; font-weight: 700; display: flex; align-items: center; gap: 10px; line-height: 1.4; }
+  .pvmsg svg { flex: none; }
+  .undo { position: relative; overflow: hidden; }
+  .undo::after { content: ''; position: absolute; inset: auto 0 0 0; height: 3px; background: var(--text); transform-origin: right; animation: drain var(--d) linear forwards; }
+  @keyframes drain { to { transform: scaleX(0); } }
+  .toast { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 30; display: flex; align-items: center; gap: 14px; padding: 8px 10px 8px 18px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.35); font-weight: 700; font-size: 16px; }
+  .ov { position: absolute; inset: 0; background: rgba(10,8,6,.66); display: flex; align-items: center; justify-content: center; z-index: 20; }
+  .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 22px 26px; min-width: 380px; max-width: calc(100% - 24px); box-sizing: border-box; display: grid; gap: 14px; text-align: center; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } .pbanner { animation: none !important; } }
+
+  /* title, setup, bank, results */
+  .screen { position: absolute; inset: 0; padding: 8px 40px; display: flex; flex-direction: column; gap: 8px; box-sizing: border-box; overflow-y: auto; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: grid; gap: 6px; font-size: 13px; color: var(--muted); font-weight: 700; }
+  .field input { width: 120px; direction: ltr; text-align: center; font-size: 16px; font-weight: bold; }
+  .box { padding: 8px 16px; display: grid; gap: 8px; align-content: start; }
+  .box > .seg { justify-self: start; }
+  .box h3 { margin: 0; font-size: 16px; }
+  .names { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 8px; }
+  .names input { min-height: 36px; width: 100%; box-sizing: border-box; direction: rtl; text-align: right; font-size: 14px; }
+  .banklist { overflow: auto; flex: 1; min-height: 0; }
+  .bq { display: grid; grid-template-columns: 110px 1fr 190px 70px; gap: 10px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .addq { display: grid; grid-template-columns: 130px minmax(0,1fr); gap: 8px; }
+  .addq input { direction: rtl; text-align: right; }
+  table.lb { width: 100%; border-collapse: collapse; font-size: 18px; }
+  table.lb th { color: var(--muted); font-weight: normal; font-size: 14px; text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  table.lb td { padding: 0 10px; height: 40px; border-bottom: 1px solid var(--line); }
+  .pod { opacity: 0; transform: translateY(24px); transition: opacity .45s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1); }
+  .pod.in { opacity: 1; transform: none; }
+  .winner { height: 78px; display: flex; align-items: center; justify-content: center; gap: 14px; font-weight: 700; text-wrap: balance; text-align: center; }
+  @media (prefers-reduced-motion: reduce) { .pod { transition: none; } }
+
+  /* host key and host menu */
+  .keymodal { width: 760px; max-width: calc(100% - 24px); justify-items: center; }
+  .keywarn { font-size: 19px; font-weight: 700; color: var(--bad); line-height: 1.6; max-width: 640px; }
+  .qrbox { background: #fff; padding: 10px; border-radius: 8px; line-height: 0; width: 400px; height: 400px; max-width: 100%; display: grid; place-items: center; overflow: hidden; }
+  .qrbox svg { width: 100%; height: 100%; transition: filter .25s ease-out; }
+  .qrbox.veiled svg { filter: blur(16px); }
+  .codeview { display: grid; gap: 10px; justify-items: center; width: 100%; padding: 8px 0; }
+  .bigcode { font: 700 54px/1.1 ui-monospace, Menlo, Consolas, monospace; direction: ltr; unicode-bidi: isolate; letter-spacing: 4px; color: var(--accent); }
+  .codeview .addr { font-size: 22px; font-weight: 700; direction: ltr; unicode-bidi: isolate; word-break: break-all; }
+  .keybtns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .chip.keychip { font: inherit; font-size: 13px; font-weight: 700; color: var(--muted); cursor: default; }
+  .chip.keychip:not([disabled]) { cursor: pointer; } .chip.keychip:not([disabled]):hover { color: var(--text); border-color: var(--accent); }
+  .chip.keychip b { color: var(--text); letter-spacing: 1px; }
+  .chip.keychip.near { border-color: var(--accent); color: var(--accent); }
+  .chip.keychip .take { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  .hostmenu { position: absolute; left: 12px; z-index: 40; min-width: 300px; padding: 10px; display: grid; gap: 4px; }
+  .hostmenu .seg { justify-self: start; }
+  .hostmenu .btn.menurow { justify-content: flex-start; text-align: start; min-height: 44px; font-size: 16px; width: 100%; }
+  .hostmenu .menukeys { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 8px; display: grid; gap: 2px; font-size: 14px; }
+
+  /* portrait (.tall): one column, the header wraps, panels stack */
+  .tall #app { --hh: 104px; }
+  .tall header { flex-wrap: wrap; align-content: center; row-gap: 6px; padding: 6px 10px; }
+  .tall header .ttl, .tall header .seg { display: none; }
+  .tall main { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-auto-rows: max-content; align-content: start; overflow-y: auto; }
+  .tall main > .card, .tall main > #bd, .tall main > #lb { grid-column: 1; grid-row: auto; }
+  .tall main > #bd { order: 1; } .tall main > .card { order: 2; } .tall main > #lb { order: 3; flex-direction: row; flex-wrap: wrap; }
+  .tall .bwrap { flex: none; aspect-ratio: 1 / 1; }
+  .tall .lbp { flex: 1 1 calc(50% - 8px); }
+  .tall main > #bd { grid-row: auto; }
+  .tall .card .body { overflow: visible; }
+  .tall .q { font-size: 26px; } .tall .choices { flex: none; grid-auto-rows: auto; } .tall .choice { min-height: 54px; font-size: 18px; }
+  .tall .screen { padding: 16px; overflow-x: hidden; }
+  .tall .grid2 { grid-template-columns: minmax(0, 1fr) !important; flex: none !important; }
+  .tall .bq { grid-template-columns: minmax(0, 1fr) auto; }
+  .tall .addq { grid-template-columns: minmax(0, 1fr); }
+  .tall .banklist { flex: none; overflow: visible; }
+  .tall .family.end ~ .screen { padding-bottom: 96px; }
+  .tall .pods { width: 100%; gap: 8px !important; } .tall .pod { width: auto !important; flex: 1; min-width: 0; }
+  .tall .winner { height: auto; min-height: 78px; }
+
+  /* intro: the logo's lockup rises and fades; every timing is a share of --t (config introTime) */
+  #intro { position: fixed; inset: 0; z-index: 9999; display: grid; place-content: center; background: var(--bg); animation: intro-out var(--t) linear both; }
+  #intro.i-skip { animation: intro-skip .2s linear both; }
+  #intro img { width: 46vmin; height: auto; animation: intro-rise var(--t) both; }
+  @keyframes intro-out { 0%, 86% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes intro-skip { to { opacity: 0; } }
+  @keyframes intro-rise { 0% { opacity: 0; transform: translateY(3vmin) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 40%, 100% { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { #intro, #intro * { animation: none !important; } }
+  /* Musabaqat family link, top-left of the title and results screens */
+  .family { position: absolute; top: 20px; left: 26px; z-index: 2; display: block; height: 62px; padding: 6px; box-sizing: border-box; border-radius: 10px; line-height: 0; }
+  .family svg { height: 100%; width: auto; }
+  .family.end { top: auto; bottom: 18px; }
+  .family:hover { background: color-mix(in srgb, var(--mq-name) 9%, transparent); }
+  .family:focus-visible { outline: 3px solid var(--mq-y); outline-offset: 2px; }
+  .dark { --mq-name: #f7f3ea; --mq-g: #16c784; --mq-y: #f6c343; --mq-b: #4f7fd8; }
+  .light { --mq-name: #0b1220; --mq-g: #0b8a5a; --mq-y: #b97f06; --mq-b: #2c56a8; }
+</style>
+</head>
+<body class="dark">
+<div id="stage"><canvas id="game"></canvas><div id="ui"></div></div>
+<script src="config.js"></script>
+<script src="questions.js"></script>
+<script src="rules.js"></script>
+<script src="csv.js"></script>
+<script src="order.js"></script>
+<script src="pack.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script>
+'use strict';
+// دروب: a host-run team quiz on a walled board. A right answer earns one action (enter a runner, step, drop a
+// wall, move a wall, use a power); a runner that reaches the far edge scores. The board rules live in rules.js
+// (DuroobRules); this file is the host's screens around them. The UI is DOM and SVG over a canvas background.
+
+// ---- Built to be checked ----------------------------------------------------------------
+const params = new URLSearchParams(location.search);
+const tune = new Proxy({}, { get: (_, k) => CONFIG[k].value }); // live: tune.undoTime is CONFIG.undoTime.value
+const STEP = 1 / 60;
+let W = 1280, H = 720, TALL = false;
+const TITLE = 'دروب';
+const CONTROLS = ['Esc: إلغاء الحركة أو إغلاق النوافذ', 'الفأرة أو اللمس: كل شيء', '1-4: اختيار الإجابة', 'R: تدوير الحاجز', 'Enter: الزر الرئيسي', 'P: إيقاف مؤقت · M: كتم الصوت', 'Z: تراجع'];
+const clock = window.GAME_CLOCK || { now: () => performance.now() / 1000 };
+const CHEAP = params.get('render') === 'cheap';
+const R = DuroobRules;
+let seed;
+function rng() { // mulberry32; every gameplay random call reads this, never Math.random
+  seed = (seed + 0x6D2B79F5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), seed | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+let vseed = 11; // decoration's own stream (confetti), never the game's chance
+function vrng() { vseed = (vseed + 0x6D2B79F5) | 0; let t = Math.imul(vseed ^ (vseed >>> 15), vseed | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+const events = [];
+const ruleTune = () => ({ // rules.js DEFAULT_TUNE, from config.js
+  wallsAuto: { 9: [tune.walls9x2, tune.walls9x3], 10: [tune.walls10x2, tune.walls10x3], 12: [tune.walls12x2, tune.walls12x3] },
+  boxesAuto: { 9: tune.boxes9, 10: tune.boxes10, 12: tune.boxes12 },
+  boxWeights: { hammer: tune.boxHammer, double: tune.boxDouble, back: tune.boxBack, freeze: tune.boxFreeze }, pushBack: tune.pushBack });
+
+// ---- Screen ---------------------------------------------------------------------------
+const stage = document.getElementById('stage');
+const canvas = document.getElementById('game');
+const ui = document.getElementById('ui');
+const ctx = canvas.getContext('2d');
+function fit() {
+  const vw = innerWidth, vh = innerHeight, a = vw / vh;
+  TALL = a < 0.9;
+  if (TALL) { W = Math.max(560, Math.round(1150 * a)); H = Math.round(W / a); }
+  else if (a >= 16 / 9) { H = 720; W = Math.round(720 * a); }
+  else { W = 1280; H = Math.round(1280 / a); }
+  const s = Math.min(vw / W, vh / H), r = s * (devicePixelRatio || 1);
+  canvas.width = Math.round(W * r); canvas.height = Math.round(H * r); ctx.setTransform(r, 0, 0, r, 0, 0);
+  stage.style.width = W + 'px'; stage.style.height = H + 'px';
+  stage.style.transform = `translate(${Math.round((vw - W * s) / 2)}px, ${Math.round((vh - H * s) / 2)}px) scale(${s})`;
+  document.body.classList.toggle('tall', TALL);
+}
+addEventListener('resize', () => { fit(); if (scene) drawFrame(); });
+fit();
+
+// ---- Input ------------------------------------------------------------------------------
+const down = new Set(), hit = new Set();
+const pressed = code => hit.has(code);
+const typing = () => document.activeElement && ['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName);
+addEventListener('keydown', e => {
+  startAudio();
+  const nativeEnter = (e.code === 'Enter' || e.code === 'NumpadEnter') && e.target instanceof Element && e.target.closest('button, a');
+  if (!e.repeat && !nativeEnter) { down.add(e.code); hit.add(e.code); }
+  if (e.code === 'Space' && !typing()) e.preventDefault();
+});
+addEventListener('keyup', e => down.delete(e.code));
+addEventListener('pointerdown', () => startAudio());
+addEventListener('blur', () => down.clear());
+
+// ---- Audio --------------------------------------------------------------------------------
+let audio = null, muted = false;
+function startAudio() {
+  if (!audio) {
+    const ac = window.GAME_AUDIO || new (window.AudioContext || window.webkitAudioContext)();
+    const out = ac.createGain(); out.gain.value = muted ? 0 : tune.volume; out.connect(ac.destination); audio = { ac, out };
+  }
+  if (audio.ac.state === 'suspended') audio.ac.resume();
+}
+function setMuted(m) { muted = m; store.set('duroob.muted', m); if (audio) audio.out.gain.value = m ? 0 : tune.volume; if (scene === 'play') renderHeader(); }
+addEventListener('tune', () => setMuted(muted));
+function tone(freq, dur, type = 'sine', vol = 0.25, delay = 0) {
+  if (!audio || muted) return;
+  const t = audio.ac.currentTime + delay, o = audio.ac.createOscillator(), g = audio.ac.createGain();
+  o.type = type; o.frequency.value = freq; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(g).connect(audio.out); o.start(t); o.stop(t + dur);
+}
+const sfx = {
+  click: () => tone(880, 0.05, 'triangle', 0.12),
+  right: () => [660, 880, 1320].forEach((f, i) => tone(f, 0.16, 'triangle', 0.22, i * 0.08)),
+  wrong: () => { tone(200, 0.3, 'sawtooth', 0.16); tone(150, 0.4, 'sawtooth', 0.14, 0.1); },
+  tick: () => tone(1200, 0.035, 'square', 0.1),
+  step: () => tone(520, 0.07, 'triangle', 0.18),
+  wall: () => { tone(110, 0.22, 'sawtooth', 0.22); tone(70, 0.3, 'square', 0.14, 0.04); },
+  score: () => [523, 784, 1047, 1568].forEach((f, i) => tone(f, 0.14, 'triangle', 0.22, i * 0.07)),
+  good: () => [740, 988].forEach((f, i) => tone(f, 0.12, 'triangle', 0.2, i * 0.08)),
+  bad: () => tone(240, 0.14, 'square', 0.12),
+  win: () => [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.22, 'triangle', 0.22, i * 0.12)),
+};
+
+// ---- Helpers ---------------------------------------------------------------------------
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const across = i => state.g.marks.filter(m => m.team === i).length; // points are runners across: one runner over the far edge, one point
+function acrossText(n) { // «عبر عدّاءان»: how many runners got across, for the podium
+  if (n === 0) return 'لم يعبر أي عدّاء';
+  if (n === 1) return 'عبر عدّاء واحد';
+  if (n === 2) return 'عبر عدّاءان';
+  return `عبر ${fmt(n)} ${n <= 10 ? 'عدّائين' : 'عدّاءً'}`;
+}
+function ptCount(n) { // نقطة، نقطتان، 3 نقاط، 11 نقطة: the number first, as it is read
+  if (n === 2) return 'نقطتان';
+  const r = n % 100;
+  return `${fmt(n)} ${r >= 3 && r <= 10 ? 'نقاط' : 'نقطة'}`;
+}
+function qCount(n) { // Arabic number agreement: سؤال واحد، سؤالان، 3 أسئلة، 11 سؤالاً، 100 سؤال
+  if (n === 1) return 'سؤال واحد';
+  if (n === 2) return 'سؤالان';
+  const r = n % 100;
+  return `${fmt(n)} ${r >= 3 && r <= 10 ? 'أسئلة' : r >= 11 ? 'سؤالاً' : 'سؤال'}`;
+}
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const toNum = s => parseInt(String(s).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d-]/g, ''), 10);
+function h(tag, props = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'style') e.style.cssText = v;
+    else if (k === 'html') e.innerHTML = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat()) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(c));
+  return e;
+}
+const B = (label, cls, fn, extra = {}) => h('button', { class: 'btn ' + cls, onclick: () => { sfx.click(); fn(); }, ...extra }, label);
+const N = v => h('span', { class: 'num' }, v);
+
+// ---- Drawn figures (no emoji, no cross or plus shapes) -----------------------------------------
+const TEAM_HEX = ['#5b8bea', '#e4553f', '#4cc4a8', '#dc98e0']; // the dark theme's team colours, for the host window (the page itself reads --t0..--t3)
+const SIDE = [['الأسفل', 'الأعلى'], ['الأعلى', 'الأسفل'], ['اليمين', 'اليسار'], ['اليسار', 'اليمين']]; // [from, to] on the screen, per side
+const sideText = i => `من ${SIDE[i][0]} إلى ${SIDE[i][1]}`;
+const tcol = i => `var(--t${i})`;
+function badge(i, size = 22) { // a team's badge: a rounded tile in its colour with its number
+  return h('span', { class: 'tbadge', style: `--c:${tcol(i)};width:${size}px;height:${size}px;font-size:${Math.round(size * 0.58)}px` }, String(i + 1));
+}
+const ICON = { // 24-unit glyphs for the powers and the surprises
+  hammer: '<g transform="rotate(-40 12 12)"><rect x="9.6" y="9" width="4.8" height="14" rx="1.2"/><rect x="4" y="2.5" width="16" height="7.5" rx="1.6"/></g>',
+  double: '<path d="M2.5 5 L11 12 L2.5 19 Z M12.5 5 L21 12 L12.5 19 Z"/>',
+  back: '<path d="M9 3.2 L3 8.4 L9 13.6 V10 H14.5 A3.4 3.4 0 0 1 14.5 16.8 H8.5 V20 H14.5 A6.6 6.6 0 0 0 14.5 6.8 H9 Z"/>',
+  freeze: '<path fill-rule="evenodd" d="M12 2 A10 10 0 1 0 12 22 A10 10 0 1 0 12 2 Z M12 4.4 A7.6 7.6 0 1 1 12 19.6 A7.6 7.6 0 1 1 12 4.4 Z"/><rect x="8.2" y="7.6" width="2.8" height="8.8" rx=".7"/><rect x="13" y="7.6" width="2.8" height="8.8" rx=".7"/>',
+  wall: '<rect x="2" y="9" width="20" height="6" rx="1.4"/>',
+  enter: '<path d="M9.5 2.5 H14.5 V9.5 H19 L12 17 L5 9.5 H9.5 Z"/><rect x="3.5" y="19" width="17" height="3" rx="1.2"/>',
+  step: '<circle cx="7" cy="12" r="4.6"/><path d="M13.4 5.8 L21.4 12 L13.4 18.2 Z"/>',
+};
+const icon = (k, size = 18) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true">${ICON[k]}</svg>`;
+const ringSize = () => TALL ? 84 : 104;
+function ring(left, total, size = 84) { // countdown ring: lantern, then red in the last seconds
+  const r = size / 2 - 6, c = 2 * Math.PI * r, f = clamp(left / total, 0, 1);
+  const col = left <= tune.tickWarn ? 'var(--bad)' : 'var(--accent)';
+  return `<svg width="${size}" height="${size}" style="transform:rotate(-90deg);display:block"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="6"/>
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${col}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${(c * (1 - f)).toFixed(2)}"/></svg>`;
+}
+const MARK_RIGHT = '<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5 L9.5 18 L20 6.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const MARK_WRONG = '<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12 H18" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/></svg>'; // a bar: no cross in the family
+const TROPHY = `<svg width="70" height="70" viewBox="0 0 70 70"><path d="M20 8 H50 V24 C50 36 43 42 35 42 C27 42 20 36 20 24 Z" fill="var(--accent)"/>
+  <path d="M20 12 H10 C10 24 16 28 22 28 M50 12 H60 C60 24 54 28 48 28" fill="none" stroke="var(--accent)" stroke-width="4"/>
+  <rect x="31" y="42" width="8" height="10" fill="var(--accent)"/><rect x="22" y="52" width="26" height="8" rx="2" fill="var(--accent)"/>
+  <path d="M27 12 V24 C27 30 30 34 34 35" stroke="rgba(255,255,255,.55)" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+const logoSrc = (kind = 'symbol-small') => `assets/logo/masters/${kind}-color-${document.body.classList.contains('light') ? 'light' : 'dark'}.svg`;
+const LOGO = (px = 36, kind = 'symbol-small') => h('img', { src: logoSrc(kind), alt: '', 'data-logo': kind, style: `width:${px}px;height:auto;display:block` });
+
+// ---- Settings, bank and theme (kept in the browser) -------------------------------------------
+const store = { get: (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } } };
+function loadBank() {
+  const b = store.get('duroob.bank', null);
+  return Array.isArray(b) && b.length && b.every(r => Array.isArray(r) && r.length === 6 && r.every(x => typeof x === 'string' && x)) ? b : DEFAULT_BANK.map(r => r.slice());
+}
+let bank = loadBank();
+const saveBank = () => store.set('duroob.bank', bank);
+let bankMsg = null;
+const WHY = { missing: 'خانة فارغة', duplicate: 'خيارات مكررة', long: 'نص أطول من ' + DuroobCSV.MAX_CELL + ' حرف', limit: 'تجاوز ' + DuroobCSV.MAX_ROWS + ' سؤال' };
+const whyList = sk => sk.slice(0, 5).map(x => `السطر ${x.line} (${WHY[x.why]})`).join('، ') + (sk.length > 5 ? ` و${sk.length - 5} غيرها` : '');
+async function importCSV(file) { // the host's file: السؤال، الخيار 1 (الإجابة)، الخيار 2، الخيار 3، الخيار 4
+  const say = (text, good) => { bankMsg = { text, good }; go('bank'); };
+  if (!/\.(csv|txt)$/i.test(file.name)) return say('اختر ملفاً بصيغة CSV', false);
+  if (file.size > 2e6) return say('الملف أكبر من 2 ميغابايت', false);
+  const buf = await file.arrayBuffer();
+  let text; // Excel's "CSV UTF-8" is UTF-8; its plain "CSV" saves Arabic as Windows-1256
+  try { text = new TextDecoder('utf-8', { fatal: true }).decode(buf); } catch { text = new TextDecoder('windows-1256').decode(buf); }
+  const cat = file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').trim().slice(0, 30) || 'مستورد';
+  const { questions, skipped } = DuroobCSV.questionsFromCSV(text, cat);
+  if (!questions.length) return say('لم أجد أسئلة صالحة في الملف' + (skipped.length ? ': ' + whyList(skipped) : '. تأكد من الأعمدة الخمسة.'), false);
+  const apply = replace => {
+    bank = replace ? questions : questions.concat(bank);
+    const saved = saveBank();
+    say(`${replace ? 'استُبدلت الأسئلة بـ' : 'أُضيف'} ${qCount(questions.length)} من "${file.name}"` + (skipped.length ? ` · تُجوهل ${skipped.length}: ${whyList(skipped)}` : '')
+      + (saved ? '' : ' · تنبيه: تعذر الحفظ في المتصفح، ستبقى الأسئلة حتى إغلاق الصفحة فقط'), saved);
+  };
+  const close = () => document.getElementById('importask')?.remove();
+  close();
+  ui.append(h('div', { class: 'ov', id: 'importask' }, h('div', { class: 'modal', style: 'max-width:560px' },
+    h('b', { style: 'font-size:20px' }, `في الملف ${qCount(questions.length)}`),
+    skipped.length ? h('div', { class: 'down', style: 'font-size:13px' }, `سيُتجاهل ${skipped.length}: ${whyList(skipped)}`) : null,
+    h('div', { class: 'muted' }, `في البنك الآن ${qCount(bank.length)}. ماذا تريد أن تفعل بالجديدة؟`),
+    h('div', { style: 'display:flex;gap:10px;justify-content:center;flex-wrap:wrap' },
+      B('إضافتها إلى الأسئلة الحالية', 'pri', () => { close(); apply(false); }, { 'data-primary': '1' }),
+      B('استبدال الأسئلة الحالية', '', () => { close(); apply(true); }),
+      B('إلغاء', '', close)))));
+}
+function downloadTemplate() {
+  const a = h('a', { href: URL.createObjectURL(new Blob([DuroobCSV.TEMPLATE], { type: 'text/csv;charset=utf-8' })), download: 'questions-template.csv' });
+  document.body.append(a); a.click(); a.remove();
+}
+const SIZES = [9, 10, 12];
+const nearestSize = v => SIZES.reduce((a, b) => Math.abs(b - v) < Math.abs(a - v) ? b : a);
+function defaults() {
+  return { teams: tune.teams, names: Array.from({ length: 4 }, (_, i) => `الفريق ${i + 1}`), size: nearestSize(tune.boardSize), wallsFixed: tune.wallsFixed > 0, wallsN: Math.max(3, tune.wallsFixed || 8),
+    boxes: !!tune.boxes, answerTime: tune.answerTime, mode: 'seq', qmode: 'choices', end: 'manual', rounds: tune.rounds, minutes: tune.minutes, target: tune.targetPoints, hostScreen: 'phone' };
+}
+const hostMode = (s = settings) => s.qmode === 'judge' ? s.hostScreen : 'none';
+function loadSettings() {
+  const s = Object.assign(defaults(), store.get('duroob.settings', {}));
+  const lim = { teams: CONFIG.teams, answerTime: CONFIG.answerTime, rounds: CONFIG.rounds, minutes: CONFIG.minutes, target: CONFIG.targetPoints };
+  for (const [k, c] of Object.entries(lim)) s[k] = clamp(Number(s[k]) || c.value, c.min, c.max);
+  s.size = nearestSize(Number(s.size) || 9); s.wallsN = clamp(Number(s.wallsN) || 8, 3, 15); s.wallsFixed = !!s.wallsFixed; s.boxes = !!s.boxes;
+  if (!['seq', 'fast'].includes(s.mode)) s.mode = 'seq';
+  if (!['choices', 'judge', 'own'].includes(s.qmode)) s.qmode = 'choices';
+  if (!['phone', 'window'].includes(s.hostScreen)) s.hostScreen = 'phone';
+  if (!['manual', 'timed', 'rounds', 'target'].includes(s.end)) s.end = 'manual';
+  s.names = Array.from({ length: 4 }, (_, i) => (Array.isArray(s.names) && typeof s.names[i] === 'string' && s.names[i].trim()) || `الفريق ${i + 1}`);
+  return s;
+}
+let settings = loadSettings();
+// A game in progress survives a refresh or a closed tab: saved on every render of the play scene, cleared at the end.
+// It resumes only with the same bank (its match code), or the fixed question order would not hold.
+const saveGame = () => { if (scene === 'play' && !state.final) store.set('duroob.game', { seed, settings, state }); };
+const clearGame = () => { try { localStorage.removeItem('duroob.game'); } catch {} };
+function savedGame() {
+  const g = store.get('duroob.game', null);
+  return g && g.state && g.state.g && Array.isArray(g.state.g.teams) && g.settings && g.state.code === O.matchCode(bank, g.state.seed0) ? g : null;
+}
+function resumeGame(g) {
+  seed = g.seed; settings = Object.assign(loadSettings(), g.settings); state = g.state; undo = null; pend = null; removeMode = false;
+  go('play'); state.paused = true; renderHeader();
+}
+addEventListener('beforeunload', e => { if (scene === 'play') { saveGame(); e.preventDefault(); e.returnValue = ''; } });
+let theme = store.get('duroob.theme', 'dark') === 'light' ? 'light' : 'dark';
+muted = !!store.get('duroob.muted', false);
+function setTheme(t) {
+  theme = t; document.body.classList.remove('dark', 'light'); document.body.classList.add(t); store.set('duroob.theme', t);
+  document.querySelectorAll('img[data-logo]').forEach(i => { i.src = logoSrc(i.dataset.logo); });
+}
+setTheme(theme);
+
+// ---- Game state ----------------------------------------------------------------------------------
+let scene, state;
+const O = DuroobOrder;
+let undo = null; // { state, seed, until }: the state just before the last verdict or action, for tune.undoTime seconds
+let pend = null; // the snapshot taken before the first rule call of the action in progress
+let removeMode = false; // the host's «إزالة حاجز» tool is waiting for a click on a wall
+const T = i => state.names[i];
+function reset() {
+  seed = Number(params.get('seed')) || CONFIG.seed || (Date.now() | 0); // seed 0: a new game every time
+  const seed0 = seed, s = settings, n = s.teams;
+  const g = R.newGame(s.size, n, { walls: s.wallsFixed ? s.wallsN : 'auto', boxes: s.boxes }, ruleTune(), rng);
+  state = {
+    t: 0, paused: false, n, names: s.names.slice(0, n), g,
+    cur: 0, turns: 0, round: 1, elapsed: 0, lastCall: false,
+    phase: 'ready', timer: 0, ticked: -1, q: null, answeredBy: null, picked: null, result: null, act: null, last: '', notes: [], flash: null, final: null, msg: '',
+    deck: O.questionDeck(bank.length, seed0), qi: 0, seed0, code: O.matchCode(bank, seed0),
+    keyTo: 0, keyAsk: hostMode() === 'phone' ? { from: 0, step: 1 } : null, keySnooze: -1,
+  };
+  undo = null; pend = null; removeMode = false;
+}
+function drawQuestion() {
+  const n = bank.length, k = state.qi++;
+  if (phoneKey() && k >= state.keyTo && !state.keyAsk) state.keyAsk = { from: k, step: 1 };
+  if (k > 0 && k % n === 0) state.deck = O.questionDeck(n, state.seed0 + k / n);
+  const row = bank[state.deck[k % n]];
+  const order = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+  return { n: k + 1, cat: row[0], text: row[1], choices: order.map(k => row[2 + k]), right: order.indexOf(0) };
+}
+const ownQuestion = () => ({ own: true, n: 0, cat: '', text: '', choices: [], right: -1 });
+function gameOverDue() {
+  if (settings.end === 'rounds') return state.round > settings.rounds;
+  if (settings.end === 'timed') return state.elapsed >= settings.minutes * 60;
+  if (settings.end === 'target') return R.reachedTarget(state.g, settings.target) >= 0;
+  return false;
+}
+function setPhase(p) {
+  if (p === 'question' || p === 'act') undo = null;
+  state.phase = p; state.msg = '';
+  if (p === 'ready' && phoneKey() && !state.keyAsk && state.keySnooze !== state.turns && state.keyTo - state.qi < tune.keyReserve) state.keyAsk = { from: state.qi, step: 1 };
+  events.push({ phase: p }); renderAll();
+}
+function undoLast() {
+  if (!undo) return;
+  const u = undo; undo = null; pend = null; state = u.state; seed = u.seed; refs.countFor = null;
+  sfx.click(); events.push({ undo: true }); renderAll();
+}
+function newQuestion() {
+  state.q = settings.qmode === 'own' ? ownQuestion() : drawQuestion(); state.timer = settings.answerTime; state.ticked = -1; state.picked = null; state.result = null;
+  state.notes = []; state.answeredBy = settings.mode === 'seq' ? state.cur : null; setPhase('question');
+}
+function answer(right, picked = null) {
+  if (state.answeredBy == null || state.phase !== 'question') return;
+  undo = { state: structuredClone(state), seed, until: state.t + tune.undoTime };
+  state.cur = state.answeredBy; state.picked = picked; state.result = right ? 'right' : 'wrong';
+  right ? sfx.right() : sfx.wrong();
+  events.push({ answer: state.result }); setPhase('reveal'); // setPhase keeps this undo: only a question or an action clears it
+}
+function timeUp() { state.result = 'time'; sfx.wrong(); setPhase('reveal'); }
+function afterReveal() {
+  const i = state.cur;
+  if (state.result !== 'right') { state.last = state.result === 'time' ? `انتهى وقت ${T(i)}` : `${T(i)}: إجابة خاطئة`; return endTurn(); }
+  if (state.g.teams[i].frozen) { state.last = `${T(i)} مجمّد: لا يتحرك حتى يلعب فريق آخر`; return endTurn(); }
+  const forced = R.forcedAction(state.g, i);
+  state.act = { mode: forced === 'skip' ? 'skip' : forced || (state.g.teams[i].pos ? 'step' : 'enter'), o: 'h', double: 0, pv: null, from: null, forced };
+  setPhase('act');
+}
+function endTurn() {
+  state.turns++; state.act = null;
+  if (settings.mode === 'seq') { const nx = R.nextTeam(state.g, state.cur); state.cur = nx.team; state.notes = nx.skipped.map(i => `يُتخطّى دور ${T(i)}: مجمّد`); }
+  state.round = Math.floor(state.turns / state.n) + 1;
+  if (gameOverDue()) return endGame();
+  setPhase('ready');
+}
+function endGame() {
+  clearGame(); removeMode = false;
+  state.final = R.ranking(state.g);
+  go('results');
+}
+
+// ---- The action: one per right answer ----------------------------------------------------------------
+const ERR = { bounds: 'خارج اللوحة', overlap: 'يتداخل مع حاجز آخر', cross: 'يقطع حاجزاً آخر على شكل تقاطع', frozen: 'الفريق مجمّد', 'no-walls': 'لا حواجز في المخزون', illegal: 'غير مسموح', 'not-entry': 'ليست خانة دخول', 'no-power': 'لا يملك هذه القوة', 'not-own': 'ليس حاجز هذا الفريق', 'same-spot': 'اختر مكاناً آخر' };
+const fail = res => { state.msg = ERR[res.err] || 'غير مسموح'; sfx.bad(); renderAll(); return false; };
+const beginMutation = () => { if (!pend) pend = { state: structuredClone(state), seed }; };
+function finishAction(text) {
+  const i = state.cur; R.afterAction(state.g, i); state.last = text; state.msg = '';
+  undo = pend ? { state: pend.state, seed: pend.seed, until: state.t + tune.undoTime } : null; pend = null;
+  endTurn();
+}
+function setMode(id) {
+  const a = state.act; a.mode = id === 'double' ? 'step' : id; a.double = id === 'double' ? 1 : 0; a.pv = null; a.from = null; state.msg = ''; renderAll();
+}
+function enterRunner(r, c) {
+  beginMutation(); const res = R.enter(state.g, state.cur, r, c);
+  if (!res.ok) { pend = null; return fail(res); }
+  sfx.step(); finishAction(`${T(state.cur)} أدخل عدّاءً`);
+}
+const BOX_TEXT = { hammer: 'مطرقة: يحتفظ بها ليهدم حاجزاً', double: 'خطوتان: يحتفظ بها لحركة مضاعفة', back: 'فخ: العدّاء يعود إلى الوراء', freeze: 'تجميد: لا يتحرك حتى يلعب فريق آخر' };
+function stepTo(r, c) {
+  const a = state.act, i = state.cur, g = state.g; beginMutation();
+  if (a.double === 1) { const d = R.useDouble(g, i); if (!d.ok) { pend = null; return fail(d); } a.double = 2; a.first = true; }
+  const res = R.step(g, i, r, c, rng, ruleTune());
+  if (!res.ok) { if (a.first) { g.teams[i].inv.double++; a.double = 1; a.first = false; } pend = null; return fail(res); }
+  sfx.step();
+  const parts = [];
+  if (res.scored) { sfx.score(); parts.push(`${T(i)} وصل إلى الجهة المقابلة: نقطة`); }
+  else parts.push(`${T(i)} تحرّك`);
+  if (res.box) {
+    state.flash = { kind: res.box, r, c, until: state.t + tune.flashTime };
+    parts.push(res.box === 'back' ? (res.pushed ? `فخ: عاد العدّاء ${res.pushed === 1 ? 'خطوة' : 'خطوتين'}` : 'فخ: حمته الحواجز فلم يعد') : BOX_TEXT[res.box]);
+    (res.box === 'hammer' || res.box === 'double' ? sfx.good : sfx.bad)();
+  }
+  const secondLeft = a.double === 2 && a.first && !res.scored && !res.box && R.pawnMoves(g, i).length > 0;
+  if (secondLeft) { a.first = false; a.lastText = parts.join(' · '); state.msg = ''; return renderAll(); } // the second step is optional
+  const text = (a.lastText ? a.lastText + ' · ' : '') + parts.join(' · ');
+  if (settings.end === 'target' && R.reachedTarget(g, settings.target) >= 0) { R.afterAction(g, i); state.last = text; pend = null; return endGame(); }
+  finishAction(text);
+}
+function endDouble() { const a = state.act; if (!a || a.double !== 2) return; finishAction(a.lastText || `${T(state.cur)} تحرّك`); }
+function pvCheck(a) { // what the board says about the wall being previewed: { err, blocks }
+  const g = a.from ? structuredClone(state.g) : state.g;
+  if (a.from) delete (a.from.o === 'h' ? g.hw : g.vw)[a.from.r + ',' + a.from.c];
+  return R.wallCheck(g, a.pv.o, a.pv.r, a.pv.c);
+}
+function commitWall() {
+  const a = state.act, i = state.cur, pv = a.pv; if (!pv) return; // pv is kept here: the pointer leaving the board for the dialog clears a.pv
+  const chk = pvCheck(a); if (chk.err) return fail(chk);
+  const go1 = () => {
+    beginMutation();
+    const res = a.from ? R.relocateWall(state.g, i, a.from, pv) : R.placeWall(state.g, i, pv.o, pv.r, pv.c);
+    if (!res.ok) { pend = null; return fail(res); }
+    sfx.wall();
+    const sealed = res.blocks.length ? ` · لا طريق الآن أمام ${res.blocks.map(T).join('، ')}` : '';
+    finishAction(`${T(i)} ${a.from ? 'نقل حاجزاً' : 'وضع حاجزاً'}${sealed}`);
+  };
+  if (chk.blocks.length) confirmBox('حاجز يغلق الطريق', `هذا الحاجز يغلق كل الطرق أمام: ${chk.blocks.map(T).join('، ')}. يُسمح بذلك، ويمكن هدمه بمطرقة أو يزيله المقدّم. هل تضعه؟`, 'نعم، ضعه', go1, 'رجوع');
+  else go1();
+}
+function hammerAt(o, r, c) {
+  beginMutation(); const res = R.useHammer(state.g, state.cur, o, r, c);
+  if (!res.ok) { pend = null; return fail(res); }
+  sfx.wall(); finishAction(`${T(state.cur)} هدم حاجزاً بالمطرقة`);
+}
+function pickOwn(o, r, c) { // relocate, first click: the team's own wall to move
+  const owner = (o === 'h' ? state.g.hw : state.g.vw)[r + ',' + c];
+  if (owner !== state.cur) { state.msg = 'اختر أحد حواجز هذا الفريق'; sfx.bad(); return renderAll(); }
+  state.act.from = { o, r, c }; state.act.pv = null; state.msg = ''; sfx.click(); renderAll();
+}
+function skipTurn() { state.last = `${T(state.cur)}: عدّاؤه محاصر ولا يملك ما يفعله، يُتخطّى الدور`; endTurn(); }
+function removeWallAt(o, r, c) {
+  removeMode = false;
+  confirmBox('إزالة هذا الحاجز؟', 'يعود الحاجز إلى مخزون صاحبه. ليست هذه حركة لأي فريق.', 'نعم، أزله', () => {
+    const res = R.removeWall(state.g, o, r, c);
+    if (res.ok) { sfx.wall(); state.msg = 'أزال المقدّم حاجزاً'; } renderAll();
+  }, 'إلغاء'); renderAll();
+}
+
+// ---- Board geometry and input ------------------------------------------------------------------------
+const CELL = 48, MARGIN = 46, SLAB = 18; // MARGIN holds the goal-edge bars and their team labels
+const boardSize = () => state.g.size * CELL + 2 * MARGIN;
+const wallRect = (o, r, c) => o === 'h' ? { x: MARGIN + c * CELL + 3, y: MARGIN + (r + 1) * CELL - SLAB / 2, w: 2 * CELL - 6, h: SLAB } : { x: MARGIN + (c + 1) * CELL - SLAB / 2, y: MARGIN + r * CELL + 3, w: SLAB, h: 2 * CELL - 6 };
+const cellCenter = (r, c) => [MARGIN + c * CELL + CELL / 2, MARGIN + r * CELL + CELL / 2];
+const allWalls = () => [['h', state.g.hw], ['v', state.g.vw]].flatMap(([o, m]) => Object.entries(m).map(([k, owner]) => { const [r, c] = k.split(',').map(Number); return { o, r, c, owner }; }));
+function boardPoint(e) { // pointer -> board units, whatever size the svg is drawn at
+  const el = refs.svg, rc = el.getBoundingClientRect(), V = boardSize(), sc = Math.min(rc.width, rc.height) / V;
+  return [(e.clientX - rc.left - (rc.width - V * sc) / 2) / sc, (e.clientY - rc.top - (rc.height - V * sc) / 2) / sc];
+}
+function wallNear(x, y, own) { // the nearest wall to a point, within half a square
+  let best = null, bd = CELL * 0.55;
+  for (const w of allWalls()) {
+    if (own && w.owner !== state.cur) continue;
+    const q = wallRect(w.o, w.r, w.c), dx = Math.max(q.x - x, 0, x - (q.x + q.w)), dy = Math.max(q.y - y, 0, y - (q.y + q.h)), d = Math.hypot(dx, dy);
+    if (d < bd) { bd = d; best = w; }
+  }
+  return best;
+}
+function cornerAt(x, y) { const n = state.g.size, i = clamp(Math.round((y - MARGIN) / CELL), 1, n - 1), j = clamp(Math.round((x - MARGIN) / CELL), 1, n - 1); return [i - 1, j - 1]; }
+function cellAt(x, y) { const c = Math.floor((x - MARGIN) / CELL), r = Math.floor((y - MARGIN) / CELL), n = state.g.size; return r >= 0 && c >= 0 && r < n && c < n ? [r, c] : null; }
+const placing = () => state.phase === 'act' && state.act && (state.act.mode === 'wall' || (state.act.mode === 'relocate' && state.act.from));
+function boardMove(e) {
+  if (state.paused || e.pointerType === 'touch') return;
+  if (!placing()) return;
+  const [x, y] = boardPoint(e), [r, c] = cornerAt(x, y), a = state.act;
+  if (!a.pv || a.pv.r !== r || a.pv.c !== c) { const first = !a.pv; a.pv = { o: a.o, r, c }; renderBoard(); if (first) renderCard(); else renderPv(); }
+}
+function boardClick(e) {
+  if (state.paused || document.querySelector('.ov')) return;
+  const [x, y] = boardPoint(e);
+  if (removeMode) { const w = wallNear(x, y, false); if (w) removeWallAt(w.o, w.r, w.c); return; }
+  if (state.phase !== 'act') return;
+  const a = state.act, g = state.g, i = state.cur, cell = cellAt(x, y);
+  if (a.mode === 'enter') { if (cell && R.entryCells(g, i).some(m => m[0] === cell[0] && m[1] === cell[1])) enterRunner(...cell); else { state.msg = 'اختر خانة مضيئة على حافة الفريق'; sfx.bad(); renderAll(); } }
+  else if (a.mode === 'step') { if (cell && R.pawnMoves(g, i).some(m => m[0] === cell[0] && m[1] === cell[1])) stepTo(...cell); else { state.msg = 'اختر خانة مضيئة'; sfx.bad(); renderAll(); } }
+  else if (a.mode === 'hammer') { const w = wallNear(x, y, false); if (w) hammerAt(w.o, w.r, w.c); else { state.msg = 'اضغط على حاجز'; sfx.bad(); renderAll(); } }
+  else if (a.mode === 'relocate' && !a.from) { const w = wallNear(x, y, true); if (w) pickOwn(w.o, w.r, w.c); else { state.msg = 'اضغط على أحد حواجز هذا الفريق'; sfx.bad(); renderAll(); } }
+  else if (placing()) {
+    const [r, c] = cornerAt(x, y), same = a.pv && a.pv.r === r && a.pv.c === c && a.pv.o === a.o;
+    a.pv = { o: a.o, r, c };
+    if (e.pointerType === 'touch' && !same) { renderBoard(); renderPv(); renderCard(); } // touch: the first tap previews, the second (or the button) places
+    else commitWall();
+  }
+}
+function rotate() { const a = state.act; if (!a) return; a.o = a.o === 'h' ? 'v' : 'h'; if (a.pv) a.pv = { ...a.pv, o: a.o }; renderBoard(); renderPv(); renderCard(); }
+function cancelAction() {
+  if (removeMode) { removeMode = false; return renderAll(); }
+  const a = state.act; if (state.phase !== 'act' || !a) return;
+  if (a.double === 2) return endDouble();
+  if (a.forced && a.forced !== 'skip') { a.pv = null; a.from = null; return renderAll(); }
+  setMode(state.g.teams[state.cur].pos ? 'step' : 'enter');
+}
+
+// ---- Scenes ---------------------------------------------------------------------------------------------
+// The Musabaqat family lockup, inlined so the game stays offline; its colours follow the theme.
+const FAMILY_URL = 'https://alghofaily.github.io/Musabaqat/';
+const FAMILY_MARK = '<svg aria-hidden="true" focusable="false" viewBox="0 0 686 256"><path fill="var(--mq-name)" transform="matrix(0.11905 0 0 0.11905 25.02 163.24)" d="M496 -332Q472 -332 455 -349Q438 -366 438 -390Q438 -414 455 -431Q472 -448 496 -448Q520 -448 537 -431Q554 -414 554 -390Q554 -366 537 -349Q520 -332 496 -332ZM323 -332Q299 -332 282 -349Q265 -366 265 -390Q265 -414 282 -431Q299 -448 323 -448Q347 -448 364 -431Q381 -414 381 -390Q381 -366 364 -349Q347 -332 323 -332ZM25 -0L109 -140L685 -140L685 -0L25 -0ZM605 -0L605 -140L685 -140L685 -309L825 -340L825 -23Q825 -11 815 -6Q805 -1 795 -0.5Q785 -0 785 -0L605 -0ZM915 -0Q915 -0 905 -0.5Q895 -1 885 -6Q875 -11 875 -23L875 -769L1015 -800L1015 -140L1095 -140L1095 -0L915 -0ZM1391 -542Q1367 -542 1350 -559Q1333 -576 1333 -600Q1333 -624 1350 -641Q1367 -658 1391 -658Q1415 -658 1432 -641Q1449 -624 1449 -600Q1449 -576 1432 -559Q1415 -542 1391 -542ZM1218 -542Q1194 -542 1177 -559Q1160 -576 1160 -600Q1160 -624 1177 -641Q1194 -658 1218 -658Q1242 -658 1259 -641Q1276 -624 1276 -600Q1276 -576 1259 -559Q1242 -542 1218 -542ZM1415 -0L1415 -140L1595 -140L1595 -0L1415 -0ZM1055 -0L1055 -140L1335 -140L1335 -268L1475 -340L1475 -23Q1475 -11 1465 -6Q1455 -1 1445 -0.5Q1435 -0 1435 -0L1055 -0ZM1306.3 -170Q1259.5 -170 1220.8 -193Q1182 -216 1158.5 -254.8Q1135 -293.6 1135 -339.8Q1135 -387 1158.5 -425.7Q1182 -464.4 1221 -487.2Q1260 -510 1306.5 -510Q1353 -510 1391 -487Q1429 -464 1452 -425.7Q1475 -387.3 1475 -340Q1475 -293 1452 -254.5Q1429 -216 1391 -193Q1353 -170 1306.3 -170ZM1306 -310Q1319 -310 1327 -318.7Q1335 -327.4 1335 -340Q1335 -352.6 1327 -361.3Q1319 -370 1306 -370Q1293 -370 1284 -361.3Q1275 -352.6 1275 -340Q1275 -327.4 1284 -318.7Q1293 -310 1306 -310ZM1658 208Q1634 208 1617 191Q1600 174 1600 150Q1600 126 1617 109Q1634 92 1658 92Q1682 92 1699 109Q1716 126 1716 150Q1716 174 1699 191Q1682 208 1658 208ZM1555 -0L1555 -140L1635 -140L1635 -309L1775 -340L1775 -23Q1775 -11 1765 -6Q1755 -1 1745 -0.5Q1735 -0 1735 -0L1555 -0ZM1865 -0Q1865 -0 1855 -0.5Q1845 -1 1835 -6Q1825 -11 1825 -23L1825 -769L1965 -800L1965 -140L2045 -140L2045 -0L1865 -0ZM2005 -0L2005 -140L2085 -140L2085 -309L2225 -340L2225 -140L2285 -140L2285 -359L2425 -390L2425 -140L2485 -140L2485 -409L2625 -440L2625 -140L2745 -140L2745 -0L2005 -0ZM2705 -0L2705 -140L2905 -140L2952 -0L2705 -0ZM2949.3 -0Q2902.5 -0 2863.8 -23Q2825 -46 2801.5 -84.8Q2778 -123.6 2778 -169.8Q2778 -217 2801.5 -255.7Q2825 -294.4 2864 -317.2Q2903 -340 2949.5 -340Q2996 -340 3034 -317Q3072 -294 3095 -255.7Q3118 -217.3 3118 -170Q3118 -123 3095 -84.5Q3072 -46 3034 -23Q2996 -0 2949.3 -0ZM2949 -140Q2962 -140 2970 -148.7Q2978 -157.4 2978 -170Q2978 -182.6 2970 -191.3Q2962 -200 2949 -200Q2936 -200 2927 -191.3Q2918 -182.6 2918 -170Q2918 -157.4 2927 -148.7Q2936 -140 2949 -140Z"/><g transform="translate(419.03 0)"><path fill="var(--mq-g)" d="M128 40.4L178.91 91.32L128 142.23L77.09 91.32Z"/><path fill="var(--mq-y)" d="M187.91 107.77L238.82 158.68L187.91 209.6L137 158.68Z"/><path fill="var(--mq-b)" d="M68.09 107.77L119 158.68L68.09 209.6L17.18 158.68Z"/></g></svg>';
+const familyLink = (at = '') => h('a', { class: at ? `family ${at}` : 'family', href: FAMILY_URL, target: '_blank', rel: 'noopener noreferrer', title: 'ألعاب مسابقات',
+  'aria-label': 'ألعاب مسابقات: تفتح صفحة الألعاب في نافذة جديدة', html: FAMILY_MARK, onclick: e => e.currentTarget.blur() });
+function go(name) { if (hostMenuOpen) { hostMenuOpen = false; document.removeEventListener('pointerdown', menuOutside, true); } if (name !== scene) document.getElementById('toast')?.remove(); scene = name; state.paused = false; ui.replaceChildren(); (scenes[name].enter || (() => {}))(); events.push({ scene: name }); }
+
+let refs = {};
+function renderAll() { if (scene !== 'play') return; renderHeader(); renderCard(); renderBoard(); renderTeams(); renderHostKey(); tellPresenter(); saveGame(); }
+function themeSeg(after) {
+  return h('div', { class: 'seg' }, h('button', { class: theme === 'dark' ? 'on' : '', onclick: () => { setTheme('dark'); after(); } }, 'داكن'),
+    h('button', { class: theme === 'light' ? 'on' : '', onclick: () => { setTheme('light'); after(); } }, 'فاتح'));
+}
+let hostMenuOpen = false;
+const menuOutside = e => { if (!e.target.closest('#hostmenu, #menubtn')) closeHostMenu(); };
+function closeHostMenu() { hostMenuOpen = false; document.getElementById('hostmenu')?.remove(); document.removeEventListener('pointerdown', menuOutside, true); if (scene === 'play' && refs.header) renderHeader(); }
+function toggleHostMenu() { if (hostMenuOpen) return closeHostMenu(); hostMenuOpen = true; document.addEventListener('pointerdown', menuOutside, true); renderHeader(); }
+function renderHostMenu() {
+  document.getElementById('hostmenu')?.remove();
+  if (!hostMenuOpen || scene !== 'play') return;
+  const row = (label, fn, cls = '') => B(label, 'ghost menurow ' + cls, fn);
+  const menu = h('div', { id: 'hostmenu', class: 'panel hostmenu', role: 'menu', style: `top:${refs.header.offsetHeight + 4}px` },
+    themeSeg(renderAll),
+    hostMode() === 'window' ? row(presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم', openPresenter) : null,
+    row('إزالة حاجز', () => { closeHostMenu(); startRemove(); }),
+    row(muted ? 'تشغيل الصوت (M)' : 'كتم الصوت (M)', () => setMuted(!muted)),
+    row(state.paused ? 'متابعة (P)' : 'إيقاف مؤقت (P)', () => { state.paused = !state.paused; renderHeader(); }),
+    row('شرح اللعبة', () => { closeHostMenu(); showHelp(); }),
+    row('إنهاء المسابقة', () => { closeHostMenu(); confirmEnd(); }, 'danger'),
+    h('div', { class: 'menukeys' }, h('b', {}, 'الاختصارات'), ...CONTROLS.map(c => h('div', { class: 'muted' }, c))));
+  (document.getElementById('app') || ui).append(menu);
+}
+function startRemove() { if (!allWalls().length) { state.msg = 'لا حواجز على اللوحة'; return renderAll(); } removeMode = true; renderAll(); }
+function renderHeader() {
+  const end = settings.end === 'rounds' ? h('span', { class: 'chip' }, 'الجولة ', N(`${Math.min(state.round, settings.rounds)} / ${settings.rounds}`))
+    : settings.end === 'timed' ? h('span', { class: 'chip', id: 'clockchip' }, 'الوقت المتبقي')
+    : settings.end === 'target' ? h('span', { class: 'chip' }, 'أول من يصل إلى ', N(settings.target), ' نقاط') : h('span', { class: 'chip' }, 'الجولة ', N(state.round), ' · إنهاء يدوي');
+  refs.header.replaceChildren(...[
+    LOGO(40), h('b', { class: 'ttl', style: 'font-size:20px' }, TITLE),
+    end,
+    hostMode() === 'phone' && state ? keyChip() : null,
+    h('span', { class: 'sp' }), B('⋯', 'ghost', toggleHostMenu, { id: 'menubtn', 'aria-label': 'قائمة المقدّم', 'aria-haspopup': 'menu', 'aria-expanded': String(hostMenuOpen), style: 'font-size:26px;min-width:52px;line-height:1' })].filter(Boolean));
+  if (hostMenuOpen) renderHostMenu();
+}
+function teamChip(i, on, fn) {
+  return h('button', { class: 'tchip' + (on ? ' on' : ''), onclick: fn ? () => { sfx.click(); fn(); } : null, style: `--c:${tcol(i)};` + (fn ? '' : 'cursor:default') }, badge(i, 22), state.names[i]);
+}
+const undoBtn = () => undo ? B('تراجع (Z)', 'undo', undoLast, { style: `--d:${Math.max(0, undo.until - state.t).toFixed(2)}s`, title: 'إلغاء آخر حكم أو حركة واستعادة الحالة قبله' }) : null;
+function renderCard() {
+  const p = state.phase, c = refs.card, i = state.cur, g = state.g;
+  const head = (title, right) => h('div', { class: 'ph' }, h('span', {}, title), right || '');
+  const turnHead = (verb, k, right) => h('div', { class: 'ph' }, h('span', { style: 'display:flex;align-items:center;gap:10px;min-width:0' }, h('span', { style: 'font-weight:500' }, verb), badge(k, 32), h('b', { style: 'font-size:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis' }, T(k))), right || '');
+  const ti = settings.mode === 'seq' ? i : p === 'question' || p === 'reveal' ? state.answeredBy : p === 'ready' ? null : i;
+  refs.main.dataset.ph = p === 'question' || p === 'reveal' ? 'q' : 'b';
+  c.classList.toggle('turn', ti != null); c.style.setProperty('--team', ti == null ? 'var(--line)' : tcol(ti));
+  c.dataset.size = ''; c.dataset.done = ''; c.dataset.judge = '';
+  if (refs.qband) { const dn = p === 'reveal'; refs.qband.replaceChildren(...(p !== 'question' && !dn ? [] : ti != null ? [badge(ti, 64), h('div', {}, h('div', { class: 't1' }, dn ? 'أجاب' : 'الدور على'), h('div', { class: 't2' }, T(ti)))] : [h('div', { class: 't2' }, 'من أجاب أولاً؟')])); }
+  const timerBox = total => h('div', { class: 'ring' }, h('span', { id: 'ringsvg', html: ring(state.timer, total, ringSize()) }), h('b', { id: 'ringnum' }, N(Math.ceil(state.timer))));
+  if (p === 'ready') {
+    const t = g.teams[i];
+    const body = settings.mode === 'seq'
+      ? [h('div', { class: 'readyteam' }, h('div', { class: 'muted', style: 'font-size:18px' }, 'الدور على'), badge(i, 72), h('div', { class: 'nm0' }, T(i)),
+          h('div', { class: 'muted', style: 'font-size:28px;line-height:1.3' }, sideText(t.side)), h('div', { style: 'font-size:22px' }, 'النقاط ', h('b', {}, N(t.score)), ' · الحواجز ', h('b', {}, N(t.walls))))]
+      : [h('div', { style: 'font-size:30px;font-weight:700' }, 'جولة الأسرع'), h('div', { class: 'muted', style: 'font-size:26px;line-height:1.4' }, 'يظهر السؤال للجميع، ثم اضغط على الفريق الذي أجاب أولاً.')];
+    c.replaceChildren(head(settings.mode === 'seq' ? 'الدور التالي' : 'سؤال جديد', state.lastCall ? h('span', { class: 'chip down' }, 'انتهى الوقت · آخر دور') : null),
+      h('div', { class: 'body', style: 'justify-content:center;align-items:center;text-align:center;gap:14px' },
+        state.last ? h('div', { class: 'note', style: 'width:100%;box-sizing:border-box' }, state.last) : null,
+        ...state.notes.map(x => h('div', { class: 'note warn', style: 'width:100%;box-sizing:border-box' }, x)),
+        ...body,
+        h('div', { style: 'display:flex;gap:10px;align-items:center' }, B('اطرح السؤال', 'pri', newQuestion, { 'data-primary': '1', style: 'padding:12px 28px;font-size:21px' }), undoBtn())));
+    return;
+  }
+  if (p === 'question' || p === 'reveal') {
+    const q = state.q, done = p === 'reveal', canAnswer = !done && state.answeredBy != null;
+    const longest = Math.max(0, ...q.choices.map(x => x.length));
+    c.dataset.size = q.text.length > 110 || longest > 45 ? 'l' : q.text.length > 70 || longest > 30 ? 'm' : '';
+    const big = settings.qmode !== 'choices'; c.dataset.judge = big ? '1' : ''; c.dataset.done = done ? '1' : '';
+    const qText = h('div', { class: (q.own ? 'q muted' : 'q') + (big ? ' qbig' : ''), style: big ? '' : 'margin-top:6px' }, q.own ? (done ? 'انتهى السؤال' : 'اطرح سؤالك على الفريق، واحكم قبل انتهاء الوقت.') : q.text);
+    const parts = [h('div', { style: 'display:flex;gap:12px;align-items:center' }, done ? null : timerBox(settings.answerTime),
+      h('div', { style: 'flex:1' }, h('div', { style: 'display:flex;gap:6px;flex-wrap:wrap' }, q.n ? h('span', { class: 'chip' }, 'سؤال ', N(q.n)) : null, q.cat ? h('span', { class: 'chip catchip' }, q.cat) : null),
+      big ? null : qText))];
+    if (big) parts.push(qText);
+    if (settings.mode === 'fast' && !done) parts.push(h('div', {}, h('div', { class: 'muted', style: 'font-size:14px;margin-bottom:5px' }, state.answeredBy == null ? 'من أجاب أولاً؟ (أو اضغط رقم الفريق)' : 'يجيب الآن:'),
+      h('div', { class: 'teams' }, ...[...Array(state.n).keys()].map(k => teamChip(k, state.answeredBy === k, () => { state.answeredBy = k; renderCard(); renderTeams(); })))));
+    if (settings.qmode === 'choices') {
+      parts.push(h('div', { class: 'choices' }, ...q.choices.map((txt, k) => {
+        const cls = done && k === q.right ? ' right' : done && k === state.picked ? ' wrong' : done ? ' dim' : '';
+        const mark = cls === ' right' ? MARK_RIGHT : cls === ' wrong' ? MARK_WRONG : null;
+        return h('button', { class: 'choice' + cls, disabled: !canAnswer, onclick: canAnswer ? () => answer(k === q.right, k) : null }, h('span', { class: 'k' }, k + 1), txt,
+          mark && h('span', { class: 'mark', html: mark, 'aria-label': cls === ' right' ? 'الإجابة الصحيحة' : 'إجابة خاطئة' }));
+      })));
+    } else if (done) { if (!q.own) parts.push(h('div', { class: 'answer' }, 'الإجابة الصحيحة: ', q.choices[q.right])); }
+    else parts.push(h('div', { style: 'display:flex;gap:10px' },
+      B('إجابة صحيحة', 'buy', () => answer(true), { disabled: !canAnswer, 'data-judge': 'right', 'data-primary': canAnswer ? '1' : null, style: 'flex:1' }),
+      B('إجابة خاطئة', 'sell', () => answer(false), { disabled: !canAnswer, 'data-judge': 'wrong', style: 'flex:1' })));
+    if (done) {
+      const right = state.result === 'right', frozen = right && g.teams[i].frozen;
+      parts.push(h('div', { style: 'display:grid;gap:10px;margin-top:auto' },
+        h('div', { style: 'display:flex;align-items:center;gap:14px' },
+          h('div', { class: 'verdict ' + (right ? 'up' : 'down') }, right ? 'إجابة صحيحة' : state.result === 'time' ? 'انتهى الوقت' : 'إجابة خاطئة'),
+          h('div', { class: 'muted', style: 'flex:1;font-size:15px' }, frozen ? `${T(i)} مجمّد: لا يتحرك حتى يلعب فريق آخر` : right ? `${T(i)} يأخذ حركة واحدة` : state.answeredBy == null ? 'لم يُجب أحد' : `تمرّ الفرصة بلا حركة`)),
+        h('div', { style: 'display:flex;gap:10px;align-items:center;justify-content:flex-end' }, undoBtn(),
+          B(right && !frozen ? 'افتح الحركة' : 'التالي', 'pri', afterReveal, { 'data-primary': '1' }))));
+    }
+    c.replaceChildren(ti != null ? turnHead(done ? 'أجاب' : 'يجيب', ti) : head('سؤال الأسرع'), h('div', { class: 'body' }, ...parts));
+    return;
+  }
+  if (p === 'act') return renderAct(c, turnHead);
+}
+function modeHint(a, t) {
+  switch (a.mode) {
+    case 'enter': return 'اضغط خانة مضيئة على حافتك لإدخال عدّاء.';
+    case 'step': return a.double === 2 ? 'الخطوة الثانية اختيارية: اضغط خانة مضيئة أو «إنهاء الحركة».' : a.double === 1 ? 'خطوتان: اضغط خانة مضيئة للخطوة الأولى.' : 'اضغط خانة مضيئة لتحريك العدّاء خطوة.';
+    case 'wall': return 'حرّك المؤشر إلى نقطة تقاطع على اللوحة (أو المس)، وأدر الحاجز بـ R. اضغط لتثبيته.';
+    case 'relocate': return a.from ? 'اختر المكان الجديد للحاجز المحدد.' : 'لا حواجز في مخزونك: اضغط على أحد حواجزك لتنقله.';
+    case 'hammer': return 'اضغط على أي حاجز على اللوحة لهدمه.';
+    case 'skip': return 'عدّاؤه محاصر ولا يملك الفريق حاجزاً ولا مطرقة: يُتخطّى الدور.';
+  }
+  return '';
+}
+function stageLine(a, i) { // the one plain line the room reads; the pointer and key instructions are in modeHint, for the host window and the help
+  const t = T(i);
+  switch (a.mode) {
+    case 'enter': return `${t} يُدخل عدّاءً`;
+    case 'step': return a.double ? `${t} يتحرك خطوتين` : `${t} يحرّك عدّاءه`;
+    case 'wall': return `${t} يضع حاجزاً`;
+    case 'relocate': return `${t} ينقل حاجزاً`;
+    case 'hammer': return `${t} يهدم حاجزاً`;
+    case 'skip': return `عدّاء ${t} محاصر: يُتخطّى الدور`;
+  }
+  return '';
+}
+const bigHint = a => ({ enter: 'اضغط على خانة مضيئة في صفّك', step: a.double === 2 ? 'اضغط على خانة مضيئة، أو «إنهاء الحركة»' : 'اضغط على خانة مضيئة', wall: 'حرّك المؤشر إلى نقطة بين أربع خانات ثم اضغط',
+  relocate: a.from ? 'اختر المكان الجديد للحاجز' : 'اضغط على أحد حواجزك', hammer: 'اضغط على الحاجز الذي تهدمه', skip: '' })[a.mode] || '';
+function renderAct(c, turnHead) {
+  const g = state.g, i = state.cur, t = g.teams[i], a = state.act;
+  const own = allWalls().some(w => w.owner === i), any = allWalls().length > 0;
+  const btn = (id, label, ic, show, extra = {}) => show ? B([h('span', { html: icon(ic, 22), style: 'display:flex' }), label], (id === 'double' ? a.double > 0 : a.mode === id && !a.double) ? 'on' : '', () => setMode(id), extra) : null;
+  const f = a.forced;
+  const list = a.mode === 'skip' ? [] : [
+    (!f) && !t.pos ? btn('enter', 'أدخل عدّاءً', 'enter', true) : null,
+    (!f) && t.pos ? btn('step', 'خطوة', 'step', true) : null,
+    (!f || f === 'wall') && t.walls > 0 ? btn('wall', `ضع حاجزاً (${t.walls})`, 'wall', true) : null,
+    (!f || f === 'relocate') && t.walls === 0 && own ? btn('relocate', 'انقل حاجزاً', 'wall', true) : null,
+    (!f || f === 'hammer') && t.inv.hammer > 0 && any ? btn('hammer', `مطرقة (${t.inv.hammer})`, 'hammer', true) : null,
+    (!f) && t.inv.double > 0 && t.pos && R.pawnMoves(g, i).length ? btn('double', `خطوتان (${t.inv.double})`, 'double', true) : null,
+  ].filter(Boolean);
+  const pvmsg = h('div', { class: 'pvmsg', id: 'pvmsg' });
+  const extra = [], canPlace = placing() && a.pv && !pvCheck(a).err; // an illegal preview cannot be placed
+  if (placing()) {
+    extra.push(h('div', { style: 'display:flex;gap:8px;flex-wrap:wrap' }, B(a.o === 'h' ? 'أفقي: أدره' : 'عمودي: أدره', '', rotate, { title: 'المفتاح R' }),
+      B('ثبّت الحاجز', 'pri', commitWall, { id: 'commitbtn', disabled: !canPlace, 'data-primary': canPlace ? '1' : null })));
+  }
+  if (a.double === 2) extra.push(B('إنهاء الحركة', 'pri', endDouble, { 'data-primary': '1', title: 'المفتاح Esc' }));
+  if (a.mode === 'skip') extra.push(B('التالي', 'pri', skipTurn, { 'data-primary': '1' }));
+  c.dataset.size = ''; c.dataset.done = ''; c.dataset.judge = '';
+  c.replaceChildren(turnHead('حركتك', i), h('div', { class: 'body' },
+    h('div', { class: 'hint', id: 'stageline' }, stageLine(a, i)),
+    h('div', { style: 'display:flex;gap:8px;flex-wrap:wrap' }, h('span', { class: 'chip' }, sideText(t.side))),
+    a.forced ? h('div', { class: 'note warn' }, a.forced === 'skip' ? 'العدّاء محاصر.' : 'عدّاء الفريق محاصر: عليه ' + { wall: 'وضع حاجز', relocate: 'نقل أحد حواجزه', hammer: 'استعمال المطرقة' }[a.forced] + '.') : null,
+    list.length ? h('div', { class: 'acts' }, ...list) : null, ...extra, pvmsg, h('div', { class: 'bighint' }, bigHint(a)),
+    h('div', { style: 'margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:10px' }, h('span', { class: 'muted', style: 'font-size:14px' }, 'حركة واحدة ثم يمر الدور'),
+      a.mode !== 'skip' && !a.forced ? B('إلغاء', 'ghost', cancelAction, { title: 'المفتاح Esc' }) : null)));
+  renderPv();
+}
+// The wall preview's verdict is a line style, never a hue (team colours own the hues): solid = allowed, dashed = seals a path, hatched with one diagonal = illegal.
+const PV_SWATCH = {
+  ok: '<svg width="48" height="20" viewBox="0 0 48 20" aria-hidden="true"><rect x="2" y="4" width="44" height="12" rx="3" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="2.4"/></svg>',
+  seal: '<svg width="48" height="20" viewBox="0 0 48 20" aria-hidden="true"><rect x="2" y="4" width="44" height="12" rx="3" fill="currentColor" fill-opacity=".3" stroke="currentColor" stroke-width="2.4" stroke-dasharray="7 4"/></svg>',
+  bad: '<svg width="48" height="20" viewBox="0 0 48 20" aria-hidden="true"><defs><clipPath id="swc"><rect x="2" y="4" width="44" height="12" rx="3"/></clipPath></defs><g clip-path="url(#swc)" stroke="currentColor" stroke-width="1.8"><path d="M-6 20 L10 0 M2 20 L18 0 M10 20 L26 0 M18 20 L34 0 M26 20 L42 0 M34 20 L50 0 M42 20 L58 0"/></g><rect x="2" y="4" width="44" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M2 16 L46 4" stroke="currentColor" stroke-width="2.4"/></svg>' };
+function renderPv() { // the live word beside the wall preview, and any error; also whether the place button may be pressed
+  const el = document.getElementById('pvmsg'); if (!el) return;
+  const a = state.act, cb = document.getElementById('commitbtn'), chk = placing() && a.pv ? pvCheck(a) : null;
+  if (cb) { cb.disabled = !chk || !!chk.err; if (cb.disabled) cb.removeAttribute('data-primary'); else cb.setAttribute('data-primary', '1'); }
+  if (state.msg) { el.className = 'pvmsg down'; el.textContent = state.msg; return; }
+  if (!chk) { el.className = 'pvmsg'; el.textContent = ''; return; }
+  const kind = chk.err ? 'bad' : chk.blocks.length ? 'seal' : 'ok';
+  el.className = 'pvmsg';
+  el.replaceChildren(h('span', { html: PV_SWATCH[kind], style: 'display:flex' }), kind === 'bad' ? 'غير مسموح: ' + ERR[chk.err] : kind === 'seal' ? `يغلق الطريق أمام ${chk.blocks.map(T).join('، ')}: سيُطلب تأكيدك` : 'مسموح');
+}
+const still = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Defs: a soft glow for the goal edges, a soft shadow for slabs and runners, one stone gradient for every tile, the lantern's light pool,
+// and the hatch of an illegal wall preview.
+const BOARD_DEFS = (V, L) => `<defs><filter id="glow" filterUnits="userSpaceOnUse" x="0" y="0" width="${V}" height="${V}"><feGaussianBlur stdDeviation="6"/></filter>`
+  + `<filter id="soft" filterUnits="userSpaceOnUse" x="0" y="0" width="${V}" height="${V}"><feGaussianBlur stdDeviation="2.4"/></filter>`
+  + `<linearGradient id="stn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".07"/><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>`
+  + `<radialGradient id="lan" gradientUnits="userSpaceOnUse" cx="${V / 2}" cy="${V / 2}" r="${L * 0.74}"><stop offset="0" style="stop-color:#ffc46b;stop-opacity:var(--lan)"/><stop offset="1" style="stop-color:#ffc46b;stop-opacity:0"/></radialGradient>`
+  + `<pattern id="hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="3.2" height="9" style="fill:var(--text)" opacity=".9"/></pattern></defs>`;
+function showBanner(i) { // a runner crossed: the team's name and +1 over the board, big enough for the back row
+  refs.bd.querySelector('.pbanner')?.remove();
+  const el = h('div', { class: 'pbanner', style: `--c:${tcol(i)}`, role: 'status' }, h('span', {}, T(i)), N('+1'));
+  refs.bd.append(el); setTimeout(() => el.remove(), 1250);
+}
+function boardDiff() { // what changed since the last draw, for the motion: { w: new wall keys, r: moved runners, e: scored teams }
+  const g = state.g, prev = refs.prev, now = performance.now(), cur = { walls: new Set(allWalls().map(w => `${w.o}${w.r},${w.c}`)), pos: g.teams.map(t => t.pos && t.pos.slice()), marks: g.marks.length };
+  refs.anim ||= {};
+  if (prev && g.marks.length > prev.marks) showBanner(g.marks[g.marks.length - 1].team); // also under reduced motion: the banner shows, nothing moves
+  if (prev && !still()) {
+    for (const k of cur.walls) if (!prev.walls.has(k)) refs.anim['w' + k] = { t: now, d: 760 };
+    g.teams.forEach((t, i) => {
+      const a = prev.pos[i], b = cur.pos[i];
+      if (a && b && (a[0] !== b[0] || a[1] !== b[1])) refs.anim['r' + i] = { t: now, d: 200, dx: (a[1] - b[1]) * CELL, dy: (a[0] - b[0]) * CELL };
+      else if (!a && b) refs.anim['r' + i] = { t: now, d: 220, pop: 1 };
+      else if (a && !b && g.marks.length > prev.marks) { const m = g.marks[g.marks.length - 1]; refs.anim['g' + i] = { t: now, d: 320, from: a, to: [m.r, m.c] }; }
+    });
+    if (g.marks.length > prev.marks) { const m = g.marks[g.marks.length - 1]; refs.anim['e' + m.team] = { t: now, d: 900 }; refs.anim['m' + m.team] = { t: now, d: 260 }; }
+  }
+  refs.prev = cur;
+  for (const k of Object.keys(refs.anim)) if (now - refs.anim[k].t > refs.anim[k].d) delete refs.anim[k];
+  return now;
+}
+const aniStyle = (a, now, delay = 0) => a ? `animation-delay:${delay - Math.round(now - a.t)}ms;` : '';
+function renderBoard() {
+  const g = state.g, n = g.size, V = boardSize(), a = state.phase === 'act' ? state.act : null, cur = state.cur, parts = [], M = MARGIN, L = n * CELL;
+  const now = boardDiff(), an = refs.anim;
+  parts.push(BOARD_DEFS(V, L));
+  // the courtyard plate the tiles sit on, raised from the flagstones
+  parts.push(`<rect x="${M - 16}" y="${M - 12}" width="${L + 32}" height="${L + 32}" rx="14" style="fill:#000;opacity:.5" filter="url(#soft)"/>`
+    + `<rect x="${M - 16}" y="${M - 16}" width="${L + 32}" height="${L + 32}" rx="14" style="fill:var(--plate);stroke:var(--line);stroke-width:2"/>`
+    + `<path d="M${M - 4} ${M - 15} H${M + L + 4}" style="stroke:var(--tile-hi);stroke-width:2;fill:none"/>`);
+  // each edge glows in the colour of the team heading for it (side 0 goes up, 1 down, 2 left, 3 right); the team's number sits outside the bar on a big tile
+  const E = [[M, M - 12, L, 6, M + L / 2, M - 29, 0], [M, M + L + 6, L, 6, M + L / 2, M + L + 29, 0], [M - 12, M, 6, L, M - 29, M + L / 2, 1], [M + L + 6, M, 6, L, M + L + 29, M + L / 2, 1]];
+  E.forEach(([x, y, w, hh, bx, by, vert], s) => {
+    if (s >= state.n) return;
+    const col = tcol(s), pulse = an['e' + s];
+    parts.push(`<g class="egl${pulse ? ' epulse' : ''}" style="${aniStyle(pulse, now)}"><rect x="${x - 2}" y="${y - 2}" width="${w + 4}" height="${hh + 4}" rx="4" style="fill:${col}" filter="url(#glow)"/><rect x="${x - 2}" y="${y - 2}" width="${w + 4}" height="${hh + 4}" rx="4" style="fill:${col};opacity:.55" filter="url(#soft)"/>`
+      + `<rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="3" style="fill:${col}"/>`
+      + (pulse ? `<rect class="eburst" x="${x}" y="${y}" width="${w}" height="${hh}" rx="3" style="fill:${col};--sx:${vert ? 7 : 1};--sy:${vert ? 1 : 7};${aniStyle(pulse, now)}" filter="url(#glow)"/>` : '')
+      + `<rect x="${bx - 17}" y="${by - 17}" width="34" height="34" rx="8" style="fill:${col};stroke:var(--night);stroke-width:2.5"/><text x="${bx}" y="${by + 8.5}" text-anchor="middle" style="font:700 25px Plex, Arial;fill:var(--onteam)">${s + 1}</text></g>`);
+  });
+  const startOf = (r, c) => [r === n - 1, r === 0, c === n - 1, c === 0];
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+    const [x, y] = [M + c * CELL, M + r * CELL], st = startOf(r, c), X = x + 1.5, Y = y + 1.5, S = CELL - 3;
+    // a carved tile: stone face, soft top-to-bottom shade, a dark inner rim (inner shadow) and a lit line under the top rim
+    parts.push(`<rect x="${X}" y="${Y}" width="${S}" height="${S}" rx="6" style="fill:${(r + c) % 2 ? 'var(--tile2)' : 'var(--tile)'}"/>`
+      + `<rect x="${X}" y="${Y}" width="${S}" height="${S}" rx="6" style="fill:url(#stn)"/>`
+      + `<rect x="${X + 1.4}" y="${Y + 1.4}" width="${S - 2.8}" height="${S - 2.8}" rx="5" style="fill:none;stroke:var(--tile-lo);stroke-width:2.8"/>`
+      + `<path d="M${X + 7} ${Y + 4.4} H${X + S - 7}" style="stroke:var(--tile-hi);stroke-width:1.8;fill:none;stroke-linecap:round"/>`);
+    let k = 0; // a team's start squares: a thin inner border and a carved notch on the outer side, never a fill
+    for (let s = 0; s < state.n; s++) if (st[s]) {
+      const col = tcol(s), i = 5 + k * 4; k++;
+      const notch = [[x + CELL / 2 - 9, y + CELL - 9, 18, 4], [x + CELL / 2 - 9, y + 5, 18, 4], [x + CELL - 9, y + CELL / 2 - 9, 4, 18], [x + 5, y + CELL / 2 - 9, 4, 18]][s];
+      parts.push(`<rect x="${x + i}" y="${y + i}" width="${CELL - 2 * i}" height="${CELL - 2 * i}" rx="4" style="fill:none;stroke:${col};stroke-width:2;opacity:.9"/><rect x="${notch[0]}" y="${notch[1]}" width="${notch[2]}" height="${notch[3]}" rx="2" style="fill:${col}"/>`);
+    }
+  }
+  // the lantern's light pool over the stones, centred on the board
+  parts.push(`<rect x="${M - 16}" y="${M - 16}" width="${L + 32}" height="${L + 32}" rx="14" style="fill:url(#lan);pointer-events:none"/>`);
+  const markAt = {}; for (const m of g.marks) { const k = m.r + ',' + m.c; (markAt[k] ||= []).push(m.team); }
+  for (const [k, ts] of Object.entries(markAt)) { const [r, c] = k.split(',').map(Number);
+    ts.forEach((tm, j) => parts.push(`<circle class="${an['m' + tm] ? 'rpop' : ''}" style="fill:${tcol(tm)};stroke:var(--night);stroke-width:1.5;${aniStyle(an['m' + tm], now)}" cx="${M + c * CELL + CELL / 2 + ((j % 3) - 1) * 15}" cy="${M + r * CELL + CELL - 11 - Math.floor(j / 3) * 14}" r="6"/>`)); }
+  // legal squares for the team's action: a ghost runner with its number where one can enter, a ring where one can step
+  const lit = a ? (a.mode === 'enter' ? R.entryCells(g, cur) : a.mode === 'step' ? R.pawnMoves(g, cur) : []) : [];
+  for (const [r, c] of lit) { const [cx, cy] = cellCenter(r, c), col = tcol(cur);
+    parts.push(a.mode === 'enter'
+      ? `<g class="pulse"><circle cx="${cx}" cy="${cy}" r="19" style="fill:${col};fill-opacity:.4;stroke:${col};stroke-width:3.5;stroke-dasharray:7 4"/><text x="${cx}" y="${cy + 7.5}" text-anchor="middle" style="font:700 21px Plex, Arial;fill:var(--text)">${cur + 1}</text></g>`
+      : `<circle class="pulse" cx="${cx}" cy="${cy}" r="14" style="fill:${col};fill-opacity:.7;stroke:${col};stroke-width:3.5"/>`); }
+  // walls: raised stone slabs in the owner's colour (host-placed ones are stone): a cast shadow, a darker side face, a lit top face. A new wall drops and settles,
+  // and the four squares around it flash.
+  const pickable = w => removeMode || (a && (a.mode === 'hammer' || (a.mode === 'relocate' && !a.from && w.owner === cur)));
+  const slabs = [];
+  for (const w of allWalls()) {
+    const q = wallRect(w.o, w.r, w.c), col = w.owner >= 0 ? tcol(w.owner) : 'var(--stone)', isFrom = a && a.from && a.from.o === w.o && a.from.r === w.r && a.from.c === w.c;
+    const drop = an['w' + w.o + w.r + ',' + w.c], ds = aniStyle(drop, now);
+    if (drop) for (const [rr, cc] of [[w.r, w.c], [w.r, w.c + 1], [w.r + 1, w.c], [w.r + 1, w.c + 1]])
+      parts.push(`<rect class="cflash" x="${M + cc * CELL + 1.5}" y="${M + rr * CELL + 1.5}" width="${CELL - 3}" height="${CELL - 3}" rx="6" style="fill:${col};${aniStyle(drop, now, 150)}"/>`);
+    const hi = w.o === 'h' ? `<rect x="${q.x + 5}" y="${q.y + 2.5}" width="${q.w - 10}" height="3" rx="1.5" style="fill:#fff;opacity:.36"/>` : `<rect x="${q.x + 2.5}" y="${q.y + 5}" width="3" height="${q.h - 10}" rx="1.5" style="fill:#fff;opacity:.36"/>`;
+    slabs.push(`<g style="${isFrom ? 'opacity:.35' : ''}"><rect class="${drop ? 'wsh' : ''}" x="${q.x + 3}" y="${q.y + 9}" width="${q.w}" height="${q.h}" rx="6" style="fill:#000;opacity:.5;${ds}" filter="url(#soft)"/>`
+      + `<g class="${drop ? 'wdrop' : ''}" style="${ds}"><rect x="${q.x}" y="${q.y + 5}" width="${q.w}" height="${q.h}" rx="5" style="fill:color-mix(in srgb, ${col} 42%, #000);stroke:var(--night);stroke-width:1.5"/>`
+      + `<rect x="${q.x}" y="${q.y}" width="${q.w}" height="${q.h}" rx="5" style="fill:${col};stroke:var(--night);stroke-width:1.5"/>${hi}</g></g>`
+      + (pickable(w) ? `<rect class="pulse" x="${q.x - 3}" y="${q.y - 3}" width="${q.w + 6}" height="${q.h + 11}" rx="7" style="fill:none;stroke:var(--text);stroke-width:2.5"/>` : ''));
+  }
+  parts.push(...slabs);
+  if (a && placing() && a.pv) { // the live preview: a ghost slab in the current team's colour; the line says the verdict (solid ok, dashed seals a path, hatched and struck illegal)
+    const chk = pvCheck(a), q = wallRect(a.pv.o, a.pv.r, a.pv.c), col = tcol(cur), kind = chk.err ? 'bad' : chk.blocks.length ? 'seal' : 'ok';
+    parts.push(`<g style="pointer-events:none"><rect x="${q.x + 3}" y="${q.y + 9}" width="${q.w}" height="${q.h}" rx="6" style="fill:#000;opacity:.3" filter="url(#soft)"/>`
+      + `<rect x="${q.x}" y="${q.y}" width="${q.w}" height="${q.h}" rx="5" style="fill:${col};fill-opacity:.7"/>`
+      + (kind === 'bad' ? `<rect x="${q.x}" y="${q.y}" width="${q.w}" height="${q.h}" rx="5" style="fill:url(#hatch);opacity:.8"/><path d="M${q.x} ${q.y + q.h} L${q.x + q.w} ${q.y}" style="stroke:var(--text);stroke-width:3.2;fill:none"/>` : '')
+      + `<rect x="${q.x - 1.5}" y="${q.y - 1.5}" width="${q.w + 3}" height="${q.h + 3}" rx="6.5" style="fill:none;stroke:var(--night);stroke-width:6.4"/>`
+      + `<rect x="${q.x - 1.5}" y="${q.y - 1.5}" width="${q.w + 3}" height="${q.h + 3}" rx="6.5" style="fill:none;stroke:#fff;stroke-width:2.8;stroke-dasharray:${kind === 'seal' ? '11 6' : 'none'}"/></g>`);
+  }
+  const disc = (cx, cy, i, ring) => `<circle cx="${cx}" cy="${cy + 3}" r="20" style="fill:#000;opacity:.45" filter="url(#soft)"/><circle cx="${cx}" cy="${cy}" r="20" style="fill:${tcol(i)};stroke:var(--night);stroke-width:3.5"/>`
+    + `<path d="M${cx - 12} ${cy - 8} A14 14 0 0 1 ${cx + 8} ${cy - 13}" style="fill:none;stroke:#fff;stroke-opacity:.38;stroke-width:2.5;stroke-linecap:round"/>${ring ? `<circle cx="${cx}" cy="${cy}" r="25.5" style="fill:none;stroke:var(--text);stroke-width:2.5"/>` : ''}`
+    + `<text x="${cx}" y="${cy + 8.5}" text-anchor="middle" style="font:700 25px Plex, Arial;fill:var(--onteam)">${i + 1}</text>`;
+  g.teams.forEach((t, i) => {
+    const gh = an['g' + i];
+    if (gh) { const [cx, cy] = cellCenter(...gh.to);
+      parts.push(`<g class="rslide" style="--dx:${(gh.from[1] - gh.to[1]) * CELL}px;--dy:${(gh.from[0] - gh.to[0]) * CELL}px;${aniStyle(gh, now)}">${disc(cx, cy, i, false)}</g>`); }
+    if (!t.pos) return; const [cx, cy] = cellCenter(...t.pos), mv = an['r' + i];
+    parts.push(`<g class="${mv ? (mv.pop ? 'rpop' : 'rslide') : ''}" style="${mv && !mv.pop ? `--dx:${mv.dx}px;--dy:${mv.dy}px;` : ''}${aniStyle(mv, now)}">${disc(cx, cy, i, state.phase !== 'ready' && i === cur && a)}</g>`);
+  });
+  if (state.flash && state.t < state.flash.until) { // a surprise opens: a large icon over its square, with its name
+    const f = state.flash, [cx, cy] = cellCenter(f.r, f.c), bad = f.kind === 'back' || f.kind === 'freeze', col = bad ? 'var(--bad)' : 'var(--good)';
+    const age = Math.round((tune.flashTime - (f.until - state.t)) * 1000), label = { hammer: 'مطرقة', double: 'خطوتان', back: 'فخ', freeze: 'تجميد' }[f.kind];
+    parts.push(`<g class="reveal" style="animation-delay:-${age}ms"><circle cx="${cx}" cy="${cy + 4}" r="44" style="fill:#000;opacity:.4" filter="url(#soft)"/><circle cx="${cx}" cy="${cy}" r="44" style="fill:var(--panel);stroke:${col};stroke-width:5"/>`
+      + `<g transform="translate(${cx - 26} ${cy - 26}) scale(2.17)" style="fill:${col}">${ICON[f.kind]}</g>`
+      + `<rect x="${cx - 40}" y="${cy + 38}" width="80" height="28" rx="8" style="fill:var(--panel);stroke:${col};stroke-width:2.5"/><text x="${cx}" y="${cy + 58}" text-anchor="middle" style="font:700 18px Plex, Arial;fill:var(--text)">${label}</text></g>`);
+  }
+  refs.svg.setAttribute('viewBox', `0 0 ${V} ${V}`); refs.svg.innerHTML = parts.join('');
+  const bar = refs.bbar;
+  bar.replaceChildren(...(removeMode ? [h('span', { class: 'down' }, 'اضغط على الحاجز المراد إزالته'), B('إلغاء', '', () => { removeMode = false; renderAll(); })]
+    : state.msg && state.phase !== 'act' ? [h('span', {}, state.msg)] : []));
+}
+function countUp(el, i, to) { // the score counts up to its new value; a drop or a first draw just shows it. Returns true while it counts.
+  const shown = refs.shown ||= [], from = shown[i] ?? to;
+  if (to <= from || still()) { shown[i] = to; el.textContent = to; return false; }
+  const t0 = performance.now(), dur = 600;
+  const tick = () => { const k = Math.min(1, (performance.now() - t0) / dur), v = Math.round(from + (to - from) * (1 - (1 - k) ** 3)); shown[i] = v;
+    if (el.isConnected) el.textContent = v; if (k < 1 && el.isConnected) requestAnimationFrame(tick); else if (!el.isConnected) shown[i] = to; };
+  el.textContent = from; requestAnimationFrame(tick); return true;
+}
+function renderTeams() {
+  const g = state.g, active = state.phase === 'ready' && settings.mode === 'fast' ? -1 : state.phase === 'question' && settings.mode === 'fast' ? state.answeredBy : state.cur;
+  refs.board.replaceChildren(...g.teams.map((t, i) => {
+    const sealed = t.pos && !R.hasPath(g, i), pts = h('span', { class: 'pts num', title: 'النقاط' });
+    const grew = countUp(pts, i, t.score);
+    return h('div', { class: 'lbp' + (i === active ? ' cur' : '') + (grew ? ' bump' : ''), style: `--c:${tcol(i)}` },
+      badge(i, 26), h('span', { class: 'nm', style: 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis' }, T(i)),
+      h('div', { class: 'l2' }, h('span', { title: 'حواجز متبقية' }, 'حواجز ', N(t.walls)),
+        t.inv.hammer ? h('span', { class: 'ico', title: 'مطرقة', html: icon('hammer') + `<span class="num">${t.inv.hammer}</span>` }) : null,
+        t.inv.double ? h('span', { class: 'ico', title: 'خطوتان', html: icon('double') + `<span class="num">${t.inv.double}</span>` }) : null), pts,
+      sealed || t.frozen ? h('div', { class: 'l3' }, sealed ? h('span', { class: 'st' }, 'محاصر: لا طريق') : null,
+        t.frozen ? h('span', { class: 'st', style: 'display:inline-flex;gap:4px;align-items:center' }, h('span', { html: icon('freeze', 14), style: 'display:flex;fill:currentColor' }), 'مجمّد') : null) : null);
+  }));
+}
+const HELP = [
+  ['الهدف', 'كل فريق يمشي بعدّاءٍ من حافة لوحة إلى الحافة المقابلة. من يصل يكسب نقطة، ويبقى عدّاؤه نقطة صغيرة بلون الفريق، ثم يُدخل الفريق عدّاءً جديداً متى شاء.'],
+  ['السؤال يشتري الحركة', 'الفريق الذي يجيب صحيحاً يأخذ حركة واحدة فقط: إدخال عدّاء، أو خطوة، أو وضع حاجز، أو نقل أحد حواجزه إذا نفدت، أو استعمال قوة جمعها. الإجابة الخاطئة يمرّ دورها بلا حركة.'],
+  ['القفز', 'العدّاء يقفز فوق عدّاء مجاور في الاتجاه نفسه، وإن سُدّ الطريق يتحرك إلى جانبيه.'],
+  ['الحواجز', 'الحاجز طوله خانتان ولا يتداخل مع غيره ولا يقطعه. لوضعه حرّك المؤشر (أو المس) إلى نقطة بين أربع خانات، وأدره بالمفتاح R، واضغط لتثبيته. يُسمح بحاجز يغلق الطريق أمام فريق بعد تأكيدك، ويُهدم بالمطرقة أو بأداة «إزالة حاجز» للمقدّم.'],
+  ['المربعات الخفية', 'خانات مخفية في داخل اللوحة: مطرقة تهدم حاجزاً، أو خطوتان في حركة واحدة، أو فخ يرجع بالعدّاء خطوتين، أو تجميد لا يتحرك الفريق بعده حتى يلعب فريق آخر.'],
+  ['الفوز', 'تنتهي المسابقة بحسب ما اخترت: يدوياً، أو بعد مدة، أو بعد جولات، أو لمن يصل أولاً إلى عدد النقاط. صاحب أكثر نقاط يفوز.'],
+];
+function showHelp(i = 0) {
+  document.getElementById('help')?.remove();
+  const last = i === HELP.length - 1, close = () => document.getElementById('help')?.remove();
+  ui.append(h('div', { class: 'ov', id: 'help' }, h('div', { class: 'modal', style: 'max-width:680px;justify-items:center' },
+    h('div', { class: 'muted', style: 'font-size:14px' }, 'شرح اللعبة · ', N(`${i + 1} / ${HELP.length}`)),
+    h('b', { style: 'font-size:24px' }, HELP[i][0]), h('div', { style: 'font-size:18px;line-height:1.8;max-width:600px;min-height:110px' }, HELP[i][1]),
+    h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('السابق', '', () => showHelp(i - 1), { disabled: i === 0 }),
+      B(last ? 'إغلاق' : 'التالي', 'pri', last ? close : () => showHelp(i + 1), { 'data-primary': '1' }), last ? null : B('إغلاق', '', close)))));
+}
+function confirmBox(title, text, yes, onYes, no) {
+  if (document.getElementById('confirm')) return;
+  const close = () => document.getElementById('confirm')?.remove();
+  ui.append(h('div', { class: 'ov', id: 'confirm' }, h('div', { class: 'modal', style: 'max-width:520px' }, h('b', { style: 'font-size:20px' }, title),
+    h('div', { class: 'muted', style: 'line-height:1.7' }, text),
+    h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B(yes, 'sell', () => { close(); onYes(); }), B(no, '', close)))));
+}
+const confirmEnd = () => confirmBox('إنهاء المسابقة الآن؟', 'يُعلن الترتيب بحسب النقاط الحالية.', 'نعم، أنهِ المسابقة', endGame, 'متابعة اللعب');
+function toast(text, onUndo) {
+  document.getElementById('toast')?.remove(); clearTimeout(toast.timer);
+  const el = h('div', { class: 'toast', id: 'toast', role: 'status' }, text,
+    B('تراجع', 'undo', () => { el.remove(); clearTimeout(toast.timer); onUndo(); }, { style: `--d:${tune.undoTime}s;min-height:40px;padding:6px 14px;font-size:15px` }));
+  stage.append(el); toast.timer = setTimeout(() => el.remove(), tune.undoTime * 1000);
+}
+
+const scenes = {
+  title: {
+    enter() {
+      const game = savedGame();
+      ui.append(familyLink());
+      ui.append(h('div', { class: 'screen', style: 'align-items:center;justify-content:center;gap:22px;text-align:center' },
+        LOGO(190, 'lockup-stacked'),
+        h('div', { class: 'muted', style: 'font-size:20px' }, 'مسابقة معلومات للفرق على لوحة بحواجز: كل إجابة صحيحة تشتري حركة'),
+        h('div', { style: 'display:flex;gap:12px;flex-wrap:wrap;justify-content:center' }, ...(game ? [B('متابعة اللعبة السابقة', 'pri', () => resumeGame(game), { 'data-primary': '1', style: 'padding:14px 34px;font-size:20px' }),
+          B('لعبة جديدة', '', () => confirmBox('بدء لعبة جديدة؟', 'اللعبة السابقة لم تنتهِ، وتُحذف عند بدء لعبة جديدة.', 'نعم، لعبة جديدة', () => go('setup'), 'رجوع'), { style: 'padding:14px 26px;font-size:18px' })]
+          : [B('مسابقة جديدة', 'pri', () => go('setup'), { 'data-primary': '1', style: 'padding:14px 34px;font-size:20px' })]),
+          B('بنك الأسئلة', '', () => go('bank'), { style: 'padding:14px 26px;font-size:18px' }),
+          B('شرح اللعبة', '', () => showHelp(), { style: 'padding:14px 26px;font-size:18px' })),
+        game ? h('div', { class: 'muted', style: 'font-size:17px;margin-top:-10px' }, 'لعبة لم تنتهِ: الجولة ', N(game.state.round), '، ', game.state.names.length, ' فرق') : null,
+        themeSeg(() => go('title')),
+        h('div', { class: 'panel', style: 'padding:12px 20px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 26px;font-size:14px' }, ...CONTROLS.map(c => h('span', { class: 'muted' }, c))),
+        h('div', { class: 'muted', style: 'font-size:14px' }, qCount(bank.length), ' في البنك')));
+    },
+    update() {}, draw() { backdrop(); },
+  },
+  setup: {
+    enter() {
+      const s = settings;
+      const numF = (label, key, cfg, suffix = '') => h('label', { class: 'field' }, label, h('span', { style: 'display:flex;gap:6px;align-items:center' },
+        h('input', { value: String(s[key]), inputmode: 'numeric', onchange: e => { s[key] = clamp(toNum(e.target.value) || cfg.value, cfg.min, cfg.max); e.target.value = s[key]; } }),
+        h('span', { class: 'muted' }, suffix)), h('span', { style: 'font-weight:normal;font-size:11px' }, 'من ', N(fmt(cfg.min)), ' إلى ', N(fmt(cfg.max))));
+      const seg = (key, opts) => h('div', { class: 'seg' }, ...opts.map(([v, l]) => h('button', { class: s[key] === v ? 'on' : '', onclick: () => { sfx.click(); s[key] = v; go('setup'); } }, l)));
+      const names = h('div', { class: 'names' }, ...[...Array(s.teams).keys()].map(i => h('div', { style: 'display:grid;gap:3px' }, h('span', { style: 'display:flex;gap:6px;align-items:center' }, badge(i, 24),
+        h('input', { value: s.names[i], maxlength: '18', 'aria-label': `اسم الفريق ${i + 1}`, oninput: e => { s.names[i] = e.target.value.trim() || `الفريق ${i + 1}`; } })), h('span', { class: 'muted', style: 'font-size:12px;padding-inline-start:30px' }, sideText(i)))));
+      ui.append(h('div', { class: 'screen' },
+        h('div', { style: 'display:flex;align-items:center;gap:12px' }, LOGO(44), h('b', { style: 'font-size:26px' }, 'إعداد المسابقة'), h('span', { style: 'flex:1' }), themeSeg(() => go('setup')),
+          B('رجوع', '', () => go('title')), B('ابدأ', 'pri', () => { store.set('duroob.settings', s); if (hostMode(s) === 'window') openPresenter(); reset(); go('play'); }, { 'data-primary': '1', style: 'padding:8px 30px;font-size:18px' })),
+        h('div', { class: 'grid2', style: 'flex:1;min-height:0' },
+          h('div', { style: 'display:grid;gap:14px;align-content:start' },
+            h('div', { class: 'panel box' }, h('h3', {}, 'الفرق'), h('div', { style: 'display:flex;gap:10px;align-items:center' }, 'عدد الفرق', seg('teams', [2, 3, 4].map(n => [n, String(n)]))), names),
+            h('div', { class: 'panel box' }, h('h3', {}, 'اللوحة'), h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' }, 'الحجم', seg('size', SIZES.map(n => [n, `${n} في ${n}`]))),
+              h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' }, 'حواجز كل فريق', seg('wallsFixed', [[false, 'تلقائي'], [true, 'عدد ثابت']]),
+                s.wallsFixed ? h('select', { 'aria-label': 'عدد الحواجز', onchange: e => { s.wallsN = Number(e.target.value); } }, ...Array.from({ length: 13 }, (_, k) => h('option', { value: k + 3, selected: s.wallsN === k + 3 }, String(k + 3)))) : null),
+              h('div', { style: 'display:flex;gap:10px;align-items:center' }, 'مربعات المفاجآت الخفية', seg('boxes', [[true, 'تعمل'], [false, 'بدونها']]))),
+            h('div', { class: 'panel box' }, h('h3', {}, 'طريقة اللعب'), seg('mode', [['seq', 'متتالي: كل فريق في دوره'], ['fast', 'الأسرع: من يجيب أولاً']]),
+              numF('وقت الإجابة', 'answerTime', CONFIG.answerTime, 'ثانية'))),
+          h('div', { style: 'display:grid;gap:14px;align-content:start' },
+            h('div', { class: 'panel box' }, h('h3', {}, 'عرض الأسئلة'), seg('qmode', [['choices', 'أربعة خيارات على الشاشة'], ['judge', 'السؤال فقط والمقدّم يحكم'], ['own', 'أسئلتي أنا']]),
+              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode === 'choices' ? 'تختار الفرق الإجابة من الخيارات، وتظهر الإجابة الصحيحة بعدها.' : s.qmode === 'own' ? 'بدون بنك: تطرح السؤال من جوالك أو كتاب، واللعبة تعرض المؤقت وزرَّي «صحيحة» و«خاطئة».' : 'يظهر السؤال، ويضغط المقدّم صحيحة أو خاطئة، ثم تظهر الإجابة الصحيحة.'),
+              h('h3', { style: 'margin-top:6px' }, 'شاشة المقدّم'),
+              s.qmode === 'judge' ? seg('hostScreen', [['phone', 'على جوالي'], ['window', 'نافذة على هذا الحاسوب']])
+                : h('div', { class: 'seg', 'aria-disabled': 'true' }, ...['على جوالي', 'نافذة على هذا الحاسوب'].map(l => h('button', { disabled: true }, l))),
+              h('div', { class: 'muted', style: 'font-size:12px' }, s.qmode !== 'judge'
+                ? (s.qmode === 'own' ? 'مع «أسئلتي أنا» الأسئلة والإجابات عندك أنت، فلا شيء تعرضه شاشة المقدّم.' : 'مع «أربعة خيارات» تحكم اللعبة على كل إجابة بنفسها. اختر «السؤال فقط والمقدّم يحكم» لتفعيل شاشة المقدّم.')
+                : s.hostScreen === 'window' ? 'اضبط العرض على «توسيع» (Win+P). تفتح نافذة للمقدّم فيها الإجابة: أبقها على شاشة الحاسوب، واسحب اللعبة إلى جهاز العرض.'
+                : 'جهاز العرض يكرر شاشة الحاسوب. عند البدء، وحين تقترب الأسئلة من النهاية، يظهر رمز تصوّره بجوالك فترى الإجابات. أخفِ جهاز العرض قبل إظهار الرمز.')),
+            h('div', { class: 'panel box' }, h('h3', {}, 'نهاية المسابقة'), seg('end', [['manual', 'يدوياً'], ['timed', 'بعد مدة'], ['rounds', 'بعد عدد جولات'], ['target', 'أول من يصل إلى نقاط']]),
+              s.end === 'timed' ? numF('مدة المسابقة', 'minutes', CONFIG.minutes, 'دقيقة') : s.end === 'rounds' ? numF('عدد الجولات', 'rounds', CONFIG.rounds, 'جولة')
+                : s.end === 'target' ? numF('عدد النقاط للفوز', 'target', CONFIG.targetPoints, 'نقطة') : h('div', { class: 'muted', style: 'font-size:12px' }, 'ينهي المقدّم المسابقة متى شاء من ⋯ ثم «إنهاء المسابقة».'),
+              h('div', { style: 'display:flex;gap:10px;align-items:center' }, 'الصوت', h('div', { class: 'seg' }, h('button', { class: muted ? '' : 'on', onclick: () => { setMuted(false); go('setup'); } }, 'يعمل'), h('button', { class: muted ? 'on' : '', onclick: () => { setMuted(true); go('setup'); } }, 'مكتوم'))))))));
+    },
+    update() {}, draw() { backdrop(); },
+  },
+  bank: {
+    enter() {
+      const f = {}; const inp = (k, label) => h('label', { class: 'field' }, label, (f[k] = h('input', { maxlength: '160', style: 'width:100%;box-sizing:border-box;direction:rtl;text-align:right;font-size:15px' })));
+      const err = h('span', { class: 'down', style: 'font-size:13px;font-weight:bold' });
+      const fileIn = h('input', { type: 'file', accept: '.csv,text/csv', style: 'display:none' });
+      fileIn.addEventListener('change', () => { const f = fileIn.files[0]; fileIn.value = ''; if (f) importCSV(f); });
+      const add = () => {
+        const row = ['cat', 'q', 'a', 'w1', 'w2', 'w3'].map(k => f[k].value.trim());
+        if (row.some(v => !v)) { err.textContent = 'املأ كل الحقول'; sfx.bad(); return; }
+        if (new Set(row.slice(2)).size < 4) { err.textContent = 'الخيارات الأربعة يجب أن تكون مختلفة'; sfx.bad(); return; }
+        bank.unshift(row); saveBank(); go('bank');
+      };
+      const list = h('div', { class: 'panel banklist' });
+      const fill = text => {
+        const want = text.trim(); list.replaceChildren(...bank.flatMap((r, i) => want && !r[1].includes(want) ? [] : [h('div', { class: 'bq' }, h('span', { class: 'chip muted', title: r[0], style: 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;box-sizing:border-box' }, r[0]), h('span', {}, r[1]),
+          h('span', { class: 'up', style: 'font-weight:bold' }, r[2]), B('حذف', '', () => { if (bank.length > 1) { const [row] = bank.splice(i, 1); saveBank(); go('bank');
+            toast('حُذف السؤال', () => { bank.splice(Math.min(i, bank.length), 0, row); saveBank(); if (scene === 'bank') go('bank'); }); } }, { style: 'padding:5px 10px;font-size:14px' }))]));
+        if (!list.children.length) list.append(h('div', { class: 'muted', style: 'padding:14px' }, 'لا سؤال يحوي هذا النص'));
+      };
+      const search = h('input', { type: 'search', placeholder: 'ابحث في نص الأسئلة', 'aria-label': 'ابحث في نص الأسئلة', style: 'width:100%;box-sizing:border-box;direction:rtl;font-size:16px', oninput: e => fill(e.target.value) });
+      fill('');
+      ui.append(h('div', { class: 'screen' },
+        h('div', { style: 'display:flex;align-items:center;gap:12px' }, h('b', { style: 'font-size:26px' }, 'بنك الأسئلة'), h('span', { class: 'chip' }, qCount(bank.length)), h('span', { style: 'flex:1' }),
+          B('استعادة الأسئلة الأصلية', '', () => confirmBox('استعادة الأسئلة الأصلية؟', `يُحذف ما في البنك الآن (${qCount(bank.length)})، وتعود الأسئلة الأصلية (${qCount(DEFAULT_BANK.length)}).`, 'نعم، استعدها',
+            () => { bank = DEFAULT_BANK.map(r => r.slice()); saveBank(); go('bank'); }, 'إلغاء')), B('رجوع', '', () => go('title'), { 'data-primary': '1' })),
+        h('div', { class: 'grid2', style: 'grid-template-columns:minmax(0,1fr) minmax(0,1fr)' },
+          h('div', { class: 'panel box' }, h('h3', {}, 'إضافة سؤال'),
+            h('div', { class: 'addq' }, inp('cat', 'التصنيف'), inp('q', 'نص السؤال')),
+            h('div', { style: 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px' }, inp('a', 'الإجابة الصحيحة'), inp('w1', 'إجابة خاطئة'), inp('w2', 'إجابة خاطئة'), inp('w3', 'إجابة خاطئة')),
+            h('div', { style: 'display:flex;gap:12px;align-items:center' }, B('إضافة إلى البنك', 'pri', add), err)),
+          h('div', { class: 'panel box' }, h('h3', {}, 'استيراد من ملف CSV'),
+            h('div', { class: 'muted', style: 'font-size:13px;line-height:1.7' }, 'الأعمدة بالترتيب: ',
+              h('b', { style: 'color:var(--text)' }, DuroobCSV.HEADERS.join('، ')),
+              h('br'), 'الخيار 1 هو الإجابة الصحيحة، ويُخلط الترتيب عند العرض. اسم الملف يصبح تصنيف أسئلته.'),
+            h('div', { style: 'display:flex;gap:10px;align-items:center;flex-wrap:wrap' },
+              B('استيراد أسئلة من ملف', 'pri', () => fileIn.click()), B('تنزيل نموذج', '', downloadTemplate), fileIn))),
+        bankMsg ? h('div', { id: 'bankmsg', class: 'panel', style: `padding:10px 14px;font-size:14px;font-weight:bold;color:var(--${bankMsg.good ? 'good' : 'bad'})` }, bankMsg.text) : null,
+        h('div', { class: 'panel', style: 'padding:8px 12px' }, search),
+        list));
+      for (const k of ['cat', 'q', 'a', 'w1', 'w2', 'w3']) f[k].style.direction = 'rtl';
+      f.cat.setAttribute('list', 'cats'); bankMsg = null;
+      ui.append(h('datalist', { id: 'cats' }, ...[...new Set(bank.map(r => r[0]))].map(c => h('option', { value: c }))));
+    },
+    update() {}, draw() { backdrop(); },
+  },
+  play: {
+    enter() {
+      refs = {};
+      refs.header = h('header'); refs.bbar = h('div', { class: 'bmsg', role: 'status' });
+      refs.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); refs.svg.setAttribute('role', 'img'); refs.svg.setAttribute('aria-label', 'لوحة اللعب');
+      refs.svg.addEventListener('pointermove', boardMove); refs.svg.addEventListener('click', boardClick);
+      refs.svg.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch' && placing() && state.act.pv && !document.querySelector('.ov')) { state.act.pv = null; renderBoard(); renderPv(); } });
+      refs.qband = h('div', { class: 'qband' });
+      refs.bd = h('section', { id: 'bd' }, h('div', { class: 'bwrap' }, refs.svg), refs.qband, refs.bbar);
+      refs.card = h('section', { class: 'panel card' }); refs.board = h('section', { id: 'lb' });
+      refs.main = h('main', {}, refs.card, refs.bd, refs.board);
+      ui.append(h('div', { id: 'app' }, refs.header, refs.main));
+      renderAll();
+    },
+    update(dt) {
+      if (state.paused || state.keyAsk) return;
+      if (undo && pressed('KeyZ') && !typing()) return undoLast();
+      if (undo && state.t > undo.until) { undo = null; renderCard(); }
+      if (state.flash && state.t >= state.flash.until) { state.flash = null; renderBoard(); }
+      if (settings.end === 'timed') {
+        state.elapsed += dt;
+        if (!state.lastCall && state.elapsed >= settings.minutes * 60) { state.lastCall = true; if (state.phase === 'ready') return endGame(); renderCard(); }
+      }
+      if (!document.querySelector('.ov')) {
+        if (state.phase === 'act' && pressed('KeyR') && !typing() && placing()) rotate();
+        if (pressed('Escape') && (removeMode || (state.phase === 'act' && !state.act.forced))) cancelAction();
+      }
+      if (state.phase === 'question') {
+        state.timer -= dt;
+        const s = Math.ceil(state.timer);
+        if (s <= tune.tickWarn && s > 0 && s !== state.ticked) { state.ticked = s; sfx.tick(); }
+        if (state.timer <= 0) { state.timer = 0; return timeUp(); }
+      }
+      if (state.phase === 'question' && !typing()) for (let k = 1; k <= 4; k++) if (pressed('Digit' + k) || pressed('Numpad' + k)) {
+        if (settings.mode === 'fast' && state.answeredBy == null) { if (k <= state.n) { state.answeredBy = k - 1; renderCard(); renderTeams(); } }
+        else if (settings.qmode === 'choices') answer(k - 1 === state.q.right, k - 1);
+        break;
+      }
+    },
+    draw() {
+      backdrop();
+      const rs = document.getElementById('ringsvg');
+      if (rs) { rs.innerHTML = ring(state.timer, settings.answerTime, ringSize()); document.getElementById('ringnum').textContent = Math.ceil(state.timer); }
+      const cc = document.getElementById('clockchip');
+      if (cc) { const left = Math.max(0, settings.minutes * 60 - state.elapsed); cc.textContent = `الوقت المتبقي ${String(Math.floor(left / 60)).padStart(2, '0')}:${String(Math.floor(left % 60)).padStart(2, '0')}`; }
+      const ov = document.getElementById('pause');
+      if (state.paused && !ov) ui.append(h('div', { id: 'pause', class: 'ov', onclick: () => { state.paused = false; renderHeader(); } }, h('div', { class: 'modal' }, h('b', { style: 'font-size:26px' }, 'إيقاف مؤقت'), h('span', { class: 'muted' }, 'اضغط للمتابعة (P)'))));
+      if (!state.paused && ov) ov.remove();
+    },
+  },
+  results: {
+    enter() {
+      ui.append(familyLink('end'));
+      if (!state.final) { state.final = R.ranking(state.g); }
+      const f = state.final.slice().sort((a, b) => a.place - b.place || a.team - b.team);
+      const tied = r => f.filter(e => e.place === r).length > 1;
+      const places = [...new Set(f.map(e => e.place))].filter(r => r <= 3);
+      const zero = f[0].score === 0, heights = { 1: 140, 2: 105, 3: 78 }, medal = zero ? { 1: 'var(--line)', 2: 'var(--line)', 3: 'var(--line)' } : { 1: 'var(--accent)', 2: '#94a3b8', 3: '#b8733a' };
+      const steps = {};
+      for (const r of places) {
+        const who = f.filter(e => e.place === r);
+        steps[r] = h('div', { class: 'pod', style: `display:flex;flex-direction:column;align-items:center;gap:6px;width:${Math.max(210, who.length * 150)}px` },
+          h('div', { style: 'display:flex;gap:14px;align-items:flex-end' }, ...who.map(e => h('div', { style: 'display:flex;flex-direction:column;align-items:center;gap:4px;max-width:200px' },
+            badge(e.team, r === 1 ? 50 : 40), h('b', { style: `font-size:${r === 1 ? 22 : 18}px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%` }, T(e.team))))),
+          h('span', { style: 'font-weight:bold;font-size:20px;display:grid;justify-items:center;line-height:1.35' }, h('span', {}, ptCount(who[0].score)), h('span', { class: 'muted', style: 'font-size:15px;font-weight:500' }, acrossText(across(who[0].team)))),
+          h('div', { style: `width:100%;height:${heights[r]}px;border-radius:10px 10px 0 0;background:linear-gradient(${medal[r]}, color-mix(in srgb, ${medal[r]} 65%, transparent));display:grid;place-items:center;font-size:54px;font-weight:bold;color:${zero ? 'var(--muted)' : 'var(--night)'}` },
+            h('span', { style: 'display:flex;align-items:center;gap:10px' }, N(r), who.length > 1 ? h('span', { style: 'font-size:22px' }, 'تعادل') : null)));
+      }
+      const top = f.filter(e => e.place === 1).map(e => T(e.team));
+      const line = zero ? 'انتهت المسابقة بلا نقاط' : top.length > 1 ? 'تعادل: ' + top.slice(0, -1).join('، ') + ' و' + top[top.length - 1] : 'الفائز: ' + top[0];
+      const headline = h('div', { class: 'winner', style: 'font-size:32px' }, 'النتائج النهائية');
+      const table = h('div', { class: 'panel', style: 'width:760px;max-width:100%;visibility:hidden' }, h('table', { class: 'lb' },
+        h('tr', {}, ...[['المركز'], ['الفريق'], ['النقاط'], ['عبروا (نقطة لكل عدّاء)', 'عدد العدّائين الذين وصلوا إلى الحافة المقابلة، وكل واحد منهم نقطة'], ['الحواجز المتبقية']].map(([s, tip]) => h('th', { title: tip }, s))),
+        ...f.map(e => h('tr', {}, h('td', {}, h('span', { style: 'display:flex;gap:8px;align-items:center' }, N(e.place), tied(e.place) ? h('span', { class: 'chip', style: 'font-size:16px;padding:2px 10px' }, 'تعادل') : null)),
+          h('td', {}, h('span', { style: 'display:flex;gap:7px;align-items:center;font-weight:bold' }, badge(e.team, 22), T(e.team))),
+          h('td', { style: 'font-weight:bold' }, N(e.score)), h('td', {}, N(across(e.team))), h('td', {}, N(state.g.teams[e.team].walls))))));
+      ui.append(h('div', { class: 'screen', style: 'align-items:center;gap:10px;padding-top:14px' }, headline,
+        h('div', { class: 'pods', style: 'display:flex;align-items:flex-end;gap:16px;height:300px' }, ...[2, 1, 3].filter(r => steps[r]).map(r => steps[r])),
+        table,
+        h('div', { style: 'display:flex;gap:12px' }, B('مسابقة جديدة بنفس الإعدادات', 'pri', () => { reset(); go('play'); }, { 'data-primary': '1' }), B('الشاشة الرئيسية', '', () => go('title')))));
+      const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      confetti = [];
+      const finale = () => {
+        headline.replaceChildren(...(zero ? [] : [h('span', { html: TROPHY, style: 'display:flex' })]), h('span', {}, line));
+        headline.style.fontSize = line.length > 40 ? '34px' : '52px'; headline.style.animation = 'flash .5s ease-out';
+        table.style.visibility = 'visible'; if (!zero) sfx.win();
+        if (!still && !zero) confetti = Array.from({ length: CHEAP ? 0 : 120 }, () => ({ x: vrng() * W, y: -vrng() * H, v: 60 + vrng() * 90, s: 5 + vrng() * 5, c: vrng() < 0.3 ? '#e8a33d' : TEAM_HEX[(vrng() * state.n) | 0], a: vrng() * 6, w: 1 + vrng() * 3 }));
+      };
+      res = { t: 0, n: 0, queue: places.slice().reverse().map(r => () => { steps[r].classList.add('in'); if (r === 1) finale(); else sfx.good(); }) };
+      if (still) { res.queue.forEach(fn => fn()); res.queue = []; }
+    },
+    update(dt) {
+      res.t += dt;
+      while (res.queue.length && res.t >= 0.25 + tune.revealStep * res.n) { res.n++; res.queue.shift()(); }
+      for (const p of confetti) { p.y += p.v * dt; p.a += p.w * dt; if (p.y > H + 10) p.y = -10; }
+    },
+    draw() {
+      backdrop();
+      for (const p of confetti) { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore(); }
+    },
+  },
+};
+let confetti = [], res = { t: 0, n: 0, queue: [] };
+
+// ---- Background: a lantern-lit flagstone courtyard, seen from above ------------------------------------------
+// Irregular flagstones: random sites at varied spacing, each stone the Voronoi cell of its site, so joints meet three at a time
+// (T or Y junctions) and never cross in a plus. Every stone is inset to leave a grout joint, shaded a little differently, and bevelled
+// (a lit lip on edges facing the lantern, a shadowed lip on the others). Drawn once per size and theme; the pool of light and the vignette are drawn each frame.
+let stoneCache = null;
+function flagstones(v) {
+  const r = ctx.getTransform().a, key = `${W}x${H}x${r}|${v('--bg')}|${v('--tile')}`;
+  if (stoneCache && stoneCache.key === key) return stoneCache.c;
+  const c = document.createElement('canvas'); c.width = Math.round(W * r); c.height = Math.round(H * r);
+  const g = c.getContext('2d'); g.setTransform(r, 0, 0, r, 0, 0);
+  const rgb = s => { const m = /^#([0-9a-f]{6})$/i.exec(s.trim()); const n = m ? parseInt(m[1], 16) : 0x1a1714; return [n >> 16, (n >> 8) & 255, n & 255]; };
+  const mix = (a, b, t) => `rgb(${a.map((x, i) => Math.round(x + (b[i] - x) * t)).join(',')})`;
+  const bg = rgb(v('--bg')), tile = rgb(v('--tile')), lightTheme = bg[0] + bg[1] + bg[2] > 384;
+  const hi = lightTheme ? 'rgba(255,255,255,.6)' : 'rgba(255,240,210,.2)', lo = lightTheme ? 'rgba(70,45,10,.3)' : 'rgba(0,0,0,.42)';
+  let sd = 20241124; const rnd = () => { sd = (sd + 0x6D2B79F5) | 0; let t = Math.imul(sd ^ (sd >>> 15), sd | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const sites = [];
+  for (let k = 0; k < 6000 && sites.length < 500; k++) {
+    const x = rnd() * (W + 240) - 120, y = rnd() * (H + 240) - 120, rad = 62 + rnd() * rnd() * 90; // mostly mid-sized stones, a few big ones
+    if (sites.every(s => Math.hypot(s.x - x, s.y - y) >= Math.max(s.rad, rad))) sites.push({ x, y, rad });
+  }
+  const clip = (poly, nx, ny, d) => { // keep the part of a polygon where nx*x + ny*y <= d
+    const out = [];
+    for (let i = 0; i < poly.length; i++) {
+      const p = poly[i], q = poly[(i + 1) % poly.length], fp = nx * p[0] + ny * p[1] - d, fq = nx * q[0] + ny * q[1] - d;
+      if (fp <= 0) out.push(p);
+      if ((fp < 0 && fq > 0) || (fp > 0 && fq < 0)) { const t = fp / (fp - fq); out.push([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t]); }
+    }
+    return out;
+  };
+  g.fillStyle = mix(bg, lightTheme ? [70, 50, 20] : [0, 0, 0], lightTheme ? 0.34 : 0.5); g.fillRect(0, 0, W, H); // the grout
+  g.lineJoin = 'round';
+  for (const s of sites) {
+    let poly = [[-400, -400], [W + 400, -400], [W + 400, H + 400], [-400, H + 400]];
+    for (const t of sites) { if (t === s || Math.hypot(t.x - s.x, t.y - s.y) > 420) continue; const nx = t.x - s.x, ny = t.y - s.y; poly = clip(poly, nx, ny, nx * (s.x + t.x) / 2 + ny * (s.y + t.y) / 2); if (poly.length < 3) break; }
+    if (poly.length < 3 || poly.every(p => p[0] < -20 || p[0] > W + 20) || poly.every(p => p[1] < -20 || p[1] > H + 20)) continue;
+    const cx = poly.reduce((a, p) => a + p[0], 0) / poly.length, cy = poly.reduce((a, p) => a + p[1] / poly.length, 0);
+    const edges = poly.map((p, i) => { const q = poly[(i + 1) % poly.length], dx = q[0] - p[0], dy = q[1] - p[1], len = Math.hypot(dx, dy) || 1; let nx = dy / len, ny = -dx / len; if (nx * (cx - p[0]) + ny * (cy - p[1]) > 0) { nx = -nx; ny = -ny; } return { p, q, nx, ny }; });
+    let face = poly; for (const e of edges) face = clip(face, e.nx, e.ny, e.nx * e.p[0] + e.ny * e.p[1] - 5.6); // the stone, inset for the joint (its rounded stroke eats 2.3 back)
+    if (face.length < 3) continue;
+    g.beginPath(); face.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.closePath();
+    const shade = 0.75 + rnd() * 0.55, col = mix(bg, tile, shade);
+    g.fillStyle = col; g.strokeStyle = col; g.lineWidth = 4.6; g.stroke(); g.fill(); // the stroke rounds the corners
+    for (const e of edges) { // bevel: lit lip toward the lantern (up and left), shadowed lip away from it
+      const dot = e.nx * -0.42 + e.ny * -0.9; if (Math.abs(dot) < 0.3) continue;
+      const ox = -e.nx * 5.2, oy = -e.ny * 5.2;
+      g.save(); g.beginPath(); face.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.closePath(); g.clip();
+      g.beginPath(); g.moveTo(e.p[0] + ox, e.p[1] + oy); g.lineTo(e.q[0] + ox, e.q[1] + oy);
+      g.lineWidth = 2.4; g.strokeStyle = dot > 0 ? hi : lo; g.stroke(); g.restore();
+    }
+  }
+  stoneCache = { key, c }; return c;
+}
+function backdrop() {
+  const cs = getComputedStyle(document.body), v = k => cs.getPropertyValue(k).trim();
+  ctx.fillStyle = v('--bg') || '#1a1714'; ctx.fillRect(0, 0, W, H);
+  ctx.drawImage(flagstones(v), 0, 0, W, H);
+  let cx = W / 2, cy = H * 0.46, rad = Math.max(W, H) * 0.62;
+  if (scene === 'play' && refs.bd && refs.bd.offsetWidth) { cx = refs.bd.offsetLeft + refs.bd.offsetWidth / 2; cy = refs.bd.offsetTop + refs.bd.offsetHeight / 2; rad = Math.min(W, H) * (TALL ? 1.1 : 0.78); }
+  const pool = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad); pool.addColorStop(0, v('--pool') || 'rgba(232,163,61,.2)'); pool.addColorStop(1, 'rgba(232,163,61,0)');
+  ctx.fillStyle = pool; ctx.fillRect(0, 0, W, H);
+  const vg = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.45, W / 2, H / 2, Math.hypot(W, H) * 0.62); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, v('--vig') || 'rgba(0,0,0,.5)');
+  ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+}
+
+// ---- Loop: fixed step, frame time clamped ---------------------------------------------
+function step() {
+  if (pressed('KeyM') && !typing()) setMuted(!muted);
+  if ((pressed('KeyP') || pressed('Space')) && !typing() && scene === 'play') { state.paused = !state.paused; renderHeader(); }
+  if ((pressed('Enter') || pressed('NumpadEnter')) && !typing() && !document.getElementById('confirm')) {
+    const p = (document.getElementById('hostkey') || document.getElementById('importask') || document.getElementById('help') || ui).querySelector('[data-primary]:not([disabled])');
+    if (p) p.click();
+  }
+  if (pressed('Escape') && hostMenuOpen) closeHostMenu();
+  if (pressed('Escape') && state && state.keyAsk && state.keyAsk.step === 2 && document.getElementById('hostkey')) { state.keyAsk.step = 1; renderAll(); }
+  else if (pressed('Escape') && document.querySelector('.ov')) { document.getElementById('confirm')?.remove(); document.getElementById('importask')?.remove(); document.getElementById('help')?.remove(); hit.delete('Escape'); }
+  state.t += STEP;
+  scenes[scene].update(STEP); hit.clear();
+}
+let last, acc = 0, ALPHA = 1;
+function tick() {
+  const now = clock.now();
+  acc += Math.min(now - last, 0.25); last = now;
+  while (acc >= STEP) { step(); acc -= STEP; }
+  ALPHA = acc / STEP; drawFrame();
+}
+function drawFrame() { scenes[scene].draw(); }
+function frame() { tick(); requestAnimationFrame(frame); }
+function timer() { if (document.visibilityState === 'visible' && clock.now() - last > 0.1) tick(); }
+
+// ---- The host's answer key on a phone (setup: شاشة المقدّم → على جوالي; projector duplicates the laptop) ----
+// The key screen comes at Start, at the start of a turn when fewer than keyReserve questions are left on the key,
+// and, as a last resort, before a question past the key. Step 1 asks the host to hide the projector; step 2 shows one
+// QR code of key.html with the next questions and answers in its #hash (pack.js); "done scanning" resumes.
+const KEY_PAGE = params.get('keybase') || (location.protocol.startsWith('http') ? new URL('key.html', location.href).href
+  : 'https://alghofaily.github.io/Musabaqat/duroob/key.html');
+let keyBuilt = null;
+function keyRows(from, count) {
+  return O.questionOrder(bank.length, state.seed0, from, count).map((bi, i) =>
+    [from + i + 1, DuroobKey.cut(bank[bi][1], tune.keyQuestionChars), DuroobKey.cut(bank[bi][2], tune.keyAnswerChars)]);
+}
+async function buildKey(from, cap = 400) {
+  if (/^https?:$/.test(location.protocol) && codeOK()) {
+    const url = KEY_PAGE + '#c=' + typedCode().replace('-', '');
+    for (let t = 1; t <= 40; t++) { try { const q = qrcode(t, 'L'); q.addData(url, 'Byte'); q.make(); return { from, count: passEnd(from) - from, small: true, svg: q.createSvgTag({ cellSize: 4, margin: 4, scalable: true }) }; } catch (e) { /* too long for t */ } }
+  }
+  const fits = async n => { const url = KEY_PAGE + '#' + await DuroobKey.pack({ code: state.code, rows: keyRows(from, n) });
+    try { const q = qrcode(tune.keyMaxVersion, 'L'); q.addData(url, 'Byte'); q.make(); return url; } catch (e) { return null; } };
+  let lo = 0, hi = Math.min(cap, bank.length), url = null;
+  while (lo < hi) { const m = (lo + hi + 1) >> 1; const u = await fits(m); if (u) { lo = m; url = u; } else hi = m - 1; }
+  if (!url) return null;
+  for (let t = 1; t <= tune.keyMaxVersion; t++) { try { const q = qrcode(t, 'L'); q.addData(url, 'Byte'); q.make(); return { from, count: lo, svg: q.createSvgTag({ cellSize: 4, margin: 4, scalable: true }) }; } catch (e) { /* too long for t */ } }
+  return null;
+}
+function phoneKey() { return hostMode() === 'phone' && state; }
+const ownBank = () => O.matchCode(bank, 0) !== O.matchCode(DEFAULT_BANK, 0);
+const codeOK = () => Number.isInteger(state.seed0) && state.seed0 === (state.seed0 | 0) && !ownBank();
+const typedCode = () => { const c = O.keyCode('D', DEFAULT_BANK, state.seed0); return c.slice(0, 3) + '-' + c.slice(3); };
+function holdToShowCode() {
+  const real = typedCode(), mask = real.replace(/[^-]/g, '•'), el = h('div', { class: 'bigcode', id: 'typedcode' }, mask);
+  const on = v => { el.textContent = v ? real : mask; };
+  const stop = e => e.stopPropagation();
+  const btn = B('اضغط مطوّلاً لإظهار رمز المفتاح', '', () => {}, { id: 'holdcode', style: 'user-select:none;touch-action:none',
+    onpointerdown: e => { e.currentTarget.setPointerCapture?.(e.pointerId); on(true); }, onpointerup: () => on(false), onpointercancel: () => on(false),
+    onpointerleave: () => on(false), onlostpointercapture: () => on(false), onblur: () => on(false), oncontextmenu: e => e.preventDefault(),
+    onkeydown: e => { stop(e); if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); on(true); } }, onkeyup: e => { stop(e); if (e.key === ' ' || e.key === 'Enter') on(false); } });
+  return [el, btn];
+}
+const keyAddress = () => KEY_PAGE.replace(/^https?:\/\//, '').replace(/#.*$/, '');
+const passEnd = from => Math.ceil((from + 1) / bank.length) * bank.length;
+function keyChip() {
+  const early = state.phase === 'ready' && !state.keyAsk;
+  const left = Math.max(0, state.keyTo - state.qi), near = state.keyTo > 0 && left <= tune.keyReserve + 10, can = early && state.keyTo > 0;
+  return h('button', { class: 'chip keychip' + (near ? ' near' : ''), disabled: !can,
+    title: can ? 'خذ مفتاح الأسئلة التالية الآن' : 'يطابق الرمز على جوال المقدّم',
+    onclick: () => { state.keyAsk = { from: state.qi, step: 1 }; renderAll(); } },
+    'رمز المطابقة ', h('b', { class: 'num' }, state.code), state.keyTo > 0 ? [' · بقي ', h('b', { class: 'num' }, left), ' في المفتاح'] : null,
+    can ? h('span', { class: 'take' }, ' · خذ التالي') : null);
+}
+function renderHostKey() {
+  const ask = state.keyAsk, old = document.getElementById('hostkey');
+  if (!ask) { old?.remove(); keyBuilt = null; return; }
+  if (old && old.dataset.step === String(ask.step) && old.dataset.from === String(ask.from) && old.dataset.cap === String(ask.cap || 0) && old.dataset.view === (ask.view || '')) return;
+  old?.remove();
+  const first = ask.from === 0, remain = state.keyTo - state.qi;
+  const close = () => { state.keyAsk = null; renderAll(); };
+  const box = h('div', { class: 'qrbox' + (ask.step === 1 ? ' veiled' : '') }, h('span', { class: 'muted' }, 'جارٍ تجهيز الرمز…'));
+  const show = B('جهاز العرض مخفي: أظهر الرمز', 'pri', () => { state.keyAsk.step = 2; renderAll(); }, { disabled: true });
+  const modal = h('div', { class: 'modal keymodal' });
+  if (ask.step === 1) {
+    modal.append(h('b', { style: 'font-size:24px' }, first ? 'مفتاح الإجابات للمقدّم' : 'مفتاح الأسئلة التالية'),
+      h('div', { class: 'keywarn' }, 'أخفِ شاشة العرض أولاً: زر الإخفاء في جهاز العرض، أو Win+P ثم «شاشة الكمبيوتر فقط». في الرمز إجابات الأسئلة القادمة، ومن يصوّره من الجمهور يراها.'),
+      box,
+      h('div', { class: 'keybtns' }, show,
+        remain > 0 ? B(`لاحقاً (بقي ${remain} في المفتاح)`, '', () => { state.keySnooze = state.turns; close(); }) : first ? B('لاحقاً', '', () => { state.keySnooze = state.turns; close(); }) : null));
+  } else {
+    const typed = ask.view === 'code' && codeOK();
+    const shown = typed ? h('div', { class: 'codeview' }, ...holdToShowCode(), h('div', { class: 'addr', id: 'keyaddr' }, keyAddress()),
+      h('div', {}, 'رمز المطابقة ', h('b', { class: 'num', style: 'letter-spacing:3px' }, state.code))) : box;
+    modal.append(...[h('div', { style: 'font-size:18px', id: 'keyrange' }, typed ? 'افتح هذا العنوان على جوالك واكتب رمز المفتاح:' : 'جارٍ تجهيز الرمز…'), shown,
+      h('div', { class: 'keybtns' },
+        B('تم المسح: أكمل المسابقة', 'pri', () => { state.keyTo = typed || keyBuilt?.small ? passEnd(ask.from) : ask.from + keyBuilt.count; close(); }, { 'data-primary': '1', disabled: !typed, id: 'keydone' }),
+        typed ? null : B('QR أصغر', '', () => { state.keyAsk.cap = Math.max(5, Math.floor((keyBuilt?.count || 20) / 2)); keyBuilt = null; renderAll(); }, { id: 'keysmaller', disabled: true }),
+        codeOK() ? B(typed ? 'أظهر QR' : 'أظهر رمز المفتاح بدل QR', '', () => { state.keyAsk.view = typed ? null : 'code'; renderAll(); }, { id: 'keyview' }) : null,
+        B('رجوع (Esc)', 'ghost', () => { state.keyAsk.step = 1; renderAll(); })),
+      ownBank() ? h('div', { class: 'muted', style: 'font-size:14px' }, 'الرمز المكتوب يعمل مع أسئلة اللعبة الأصلية فقط؛ مع أسئلتك استعمل رمز QR.') : null].filter(Boolean));
+  }
+  const cap = ask.cap || 400;
+  if (!(ask.step === 2 && ask.view === 'code' && codeOK())) (keyBuilt && keyBuilt.from === ask.from && keyBuilt.cap === cap ? Promise.resolve(keyBuilt) : buildKey(ask.from, cap)).then(k => {
+    if (state.keyAsk !== ask || !modal.isConnected) return;
+    if (!k) { box.replaceChildren(h('b', { style: 'color:var(--bg)' }, 'تعذّر صنع الرمز. ارفع keyMaxVersion في config.js.')); return; }
+    keyBuilt = Object.assign(k, { cap });
+    box.innerHTML = k.svg;
+    if (ask.step === 1) { show.disabled = false; return; }
+    document.getElementById('keyrange').replaceChildren(k.small ? 'امسح الرمز بجوالك: مفتاح كامل لأسئلة اللعبة · رمز المطابقة ' : `امسح الرمز بجوالك: الأسئلة ${ask.from + 1} إلى ${ask.from + k.count} · رمز المطابقة `, h('b', { class: 'num', style: 'letter-spacing:3px' }, state.code));
+    document.getElementById('keydone').disabled = false;
+    const sm = document.getElementById('keysmaller'); if (sm) { sm.hidden = !!k.small; sm.disabled = k.count <= 10; }
+  });
+  ui.append(h('div', { class: 'ov', id: 'hostkey', 'data-step': String(ask.step), 'data-from': String(ask.from), 'data-cap': String(ask.cap || 0), 'data-view': ask.view || '', role: 'dialog', 'aria-label': 'مفتاح الإجابات للمقدّم' }, modal));
+}
+
+// ---- The host window (setup: شاشة المقدّم → نافذة على هذا الحاسوب; projector set to Extend) ----
+// presenter.html stays on the laptop screen and shows the answer; this window is the only holder of the game. It sends a
+// full snapshot on every render and every second; the host window sends back the same actions as the keyboard or the judge buttons.
+let presenter = null;
+const presenterOpen = () => !!presenter && !presenter.closed;
+function openPresenter() {
+  closeHostMenu();
+  if (presenterOpen()) { presenter.focus(); return; }
+  presenter = window.open('presenter.html', 'duroob-presenter', 'popup,width=960,height=720');
+  if (!presenter) setTimeout(() => { if (scene === 'play') { state.msg = 'منع المتصفح نافذة المقدّم. اسمح بالنوافذ المنبثقة لهذه الصفحة، ثم اضغط «افتح شاشة المقدّم» من ⋯ في الأعلى.'; renderAll(); } }, 0);
+  else if (scene === 'play') renderHeader();
+}
+let adoptAsk = null;
+function adoptPresenter() { const w = adoptAsk; adoptAsk = null; if (w && !w.closed) { presenter = w; tellPresenter(); } }
+for (const ev of ['pointerdown', 'keydown']) addEventListener(ev, () => { if (adoptAsk && !presenterOpen()) adoptPresenter(); }, true);
+function tellPresenter() {
+  if (!presenterOpen()) return;
+  const playing = scene === 'play' && state, q = playing && state.q, p = playing ? state.phase : '';
+  const asking = (p === 'question' || p === 'reveal') && q;
+  const primary = ui.querySelector('[data-primary]:not([disabled])');
+  const ti = !playing ? -1 : asking ? (state.answeredBy ?? state.cur) : state.cur;
+  const ctx = p === 'act' && state.act ? modeHint(state.act, state.g.teams[state.cur]) : p === 'ready' ? state.last : '';
+  presenter.postMessage({ type: 'state', scene, phase: p, paused: playing ? state.paused : false,
+    round: playing ? state.round : 0, team: playing ? state.names[state.cur] : '', teamNo: ti + 1, teamColor: ti >= 0 ? TEAM_HEX[ti] : '',
+    answering: asking && state.answeredBy != null ? state.names[state.answeredBy] : '',
+    q: asking ? (q.own ? { n: 0, own: true } : { n: q.n, text: q.text, answer: q.choices[q.right], right: q.right + 1, choices: q.choices }) : null,
+    qmode: settings.qmode, done: p === 'reveal', result: p === 'reveal' ? state.result : null, undo: undo && (p === 'reveal') ? Math.max(0, Math.ceil(undo.until - state.t)) : 0,
+    timer: asking ? Math.ceil(state.timer) : null, ctx, acts: [],
+    primary: primary ? primary.textContent.trim() : '', judge: !!ui.querySelector('[data-judge="right"]:not([disabled])') }, '*');
+}
+setInterval(() => {
+  tellPresenter();
+  if (scene === 'play' && hostMode() === 'window') {
+    const b = [...(refs.header?.querySelectorAll('button') || [])].find(x => x.textContent.includes('شاشة المقدّم'));
+    if (b && b.textContent !== (presenterOpen() ? 'شاشة المقدّم: متصلة' : 'افتح شاشة المقدّم')) renderHeader();
+  }
+}, 1000);
+addEventListener('message', e => {
+  const m = e.data || {};
+  if (m.type === 'hello' && !presenterOpen()) { try { if (e.source && e.source !== window && e.source.name === 'duroob-presenter') adoptAsk = e.source; } catch { if (location.protocol === 'file:') adoptAsk = e.source; } return; }
+  if (!presenterOpen() || e.source !== presenter) return;
+  if (m.type === 'hello') return tellPresenter();
+  if (m.type !== 'cmd' || scene !== 'play') return;
+  if (m.cmd === 'pause') { state.paused = !state.paused; renderHeader(); return; }
+  if (state.paused) return;
+  if (m.cmd === 'enter') hit.add('Enter');
+  else if (m.cmd === 'choice' && m.k >= 1 && m.k <= 4) hit.add('Digit' + m.k);
+  else if (m.cmd === 'judge' && (m.v === 'right' || m.v === 'wrong')) ui.querySelector(`[data-judge="${m.v}"]:not([disabled])`)?.click();
+  else if (m.cmd === 'undo') undoLast();
+});
+
+// ---- What a check can read and drive (?manual=1 stops the loop; players never see it) ----
+window.game = {
+  get scene() { return scene; },
+  get state() { return state; },
+  press(code) { hit.add(code); },
+  hold(code, on) { on ? down.add(code) : down.delete(code); },
+  get events() { return events; },
+  step(n = 1, draw = true, alpha = 1) { for (let i = 0; i < n; i++) step(); if (draw) { ALPHA = alpha; drawFrame(); } },
+};
+
+reset();
+go(params.get('scene') || 'title');
+last = clock.now();
+// ---- Intro: the logo lockup for introTime seconds on load (config.js); any key or click skips it ----
+function intro() {
+  if (!tune.introTime || params.get('manual') === '1') return;
+  const el = h('div', { id: 'intro', 'aria-hidden': 'true', style: `--t:${tune.introTime}s` }, h('img', { src: logoSrc('lockup-stacked'), alt: '', 'data-logo': 'lockup-stacked' }));
+  const end = () => { removeEventListener('keydown', skip, true); removeEventListener('pointerdown', skip, true); el.remove(); };
+  const skip = e => {
+    if (!el.isConnected) return end();
+    e.preventDefault(); e.stopImmediatePropagation();
+    if (!el.classList.contains('i-skip')) { el.classList.add('i-skip'); setTimeout(end, 200); }
+  };
+  addEventListener('keydown', skip, true); addEventListener('pointerdown', skip, true);
+  setTimeout(end, tune.introTime * 1000);
+  document.body.append(el);
+}
+intro();
+if (params.get('manual') === '1') drawFrame();
+else { requestAnimationFrame(frame); setInterval(timer, 50); }
+</script>
+</body>
+</html>
