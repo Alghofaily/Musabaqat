@@ -120,6 +120,84 @@
   .pop { animation: pop .5s ease-out; display: inline-block; }
   .ov { position: absolute; inset: 0; background: rgba(5,10,20,.66); display: flex; align-items: center; justify-content: center; z-index: 20; }
   .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 22px 26px; min-width: 380px; display: grid; gap: 14px; text-align: center; }
+  /* how-to-play scenes: one looping motion graphic per step, drawn from the game's own parts. Each element's plain style is its end
+     state, so reduced motion (animations off) shows the finished picture; the keyframes only lead into it. */
+  .hs { position: relative; width: 704px; height: 396px; max-width: 100%; box-sizing: border-box; border-radius: 8px; border: 1px solid var(--line); overflow: hidden; direction: rtl; text-align: right;
+    background: var(--bg); background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 32px 32px; --d: 6s; }
+  .hs > .in { position: absolute; inset: 0; animation: hs-cycle var(--d) linear infinite both; }
+  .hs .ab { position: absolute; }
+  .hs .e1 { animation: hs-e1 var(--d) infinite both; } .hs .e2 { animation: hs-e2 var(--d) infinite both; } .hs .e3 { animation: hs-e3 var(--d) infinite both; }
+  .hs .e4 { animation: hs-e4 var(--d) infinite both; } .hs .e5 { animation: hs-e5 var(--d) infinite both; } .hs .e6 { animation: hs-e6 var(--d) infinite both; }
+  .hs .e7 { animation: hs-e7 var(--d) infinite both; } .hs .e8 { animation: hs-e8 var(--d) infinite both; }
+  @keyframes hs-cycle { 0% { opacity: 0; } 3%, 94% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes hs-e1 { 0%, 4% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 12%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e2 { 0%, 10% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 18%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e3 { 0%, 16% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 24%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e4 { 0%, 22% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 30%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e5 { 0%, 30% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 38%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e6 { 0%, 38% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 46%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e7 { 0%, 50% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 58%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e8 { 0%, 70% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 78%, 100% { opacity: 1; transform: none; } }
+  .hs .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+  .hs .lab { color: var(--muted); font-size: 14px; }
+  .hs .val { font-size: 26px; font-weight: 700; }
+  .hs .tm { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 700; padding: 8px 14px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--team); }
+  .hs .opt { display: flex; align-items: center; gap: 10px; padding: 0 14px; height: 40px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--line); font-size: 17px; font-weight: 700; }
+  .hs .opt i { font-style: normal; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 4px; background: var(--panel); border: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .hs .sw { display: inline-grid; } .hs .sw > * { grid-area: 1 / 1; }
+  /* 1 setup: the teams join, the money and the clock are set, then the host starts */
+  .hs .go { animation: hs-press var(--d) infinite both; }
+  @keyframes hs-press { 0%, 80% { transform: none; box-shadow: 0 0 0 0 transparent; } 83% { transform: scale(.93); box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 30%, transparent); } 88%, 100% { transform: none; box-shadow: 0 0 0 0 transparent; } }
+  /* 2 the question: the turn's team, the question, its four answers, and the clock running down */
+  .hs .clock circle.run { stroke-dasharray: 176; stroke-dashoffset: 132; animation: hs-clock var(--d) infinite both; }
+  @keyframes hs-clock { 0%, 30% { stroke-dashoffset: 0; stroke: var(--accent); } 74% { stroke: var(--accent); } 76%, 100% { stroke-dashoffset: 132; stroke: var(--down); } }
+  /* 3 a right answer pays: the answer turns green, the reward flies into the team's balance, the market opens */
+  .hs .okopt { animation: hs-ok var(--d) infinite both; background: var(--upbg); border-color: var(--up); }
+  @keyframes hs-ok { 0%, 26% { background: var(--panel2); border-color: var(--line); } 30%, 100% { background: var(--upbg); border-color: var(--up); } }
+  .hs .tick path { stroke-dasharray: 30; animation: hs-tick var(--d) infinite both; }
+  @keyframes hs-tick { 0%, 28% { stroke-dashoffset: 30; } 36%, 100% { stroke-dashoffset: 0; } }
+  .hs .gain { animation: hs-fly var(--d) infinite both; opacity: 0; }
+  @keyframes hs-fly { 0%, 34% { opacity: 0; transform: translate(0, 10px) scale(.7); } 40% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.6, 0, .3, 1); } 48% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.6, 0, .3, 1); }
+    60% { opacity: .9; transform: translate(-150px, 166px) scale(.45); } 63%, 100% { opacity: 0; transform: translate(-150px, 166px) scale(.4); } }
+  .hs .old3 { animation: hs-out60 var(--d) infinite both; opacity: 0; } .hs .new3 { animation: hs-in60 var(--d) infinite both; }
+  @keyframes hs-out60 { 0%, 59% { opacity: 1; transform: none; } 64%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-in60 { 0%, 60% { opacity: 0; transform: translateY(10px); } 66%, 100% { opacity: 1; transform: none; } }
+  .hs .flash3 { animation: hs-flash60 var(--d) infinite both; }
+  @keyframes hs-flash60 { 0%, 59% { background: var(--panel); } 63% { background: color-mix(in srgb, var(--up) 30%, var(--panel)); } 80%, 100% { background: var(--panel); } }
+  /* 4 trading: a buy lifts the price; then breaking news lifts the whole sector */
+  .hs .row { display: grid; grid-template-columns: 30px 1fr 70px 120px 96px; align-items: center; gap: 12px; height: 52px; padding: 0 14px; }
+  .hs .rw + .rw { border-top: 1px solid var(--line); }
+  .hs .row b { font-size: 17px; } .hs .row .pr { font-size: 20px; font-weight: 700; text-align: center; }
+  .hs .buyb { animation: hs-buy var(--d) infinite both; }
+  @keyframes hs-buy { 0%, 30% { transform: none; } 33% { transform: scale(.9); } 37%, 100% { transform: none; } }
+  .hs .o1 { animation: hs-out34 var(--d) infinite both; opacity: 0; } .hs .n1 { animation: hs-in34 var(--d) infinite both; }
+  @keyframes hs-out34 { 0%, 33% { opacity: 1; transform: none; } 38%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-in34 { 0%, 34% { opacity: 0; transform: translateY(10px); } 40%, 100% { opacity: 1; transform: none; } }
+  .hs .m1 { animation: hs-mid var(--d) infinite both; opacity: 0; }
+  @keyframes hs-mid { 0%, 34% { opacity: 0; transform: translateY(10px); } 40%, 61% { opacity: 1; transform: none; } 66%, 100% { opacity: 0; transform: translateY(-10px); } }
+  .hs .o2 { animation: hs-out62 var(--d) infinite both; opacity: 0; } .hs .n2 { animation: hs-in62 var(--d) infinite both; }
+  @keyframes hs-out62 { 0%, 61% { opacity: 1; transform: none; } 66%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-in62 { 0%, 62% { opacity: 0; transform: translateY(10px); } 68%, 100% { opacity: 1; transform: none; } }
+  .hs .newsr { animation: hs-newsrow var(--d) infinite both; outline: 3px solid var(--gold); outline-offset: -3px; background: color-mix(in srgb, var(--gold) 12%, transparent); }
+  @keyframes hs-newsrow { 0%, 58% { outline-color: transparent; background: transparent; } 62%, 100% { outline-color: var(--gold); background: color-mix(in srgb, var(--gold) 12%, transparent); } }
+  .hs .newsb { display: flex; align-items: center; gap: 12px; padding: 10px 16px; font-size: 18px; font-weight: 700; background: var(--panel); border: 1px solid var(--gold); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.25); animation: hs-news var(--d) infinite both; }
+  .hs .newsb .tag { background: var(--gold); color: #0b1220; padding: 2px 10px; border-radius: 4px; }
+  @keyframes hs-news { 0%, 52% { opacity: 0; transform: translateY(-30px); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 58%, 100% { opacity: 1; transform: none; } }
+  /* 5 the winner: each team's worth stacks up as its balance plus its shares at market price; the tallest wins */
+  .hs .bars { display: flex; align-items: flex-end; justify-content: center; gap: 56px; }
+  .hs .col { display: grid; justify-items: center; gap: 8px; width: 132px; }
+  .hs .stack { width: 84px; display: flex; flex-direction: column-reverse; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .hs .cash { background: color-mix(in srgb, var(--team) 38%, var(--panel)); transform-origin: 50% 100%; animation: hs-grow1 var(--d) infinite both; }
+  .hs .shares { background: var(--team); transform-origin: 50% 100%; animation: hs-grow2 var(--d) infinite both; }
+  @keyframes hs-grow1 { 0%, 14% { transform: scaleY(0); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 32%, 100% { transform: none; } }
+  @keyframes hs-grow2 { 0%, 34% { transform: scaleY(0); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 52%, 100% { transform: none; } }
+  .hs .worth { font-size: 22px; font-weight: 700; animation: hs-e7 var(--d) infinite both; }
+  .hs .win .stack { animation: hs-win var(--d) infinite both; box-shadow: 0 0 0 3px var(--gold); }
+  @keyframes hs-win { 0%, 70% { box-shadow: 0 0 0 0 transparent; } 76%, 100% { box-shadow: 0 0 0 3px var(--gold); } }
+  .hs .crownl { background: var(--gold); color: #0b1220; font-weight: 700; font-size: 15px; padding: 3px 12px; border-radius: 4px; }
+  .hs .key { display: flex; gap: 18px; justify-content: center; font-size: 15px; color: var(--muted); }
+  .hs .key span { display: inline-flex; align-items: center; gap: 6px; } .hs .key i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+  @media (prefers-reduced-motion: reduce) { .hs, .hs * { animation: none !important; } }
 
   /* title, setup, bank, results */
   .screen { position: absolute; inset: 0; padding: 14px 40px; display: flex; flex-direction: column; gap: 12px; box-sizing: border-box; overflow-y: auto; }
@@ -887,19 +965,79 @@ function renderNews() {
   document.getElementById('newsbar')?.remove();
   if (state.phase === 'news' && state.news) ui.append(h('div', { id: 'newsbar', class: 'news' + (state.news.good ? ' good' : '') }, h('span', { class: 'tag' }, 'عاجل'), state.news.text));
 }
-const HELP = [ // the game explained in steps: a title and a line each, beside assets/help-<n>.png
+const HELP = [ // the game explained in steps: a title and a line each, beside helpScene(<n>)
   ['الإعداد', 'يحدد المقدّم عدد الفرق وأسماءها، والرصيد الابتدائي، وأوقات الإجابة والتداول، وطريقة عرض الأسئلة، ومتى تنتهي المسابقة.'],
   ['السؤال', 'يُطرح سؤال على الفريق صاحب الدور، وعليه أن يجيب قبل انتهاء الوقت.'],
   ['الإجابة الصحيحة تربح مالاً', 'الإجابة الصحيحة تضيف مكافأة نقدية إلى رصيد الفريق وتفتح له السوق. الإجابة الخاطئة تنقل الدور إلى الفريق التالي.'],
   ['التداول', 'يشتري الفريق أسهماً أو يبيعها خلال وقت التداول. كل صفقة تحرّك سعر السهم، والأخبار العاجلة قد ترفع قطاعاً كاملاً أو تهبط به.'],
   ['الفائز', 'عند نهاية المسابقة تُقيَّم الأسهم بسعر السوق، ويفوز الفريق صاحب أعلى صافي ثروة: الرصيد مع قيمة الأسهم.'],
 ];
-function showHelp(i = 0) { // the how-to-play dialog: one photo and one step at a time
+// The how-to-play scenes, one per HELP step: small looping motion graphics built from the game's own parts (shields, rows, pills).
+function helpScene(i) {
+  const sh = (t, s = 22) => shield(t, s).outerHTML, num = v => `<span class="num">${/^[+\-−]/.test(v) ? '‎' : ''}${v}</span>`;
+  const tm = (t, cls, extra = '') => `<div class="tm ${cls}" style="--team:${TEAM_COLORS[t]}">${sh(t)}${['الصقور', 'النمور', 'الفهود'][t]}${extra}</div>`;
+  const sw = (pairs) => `<span class="sw">${pairs.map(([v, c]) => `<span class="${c}">${v}</span>`).join('')}</span>`;
+  const pill = v => `<span class="pill up">${num(v)}</span>`;
+  const scenes = [
+    // 1 setup
+    `<div class="ab" style="inset:30px 40px;display:grid;gap:20px;align-content:center">
+      <div class="lab e1">الفرق</div>
+      <div style="display:flex;gap:12px">${tm(0, 'e1')}${tm(1, 'e2')}${tm(2, 'e3')}</div>
+      <div class="lab e4">المال والوقت</div>
+      <div style="display:flex;gap:14px">
+        <div class="card e4" style="flex:1;padding:14px 18px;display:grid;gap:4px"><span class="lab">الرصيد الابتدائي لكل فريق</span><span class="val">${num('10,000')} ريال</span></div>
+        <div class="card e5" style="flex:1;padding:14px 18px;display:grid;gap:4px"><span class="lab">وقت الإجابة</span><span class="val">${num('30')} ثانية</span></div>
+        <div class="card e6" style="flex:1;padding:14px 18px;display:grid;gap:4px"><span class="lab">وقت التداول</span><span class="val">${num('60')} ثانية</span></div>
+      </div>
+      <div class="e7" style="justify-self:end"><span class="btn pri go" style="display:inline-grid;place-items:center;border-radius:6px;padding:12px 30px;font-size:18px">ابدأ التداول</span></div></div>`,
+    // 2 the question
+    `<div class="ab e1" style="top:28px;right:40px;display:flex;align-items:center;gap:12px"><span class="lab" style="font-size:16px">الدور على</span>${tm(0, '')}</div>
+     <div class="ab e1 clock" style="top:20px;left:40px;display:grid;justify-items:center;gap:2px">
+       <svg width="64" height="64" viewBox="0 0 64 64" style="transform:rotate(-90deg)"><circle cx="32" cy="32" r="28" fill="none" stroke="var(--line)" stroke-width="6"/>
+       <circle class="run" cx="32" cy="32" r="28" fill="none" stroke="var(--down)" stroke-width="6" stroke-linecap="round"/></svg><span class="lab">الوقت</span></div>
+     <div class="ab card e2" style="top:108px;right:40px;left:40px;padding:18px 22px;display:grid;gap:10px">
+       <b style="font-size:22px">من أول من رأى الشيب؟</b>
+       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+         <div class="opt e3"><i>${num('1')}</i>إبراهيم عليه السلام</div><div class="opt e4"><i>${num('2')}</i>هود عليه السلام</div>
+         <div class="opt e5"><i>${num('3')}</i>نوح عليه السلام</div><div class="opt e6"><i>${num('4')}</i>داود عليه السلام</div></div></div>`,
+    // 3 a right answer pays
+    `<div class="ab card e1" style="top:24px;right:40px;width:400px;padding:16px 20px;display:grid;gap:10px">
+       <b style="font-size:20px">من أول من رأى الشيب؟</b>
+       <div class="opt okopt"><i>${num('1')}</i><span style="flex:1">إبراهيم عليه السلام</span>
+         <svg class="tick" width="26" height="26" viewBox="0 0 26 26"><path d="M5 13.5 L10.5 19 L21 7.5" fill="none" stroke="var(--up)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+       <div class="opt" style="opacity:.45"><i>${num('2')}</i>هود عليه السلام</div></div>
+     <div class="ab gain" style="top:90px;left:80px;width:140px;text-align:center;color:var(--gold);font-size:56px;font-weight:700;line-height:1">${num('+305')}</div>
+     <div class="ab e8" style="top:200px;right:40px"><span class="chip" style="font-size:15px;padding:6px 12px;border-color:var(--up);color:var(--up)">السوق مفتوح للصقور</span></div>
+     <div class="ab" style="bottom:24px;right:40px;left:40px;display:flex;gap:12px">
+       ${[0, 1, 2].map(t => `<div class="tm ${t ? '' : 'flash3'}" style="--team:${TEAM_COLORS[t]};flex:1;justify-content:space-between">
+         <span style="display:flex;align-items:center;gap:8px">${sh(t)}${['الصقور', 'النمور', 'الفهود'][t]}</span>
+         <span style="font-size:22px">${t ? num('10,000') : sw([[num('10,000'), 'old3'], [num('10,305'), 'new3']])}</span></div>`).join('')}</div>`,
+    // 4 trading
+    `<div class="ab newsb" style="top:22px;right:40px;left:40px"><span class="tag">عاجل</span>قطاع الطاقة يرتفع بعد اكتشاف حقل جديد</div>
+     <div class="ab card" style="top:96px;right:40px;left:40px">
+       <div class="rw e1"><div class="row newsr">${secIcon('طاقة').outerHTML}<b>نفط الواحة</b>
+         <span class="pr">${sw([[num('56'), 'o2'], [num('61'), 'n2']])}</span><span>${sw([[pill('+9.80%'), 'o2'], [pill('+19.61%'), 'n2']])}</span><span></span></div></div>
+       <div class="rw e2"><div class="row newsr">${secIcon('طاقة').outerHTML}<b>شمس للطاقة</b>
+         <span class="pr">${sw([[num('61'), 'o1'], [num('64'), 'm1'], [num('69'), 'n2']])}</span><span>${sw([[pill('+5.17%'), 'o1'], [pill('+10.34%'), 'm1'], [pill('+18.97%'), 'n2']])}</span>
+         <span class="btn buy buyb" style="display:inline-grid;place-items:center;min-height:36px;padding:6px 12px;border-radius:6px;font-size:16px">شراء</span></div></div>
+       <div class="rw e3"><div class="row">${secIcon('بنوك').outerHTML}<b>بنك الأمانة</b><span class="pr">${num('143')}</span><span>${pill('+3.62%')}</span><span></span></div></div></div>
+     <div class="ab e4" style="bottom:22px;right:40px;left:40px;text-align:center" ><span class="lab" style="font-size:15px">كل صفقة تحرّك السعر: الشراء يرفعه والبيع يخفضه</span></div>`,
+    // 5 the winner
+    `<div class="ab key e1" style="top:22px;left:0;right:0"><span><i style="background:color-mix(in srgb, var(--muted) 45%, var(--panel))"></i>الرصيد</span><span><i style="background:var(--muted)"></i>قيمة الأسهم</span></div>
+     <div class="ab bars" style="top:56px;bottom:22px;left:0;right:0">
+       ${[[0, 63, 147, '14,000', 1], [1, 121.5, 51, '11,500'], [2, 90, 34.5, '8,300']].map(([t, c, s, w, win]) => `<div class="col ${win ? 'win' : ''}" style="--team:${TEAM_COLORS[t]}">
+         ${win ? '<span class="crownl e8">الفائز</span>' : ''}<span class="worth">${num(w)}</span>
+         <div class="stack"><div class="cash" style="height:${c}px"></div><div class="shares" style="height:${s}px"></div></div>
+         <div style="display:flex;align-items:center;gap:6px;font-weight:700;font-size:17px">${sh(t)}${['الصقور', 'النمور', 'الفهود'][t]}</div></div>`).join('')}</div>`,
+  ];
+  return h('div', { class: 'hs', 'aria-hidden': 'true', html: `<div class="in">${scenes[i]}</div>` });
+}
+function showHelp(i = 0) { // the how-to-play dialog: one animated scene and one step at a time
   document.getElementById('help')?.remove();
   const last = i === HELP.length - 1, close = () => document.getElementById('help')?.remove();
   ui.append(h('div', { class: 'ov', id: 'help' }, h('div', { class: 'modal', style: 'max-width:780px;justify-items:center' },
     h('div', { class: 'muted', style: 'font-size:14px' }, 'شرح اللعبة · ', N(`${i + 1} / ${HELP.length}`)),
-    h('img', { src: `assets/help-${i + 1}.png`, alt: HELP[i][0], width: '704', height: '396', style: 'border-radius:8px;border:1px solid var(--line);display:block;max-width:100%;height:auto' }),
+    helpScene(i),
     h('b', { style: 'font-size:22px' }, HELP[i][0]), h('div', { style: 'font-size:16px;line-height:1.7;max-width:680px;min-height:54px' }, HELP[i][1]),
     h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('السابق', '', () => showHelp(i - 1), { disabled: i === 0 }),
       B(last ? 'إغلاق' : 'التالي', 'pri', last ? close : () => showHelp(i + 1), { 'data-primary': '1' }), last ? null : B('إغلاق', '', close)))));

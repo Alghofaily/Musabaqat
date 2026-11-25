@@ -55,6 +55,143 @@
   .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 22px 26px; min-width: 380px; display: grid; gap: 14px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; } }
   ::selection { background: var(--brass); color: var(--brass-ink); }
+  /* how-to-play scenes: one looping motion graphic per step, drawn from the game's own figures (hexes, fortresses, shields, banners).
+     Each element's plain style is its end state, so reduced motion (animations off) shows the finished picture; keyframes only lead into it. */
+  .hs { position: relative; width: 588px; height: 331px; box-sizing: border-box; border-radius: 8px; border: 1px solid var(--line); overflow: hidden; direction: rtl; text-align: right; --d: 6s;
+    background: var(--bg); background-image: linear-gradient(color-mix(in srgb, var(--line) 50%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--line) 50%, transparent) 1px, transparent 1px); background-size: 32px 32px; }
+  .hs > .in { position: absolute; inset: 0; animation: hs-cycle var(--d) linear infinite both; }
+  .hs .ab { position: absolute; }
+  .hs polygon, .hs path, .hs g { transform-box: fill-box; transform-origin: center; }
+  .hs .e1 { animation: hs-e1 var(--d) infinite both; } .hs .e2 { animation: hs-e2 var(--d) infinite both; } .hs .e3 { animation: hs-e3 var(--d) infinite both; }
+  .hs .e4 { animation: hs-e4 var(--d) infinite both; } .hs .e5 { animation: hs-e5 var(--d) infinite both; } .hs .e6 { animation: hs-e6 var(--d) infinite both; }
+  .hs .e7 { animation: hs-e7 var(--d) infinite both; } .hs .e8 { animation: hs-e8 var(--d) infinite both; }
+  @keyframes hs-cycle { 0% { opacity: 0; } 3%, 94% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes hs-e1 { 0%, 4% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 12%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e2 { 0%, 10% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 18%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e3 { 0%, 16% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 24%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e4 { 0%, 22% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 30%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e5 { 0%, 30% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 38%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e6 { 0%, 38% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 46%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e7 { 0%, 50% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 58%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e8 { 0%, 70% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 78%, 100% { opacity: 1; transform: none; } }
+  .hs .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+  .hs .lab { color: var(--muted); font-size: 14px; }
+  .hs .tm { display: flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box; font-size: 15px; font-weight: 700; padding: 6px 12px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); border-top: 4px solid var(--team); white-space: nowrap; }
+  .hs .opt { display: flex; align-items: center; gap: 10px; padding: 0 12px; height: 38px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--line); font-size: 16px; font-weight: 700; }
+  .hs .sw { display: inline-grid; } .hs .sw > * { grid-area: 1 / 1; }
+  .hs .fl { width: 100%; height: 100%; }
+  .hs .hx { fill: var(--land); stroke: var(--line); stroke-width: 2; stroke-linejoin: round; }
+  .hs .th { --tf: color-mix(in srgb, var(--team) 55%, var(--land)); fill: var(--tf); stroke: var(--team); }
+  .hs .chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 6px; background: var(--panel); border: 1px solid var(--line); font-size: 14px; font-weight: 700; white-space: nowrap; }
+  .hs .pbtn { display: inline-grid; place-items: center; min-width: 60px; height: 34px; border-radius: 6px; background: var(--brass); color: var(--brass-ink); font-weight: 700; font-size: 15px; }
+  .hs .rw + .rw { border-top: 1px solid var(--line); }
+  /* 2 question */
+  .hs .okopt { background: var(--okbg); border-color: var(--ok); animation: hs2-ok var(--d) infinite both; }
+  @keyframes hs2-ok { 0%, 20% { background: var(--panel2); border-color: var(--line); } 26%, 100% { background: var(--okbg); border-color: var(--ok); } }
+  .hs .tick path { stroke-dasharray: 1; stroke-dashoffset: 0; animation: hs2-tick var(--d) infinite both; }
+  @keyframes hs2-tick { 0%, 22% { stroke-dashoffset: 1; } 30%, 100% { stroke-dashoffset: 0; } }
+  .hs .fly { opacity: 0; animation: hs2-fly var(--d) infinite both; }
+  @keyframes hs2-fly { 0%, 30% { opacity: 0; transform: translateY(0) scale(.7); } 34% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.6, 0, .3, 1); } 44% { opacity: 1; transform: translateY(-104px); } 47%, 100% { opacity: 0; transform: translateY(-104px); } }
+  .hs .pulse { animation: hs2-pulse var(--d) infinite both; }
+  @keyframes hs2-pulse { 0%, 54% { transform: none; } 58% { transform: scale(1.22); } 64%, 100% { transform: none; } }
+  /* 3 shop */
+  .hs .ring { stroke-dasharray: 1; stroke-dashoffset: 0; animation: hs3-ring var(--d) infinite both; }
+  @keyframes hs3-ring { 0%, 62% { stroke-dashoffset: 1; opacity: 1; } 76%, 100% { stroke-dashoffset: 0; opacity: 1; } }
+  /* 4 battle */
+  .hs .arrow { stroke-dasharray: 1; stroke-dashoffset: 0; animation: hs4-arrow var(--d) infinite both; }
+  @keyframes hs4-arrow { 0%, 10% { stroke-dashoffset: 1; } 18%, 100% { stroke-dashoffset: 0; } }
+  .hs .ahead { animation: hs4-head var(--d) infinite both; }
+  @keyframes hs4-head { 0%, 16% { opacity: 0; } 19%, 100% { opacity: 1; } }
+  .hs .trk { flex: 1; height: 14px; border-radius: 4px; background: var(--panel2); border: 1px solid var(--line); overflow: hidden; }
+  .hs .bar { display: block; height: 100%; background: var(--team); transform-origin: 100% 50%; }
+  .hs .bar.dbar { transform: scaleX(0); animation: hs4-d var(--d) infinite both; }
+  @keyframes hs4-d { 0%, 30% { transform: scaleX(var(--s0)); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 36%, 62% { transform: scaleX(var(--s1)); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 68%, 100% { transform: scaleX(0); } }
+  .hs .shake { animation: hs4-shake var(--d) infinite both; }
+  @keyframes hs4-shake { 0%, 31% { transform: none; } 33% { transform: translateX(-5px); } 35% { transform: translateX(4px); } 37%, 63% { transform: none; } 65% { transform: translateX(-5px); } 67% { transform: translateX(4px); } 69%, 100% { transform: none; } }
+  .hs .flip4 { animation: hs4-flip var(--d) infinite both; }
+  @keyframes hs4-flip { 0%, 74% { fill: var(--of); stroke: var(--oc); } 80%, 100% { fill: var(--tf); stroke: var(--team); } }
+  .hs .r1 { animation: hs4-r1 var(--d) infinite both; opacity: 0; } .hs .r2 { animation: hs4-r2 var(--d) infinite both; }
+  @keyframes hs4-r1 { 0%, 20% { opacity: 0; transform: translateY(8px); } 26%, 50% { opacity: 1; transform: none; } 56%, 100% { opacity: 0; transform: translateY(-8px); } }
+  @keyframes hs4-r2 { 0%, 52% { opacity: 0; transform: translateY(8px); } 58%, 100% { opacity: 1; transform: none; } }
+  .hs .rd { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700; }
+  .hs .rd svg { width: 22px; height: 22px; flex: none; }
+  /* 5 capital */
+  .hs .flip5 { animation: hs5-flip var(--d) infinite both; }
+  @keyframes hs5-flip { 0%, 26% { fill: var(--of); stroke: var(--oc); } 32%, 100% { fill: var(--tf); stroke: var(--team); } }
+  .hs .move { animation: hs5-move var(--d) infinite both; }
+  @keyframes hs5-move { 0%, 56% { opacity: 0; transform: translateX(72.7px); } 58% { opacity: 1; transform: translateX(72.7px); animation-timing-function: cubic-bezier(.5, 0, .2, 1); } 74%, 100% { opacity: 1; transform: none; } }
+  /* 6 end */
+  .hs .key { display: flex; gap: 20px; justify-content: center; font-size: 14px; color: var(--muted); }
+  .hs .key span { display: inline-flex; align-items: center; gap: 6px; } .hs .key i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+  .hs .bars { display: flex; align-items: flex-end; justify-content: center; gap: 56px; }
+  .hs .col { display: grid; justify-items: center; gap: 6px; width: 130px; }
+  .hs .stack { width: 84px; display: flex; flex-direction: column-reverse; gap: 2px; border-radius: 6px 6px 0 0; overflow: hidden; }
+  .hs .stack > div { transform-origin: 50% 100%; }
+  .hs .win .stack { animation: hs6-win var(--d) infinite both; box-shadow: 0 0 0 3px var(--brass); }
+  @keyframes hs6-win { 0%, 70% { box-shadow: 0 0 0 0 transparent; } 76%, 100% { box-shadow: 0 0 0 3px var(--brass); } }
+  .hs .crownl { background: var(--brass); color: var(--brass-ink); font-weight: 700; font-size: 15px; padding: 3px 12px; border-radius: 4px; }
+  @media (prefers-reduced-motion: reduce) { .hs, .hs * { animation: none !important; } }
+  .hs .o17 { animation: hs-o17 var(--d) infinite both; opacity: 0; } .hs .n17 { animation: hs-n17 var(--d) infinite both; }
+  @keyframes hs-o17 { 0%, 16% { opacity: 1; transform: none; } 21%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-n17 { 0%, 17% { opacity: 0; transform: translateY(10px); } 23%, 100% { opacity: 1; transform: none; } }
+  .hs .o30 { animation: hs-o30 var(--d) infinite both; opacity: 0; } .hs .n30 { animation: hs-n30 var(--d) infinite both; }
+  @keyframes hs-o30 { 0%, 29% { opacity: 1; transform: none; } 34%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-n30 { 0%, 30% { opacity: 0; transform: translateY(10px); } 36%, 100% { opacity: 1; transform: none; } }
+  .hs .o33 { animation: hs-o33 var(--d) infinite both; opacity: 0; } .hs .n33 { animation: hs-n33 var(--d) infinite both; }
+  @keyframes hs-o33 { 0%, 32% { opacity: 1; transform: none; } 37%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-n33 { 0%, 33% { opacity: 0; transform: translateY(10px); } 39%, 100% { opacity: 1; transform: none; } }
+  .hs .o39 { animation: hs-o39 var(--d) infinite both; opacity: 0; } .hs .n39 { animation: hs-n39 var(--d) infinite both; }
+  @keyframes hs-o39 { 0%, 38% { opacity: 1; transform: none; } 43%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-n39 { 0%, 39% { opacity: 0; transform: translateY(10px); } 45%, 100% { opacity: 1; transform: none; } }
+  .hs .o45 { animation: hs-o45 var(--d) infinite both; opacity: 0; } .hs .n45 { animation: hs-n45 var(--d) infinite both; }
+  @keyframes hs-o45 { 0%, 44% { opacity: 1; transform: none; } 49%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-n45 { 0%, 45% { opacity: 0; transform: translateY(10px); } 51%, 100% { opacity: 1; transform: none; } }
+  .hs .o58 { animation: hs-o58 var(--d) infinite both; opacity: 0; } .hs .n58 { animation: hs-n58 var(--d) infinite both; }
+  @keyframes hs-o58 { 0%, 57% { opacity: 1; transform: none; } 62%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-n58 { 0%, 58% { opacity: 0; transform: translateY(10px); } 64%, 100% { opacity: 1; transform: none; } }
+  .hs .o61 { animation: hs-o61 var(--d) infinite both; opacity: 0; } .hs .n61 { animation: hs-n61 var(--d) infinite both; }
+  @keyframes hs-o61 { 0%, 60% { opacity: 1; transform: none; } 65%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-n61 { 0%, 61% { opacity: 0; transform: translateY(10px); } 67%, 100% { opacity: 1; transform: none; } }
+  .hs .o66 { animation: hs-o66 var(--d) infinite both; opacity: 0; } .hs .n66 { animation: hs-n66 var(--d) infinite both; }
+  @keyframes hs-o66 { 0%, 65% { opacity: 1; transform: none; } 70%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-n66 { 0%, 66% { opacity: 0; transform: translateY(10px); } 72%, 100% { opacity: 1; transform: none; } }
+  .hs .o74 { animation: hs-o74 var(--d) infinite both; opacity: 0; } .hs .n74 { animation: hs-n74 var(--d) infinite both; }
+  @keyframes hs-o74 { 0%, 73% { opacity: 1; transform: none; } 78%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-n74 { 0%, 74% { opacity: 0; transform: translateY(10px); } 80%, 100% { opacity: 1; transform: none; } }
+  .hs .f1 { animation: hs-f1 var(--d) infinite both; }
+  @keyframes hs-f1 { 0%, 34% { fill: var(--land); stroke: var(--line); } 40%, 100% { fill: var(--tf); stroke: var(--team); } }
+  .hs .f2 { animation: hs-f2 var(--d) infinite both; }
+  @keyframes hs-f2 { 0%, 44% { fill: var(--land); stroke: var(--line); } 50%, 100% { fill: var(--tf); stroke: var(--team); } }
+  .hs .f3 { animation: hs-f3 var(--d) infinite both; }
+  @keyframes hs-f3 { 0%, 54% { fill: var(--land); stroke: var(--line); } 60%, 100% { fill: var(--tf); stroke: var(--team); } }
+  .hs .lit1 { animation: hs2-lit1 var(--d) infinite both; }
+  @keyframes hs2-lit1 { 0%, 56% { fill: var(--tf); } 59% { fill: var(--brass); } 65%, 100% { fill: var(--tf); } }
+  .hs .lit2 { animation: hs2-lit2 var(--d) infinite both; }
+  @keyframes hs2-lit2 { 0%, 62% { fill: var(--tf); } 65% { fill: var(--brass); } 71%, 100% { fill: var(--tf); } }
+  .hs .lit3 { animation: hs2-lit3 var(--d) infinite both; }
+  @keyframes hs2-lit3 { 0%, 68% { fill: var(--tf); } 71% { fill: var(--brass); } 77%, 100% { fill: var(--tf); } }
+  .hs .pb1 { animation: hs3-b1 var(--d) infinite both; }
+  @keyframes hs3-b1 { 0%, 14% { transform: none; } 16% { transform: scale(.9); } 20%, 100% { transform: none; } }
+  .hs .pb2 { animation: hs3-b2 var(--d) infinite both; }
+  @keyframes hs3-b2 { 0%, 36% { transform: none; } 38% { transform: scale(.9); } 42%, 100% { transform: none; } }
+  .hs .pb3 { animation: hs3-b3 var(--d) infinite both; }
+  @keyframes hs3-b3 { 0%, 58% { transform: none; } 60% { transform: scale(.9); } 64%, 100% { transform: none; } }
+  .hs .pop1 { animation: hs3-pop1 var(--d) infinite both; }
+  @keyframes hs3-pop1 { 0%, 18% { opacity: 0; transform: scale(.4); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 26%, 100% { opacity: 1; transform: none; } }
+  .hs .pop2 { animation: hs3-pop2 var(--d) infinite both; }
+  @keyframes hs3-pop2 { 0%, 40% { opacity: 0; transform: scale(.4); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 48%, 100% { opacity: 1; transform: none; } }
+  .hs .fd1 { animation: hs5-fd1 var(--d) infinite both; }
+  @keyframes hs5-fd1 { 0%, 40% { fill: var(--of); stroke: var(--oc); } 46%, 100% { fill: var(--land); stroke: var(--line); } }
+  .hs .fd2 { animation: hs5-fd2 var(--d) infinite both; }
+  @keyframes hs5-fd2 { 0%, 44% { fill: var(--of); stroke: var(--oc); } 50%, 100% { fill: var(--land); stroke: var(--line); } }
+  .hs .fd3 { animation: hs5-fd3 var(--d) infinite both; }
+  @keyframes hs5-fd3 { 0%, 48% { fill: var(--of); stroke: var(--oc); } 54%, 100% { fill: var(--land); stroke: var(--line); } }
+  .hs .gr1 { animation: hs6-g1 var(--d) infinite both; }
+  @keyframes hs6-g1 { 0%, 14% { transform: scaleY(0); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 30%, 100% { transform: none; } }
+  .hs .gr2 { animation: hs6-g2 var(--d) infinite both; }
+  @keyframes hs6-g2 { 0%, 32% { transform: scaleY(0); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 48%, 100% { transform: none; } }
+  .hs .gr3 { animation: hs6-g3 var(--d) infinite both; }
+  @keyframes hs6-g3 { 0%, 50% { transform: scaleY(0); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 66%, 100% { transform: none; } }
 
   /* the war room */
   header { position: absolute; left: 0; right: 0; top: 0; height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 12px; background: var(--panel); border-bottom: 1px solid var(--line); box-sizing: border-box; }
@@ -1230,14 +1367,6 @@ function timeUp() { // nobody answered in time: an unanswered team counts as wro
   if (state.phase === 'question') { snapVerdict(); state.result = 'time'; state.reveal = true; sfx.wrong(); return setPhase('reveal'); }
   if (state.phase === 'duel') answerBattle(false, null, true);
 }
-const HELP_FIG = { // the help's drawings, from the game's own figures
-  setup: () => `<div style="display:flex;gap:18px;align-items:center;justify-content:center">${[0, 1, 2, 3].map(t => fortressSVG(t, 64)).join('')}</div>`,
-  question: () => `<div style="display:flex;gap:16px;align-items:center;justify-content:center">${ring(18, 30, 96)}<span class="reward num">+${fmt(tune.turnReward)}</span></div>`,
-  shop: () => `<div style="display:flex;gap:14px;align-items:center;justify-content:center">${shieldSVG(0, 2, 48)}<b class="brass" style="font-size:40px">←</b>${shieldSVG(0, 3, 48)}</div>`,
-  battle: () => `<div style="display:flex;gap:16px;align-items:center;justify-content:center">${bannerSVG(0, 80)}<b class="brass" style="font-size:34px">ضد</b>${bannerSVG(1, 80)}</div>`,
-  capital: () => `<div style="display:flex;gap:16px;align-items:center;justify-content:center">${fortressSVG(1, 80)}<b class="bad" style="font-size:40px">←</b>${fortressSVG(0, 80)}</div>`,
-  end: () => `<div style="display:flex;justify-content:center">${TROPHY}</div>`,
-};
 const HELP_AT = { ready: 1, question: 1, reveal: 1, shop: 2, attack: 3, duel: 3, duelReveal: 3, capture: 3, move: 4, over: 5 }; // H: help opens on the step in play
 const HELP = [
   ['setup', 'الإعداد', 'يختار المقدّم عدد الفرق وأسماءها، وطريقة عرض الأسئلة، ومتى تنتهي الحرب. لكل فريق عاصمة وأراضٍ حولها على خريطة جديدة كل مرة.'],
@@ -1247,13 +1376,120 @@ const HELP = [
   ['capital', 'سقوط العاصمة', 'الأرض المأخوذة تبدأ خالية وتبقى الكتائب الناجية في أرض الهجوم، فانقلها في خطوة التحريك. إذا سقطت العاصمة خرج فريقها من الحرب وعادت أراضيه محايدة.'],
   ['end', 'نهاية الحرب', 'تنتهي الحرب بسقوط كل العواصم إلا واحدة، أو بانتهاء الوقت أو الجولات. عندها يفوز صاحب أعلى نقاط: الأراضي، والمال، وقيمة الكتائب والمدافع والحصون بسعر البيع. النقاط لا تظهر إلا في النتائج؛ أثناء الحرب يُرتَّب الفرق بالأراضي ثم الكتائب.'],
 ];
+// The how-to-play scenes, one per HELP step: looping motion graphics built from the game's own figures
+// (hexes in the team colours, fortressSVG, shieldSVG, bannerSVG, MARK_OK/MARK_NO) and its own tuning numbers.
+function helpScene(i) {
+  const R3 = Math.sqrt(3), TN = t => `الفريق ${t + 1}`;
+  const num = v => `<span class="num">${/^[+\-−]/.test(v) ? '‎' : ''}${v}</span>`;
+  const tfc = t => `color-mix(in srgb, ${TEAMS[t].c} 55%, var(--land))`;
+  const hc = (c, r, rad, ox, oy) => [ox + R3 * rad * (c + (r & 1 ? .5 : 0)), oy + 1.5 * rad * r];
+  const pts = (x, y, rad) => Array.from({ length: 6 }, (_, k) => { const a = Math.PI / 180 * (60 * k - 30); return `${(x + rad * Math.cos(a)).toFixed(1)},${(y + rad * Math.sin(a)).toFixed(1)}`; }).join(' ');
+  const hx = (x, y, rad, t = -1, anim = '', st = '') => `<polygon class="hx${t >= 0 ? ' th' : ''} ${anim}" points="${pts(x, y, rad - 1.5)}" style="${t >= 0 ? `--team:${TEAMS[t].c};` : ''}${st}"/>`;
+  const grp = (e, inner) => `<g class="${e}">${inner}</g>`;
+  const svg = inner => `<svg class="ab" style="left:0;top:0" width="588" height="331" viewBox="0 0 588 331">${inner}</svg>`;
+  const unit = (html, x, y, w, hh, cls = '') => `<div class="ab ${cls}" style="left:${x - w / 2}px;top:${y - hh / 2}px;width:${w}px;height:${hh}px">${html}</div>`;
+  const fort = (t, x, y, s, cls = '') => unit(fortressSVG(t, s), x, y, s, s, cls);
+  const shield = (t, n, x, y, s, cls = '') => unit(shieldSVG(t, n, s), x, y, s, Math.round(s * 1.15), cls);
+  const cannonSVG = n => `<svg viewBox="-12 -12 28 24" width="100%" height="100%"><g transform="rotate(-26)"><rect x="-9" y="-3" width="16" height="6" rx="2" fill="var(--stone2)" stroke="var(--brass)" stroke-width="1.2"/></g><circle cx="-1" cy="3" r="3.4" fill="var(--brass)"/><text x="10" y="7" text-anchor="middle" font-size="9" font-weight="bold" fill="var(--text)" stroke="var(--panel)" stroke-width="2" paint-order="stroke" font-family="Plex, Arial">${n}</text></svg>`;
+  const cannon = (n, x, y, s, cls = '') => unit(cannonSVG(n), x, y, 28 * s, 24 * s, cls);
+  const tm = (t, cls = '', st = '') => `<div class="tm ${cls}" style="--team:${TEAMS[t].c};${st}">${bannerSVG(t, 22)}${TN(t)}</div>`;
+  const sw = (...vals) => `<span class="sw">${vals.join('')}</span>`;
+  const P = RP(), hit1 = R.hit(1, false, P), loss = tune.defenderWrongLoss;
+  const price = { troop: tune.troopBase + 8, cannon: tune.cannonBase + 8, fort: tune.fortBase + 8 }; // illustrative buy prices: the real ones roll every round
+  const nb = (c, r) => (r & 1 ? [[1, 0], [-1, 0], [0, -1], [1, -1], [0, 1], [1, 1]] : [[1, 0], [-1, 0], [-1, -1], [0, -1], [-1, 1], [0, 1]]).map(([a, b]) => [c + a, r + b]);
+  const scenes = [
+    // 1 setup: land pops in, capitals are planted, their neighbours take the team colour
+    (() => {
+      const rad = 32, ox = 58.7, oy = 44, caps = [[1, 1], [7, 1], [4, 3]]; let hexes = '', forts = '';
+      for (let r = 0; r < 5; r++) for (let c = 0; c < 9; c++) {
+        const [x, y] = hc(c, r, rad, ox, oy), ci = caps.findIndex(([a, b]) => a === c && b === r);
+        const own = ci >= 0 ? ci : caps.findIndex(([a, b]) => nb(a, b).some(([p, q]) => p === c && q === r));
+        hexes += grp(ci >= 0 ? `e${4 + ci}` : `e${1 + Math.floor((8 - c) / 3)}`, hx(x, y, rad, own, own >= 0 && ci < 0 ? `f${own + 1}` : ''));
+        if (ci >= 0) forts += fort(ci, x, y - 2, 40, `e${4 + ci}`);
+      }
+      return svg(hexes) + forts + `<div class="ab" style="left:0;right:0;bottom:12px;display:flex;gap:12px;justify-content:center">${[0, 1, 2].map(t => tm(t, `e${4 + t}`, 'width:130px')).join('')}</div>`;
+    })(),
+    // 2 the question: right answer, reward into the money, then the payout lights the land and lifts the capital's battalions
+    (() => {
+      const rad = 28, ox = 44.2, oy = 100, land = [[1, 1], [3, 1], [2, 2]], cap = [2, 1]; let hexes = '', n = 0;
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 5; c++) {
+        const [x, y] = hc(c, r, rad, ox, oy), li = land.findIndex(([a, b]) => a === c && b === r), isCap = c === cap[0] && r === cap[1];
+        hexes += hx(x, y, rad, li >= 0 || isCap ? 0 : -1, li >= 0 ? `lit${li + 1}` : '');
+      }
+      const [cx, cy] = hc(cap[0], cap[1], rad, ox, oy), before = tune.startCapitalBattalions, after = before + land.length * tune.payoutPerHex;
+      return `<div class="ab tm e1" style="--team:${TEAMS[0].c};right:20px;top:14px;width:200px;justify-content:flex-start">${bannerSVG(0, 22)}<span>${TN(0)}</span>
+          <span style="margin-inline-start:auto;font-size:18px">${sw(`<span class="o45">${num(fmt(tune.startMoney))}</span>`, `<span class="n45">${num(fmt(tune.startMoney + tune.turnReward))}</span>`)}</span></div>
+        <div class="ab card e2" style="right:20px;top:66px;width:276px;box-sizing:border-box;padding:14px 16px;display:grid;gap:10px">
+          <b style="font-size:18px">ما أكبر كواكب المجموعة الشمسية؟</b>
+          <div class="opt okopt"><span style="flex:1">المشتري</span><svg class="tick" width="24" height="24" viewBox="0 0 24 24"><path pathLength="1" d="M4 12.5 L9.5 18 L20 6" fill="none" stroke="var(--ok)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="opt" style="opacity:.55">المريخ</div></div>
+        <div class="ab fly" style="left:384px;top:132px;font-size:24px;font-weight:700;color:var(--brass)">${num('+' + fmt(tune.turnReward))}</div>`
+        + svg(grp('e1', hexes))
+        + unit(`<div class="pulse fl">${fortressSVG(0, 30)}</div>`, cx, cy - 9, 30, 30)
+        + unit(`<div class="fl o74">${shieldSVG(0, before, 26)}</div>`, cx + 8, cy + 20, 26, 30) + unit(`<div class="fl n74">${shieldSVG(0, after, 26)}</div>`, cx + 8, cy + 20, 26, 30)
+        + `<div class="ab e7" style="left:20px;right:20px;bottom:16px;text-align:center"><span class="chip">كل ${num(tune.payoutEvery)} جولات: ${num('+' + fmt(land.length * tune.payoutPerHex))} كتيبة للعاصمة</span></div>`;
+    })(),
+    // 3 the shop: three buys in turn, each one puts its good on the hex; the money drops at each
+    (() => {
+      const [hx0, hy0] = [150, 165], m = [tune.startMoney, tune.startMoney - price.troop, tune.startMoney - price.troop - price.cannon, tune.startMoney - price.troop - price.cannon - price.fort].map(v => num(fmt(v)));
+      const money = sw(`<span class="o17">${m[0]}</span>`, `<span class="n17"><span class="o39">${m[1]}</span></span>`, `<span class="n39"><span class="o61">${m[2]}</span></span>`, `<span class="n61">${m[3]}</span>`);
+      const row = (e, icon, name, p, b) => `<div class="rw e${e}" style="display:flex;align-items:center;gap:10px;height:54px;padding:0 14px"><span style="width:34px;display:grid;place-items:center">${icon}</span><b style="font-size:17px;flex:1">${name}</b><span style="font-size:16px;color:var(--muted)">${num(fmt(p))}</span><span class="pbtn pb${b}">شراء</span></div>`;
+      return svg(hx(hx0, hy0, 76, 0) + `<polygon class="ring" pathLength="1" points="${pts(hx0, hy0, 86)}" fill="none" stroke="var(--brass)" stroke-width="4" stroke-linejoin="round"/>`)
+        + shield(0, 1, hx0 - 2, hy0 - 22, 44, 'pop1') + cannon(1, hx0, hy0 + 32, 2, 'pop2')
+        + `<div class="ab card" style="right:20px;top:60px;width:272px;overflow:hidden">
+            <div style="display:flex;justify-content:space-between;align-items:center;height:44px;padding:0 14px;border-bottom:1px solid var(--line)"><b style="font-size:17px">السوق</b><span class="lab" style="font-size:15px">المال: <b style="color:var(--text);font-size:18px">${money}</b></span></div>
+            ${row(1, shieldSVG(0, 1, 22), 'كتيبة', price.troop, 1)}${row(2, `<span style="display:block;width:34px;height:29px">${cannonSVG(1)}</span>`, 'مدفع', price.cannon, 2)}${row(3, fortressSVG(0, 30), 'حصن', price.fort, 3)}</div>`;
+    })(),
+    // 4 battle: the arrow, then two rounds that wear the defender's strength down until the hex flips
+    (() => {
+      const rad = 64, [dx, dy] = [100, 170], [ax, ay] = [211, 170], a = hit1 + loss + 4, d0 = hit1 + loss;
+      const bar = (t, label, cls, st, nums) => `<div style="display:flex;align-items:center;gap:10px">${bannerSVG(t, 22)}<b style="width:44px;font-size:15px">${label}</b><div class="trk"><span class="bar ${cls}" style="--team:${TEAMS[t].c};${st}"></span></div><b style="min-width:26px;text-align:center;font-size:17px">${nums}</b></div>`;
+      const round = (cls, mk, txt, v) => `<span class="rd ${cls}"><span class="${cls === 'r1' ? 'ok' : 'bad'}">${mk}</span>${txt} ${num(v)}</span>`;
+      return svg(`<g class="e1"><g class="shake">${hx(dx, dy, rad, 0, 'flip4', `--of:${tfc(1)};--oc:${TEAMS[1].c};--team:${TEAMS[0].c}`)}</g>${hx(ax, ay, rad, 0)}</g>`
+          + `<path class="arrow" pathLength="1" d="M200 138 L124 138" fill="none" stroke="var(--brass)" stroke-width="5" stroke-linecap="round"/><polygon class="ahead" points="112,138 126,129 126,147" fill="var(--brass)" stroke="var(--brass)" stroke-width="2" stroke-linejoin="round"/>`)
+        + unit(`<div class="fl o33">${shieldSVG(1, d0, 34)}</div>`, dx, dy + 20, 34, 39) + unit(`<div class="fl n33"><div class="fl o66">${shieldSVG(1, d0 - hit1, 34)}</div></div>`, dx, dy + 20, 34, 39)
+        + shield(0, a, ax - 14, ay + 20, 30, 'e2') + cannon(1, ax + 24, ay + 26, 1.2, 'e3')
+        + tm(1, 'ab e1', `left:${dx - 52}px;top:252px;width:104px`) + tm(0, 'ab e1', `left:${ax - 52}px;top:252px;width:104px`)
+        + `<div class="ab card e2" style="right:20px;top:60px;width:272px;box-sizing:border-box;padding:16px;display:grid;gap:14px">
+            ${bar(0, 'الهجوم', '', '', num(a))}
+            ${bar(1, 'الدفاع', 'dbar', `--s0:${d0 / a};--s1:${(d0 - hit1) / a}`, sw(`<span class="o33">${num(d0)}</span>`, `<span class="n33"><span class="o66">${num(d0 - hit1)}</span></span>`, `<span class="n66">${num(0)}</span>`))}
+            <div style="border-top:1px solid var(--line);padding-top:14px;height:30px">${sw(round('r1', MARK_OK, 'أجاب المهاجم صحيحاً:', '−' + hit1), round('r2', MARK_NO, 'أخطأ المدافع:', '−' + loss))}</div></div>`;
+    })(),
+    // 5 the capital falls: it flips, the loser's other land goes neutral, the survivors slide into the empty hex
+    (() => {
+      const rad = 42, ox = 94, oy = 62, A = [4, 1], C = [3, 1], own1 = [[2, 1], [3, 0], [3, 2]], own0 = [[4, 1], [5, 1], [4, 2]]; let hexes = '';
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 6; c++) {
+        const [x, y] = hc(c, r, rad, ox, oy), is = l => l.findIndex(([p, q]) => p === c && q === r), fi = is(own1);
+        hexes += c === C[0] && r === C[1] ? hx(x, y, rad, 0, 'flip5', `--of:${tfc(1)};--oc:${TEAMS[1].c};--team:${TEAMS[0].c}`)
+          : is(own0) >= 0 ? hx(x, y, rad, 0) : fi >= 0 ? hx(x, y, rad, -1, `fd${fi + 1}`, `--of:${tfc(1)};--oc:${TEAMS[1].c}`) : hx(x, y, rad);
+      }
+      const [ax, ay] = hc(A[0], A[1], rad, ox, oy), [cx, cy] = hc(C[0], C[1], rad, ox, oy), have = tune.attackMin + 4, left = tune.attackMin;
+      return svg(grp('e1', hexes)) + fort(1, cx, cy - 8, 38, 'o30') + fort(0, cx, cy - 8, 38, 'n30')
+        + unit(`<div class="fl o58">${shieldSVG(0, have, 30)}</div>`, ax, ay, 30, 35) + unit(`<div class="fl n58">${shieldSVG(0, left, 30)}</div>`, ax, ay, 30, 35)
+        + shield(0, have - left, cx, cy + 16, 26, 'move')
+        + `<div class="ab" style="left:0;right:0;bottom:14px;display:flex;gap:10px;justify-content:center"><span class="chip e4">سقطت العاصمة</span><span class="chip e6">عادت أراضيها محايدة</span><span class="chip e8">انتقلت الكتائب</span></div>`;
+    })(),
+    // 6 the end: each team's score stacks up from its parts; the tallest is the winner
+    (() => {
+      const teams = [[0, 2800, 1100, 800], [1, 2100, 1600, 500], [2, 1400, 700, 400]], k = 170 / 4700, tone = [100, 68, 42];
+      const seg = (t, n, v, pct) => `<div class="gr${n}" style="height:${Math.round(v * k)}px;background:color-mix(in srgb, ${TEAMS[t].c} ${pct}%, var(--panel))"></div>`;
+      const sw3 = (pct, label) => `<span><i style="background:color-mix(in srgb, ${TEAMS[0].c} ${pct}%, var(--panel))"></i>${label}</span>`;
+      return `<div class="ab key e1" style="left:0;right:0;top:14px">${sw3(100, 'الأراضي')}${sw3(68, 'المال')}${sw3(42, 'الكتائب والمدافع والحصون')}</div>
+        <div class="ab bars" style="top:44px;bottom:12px;left:0;right:0">${teams.map(([t, l, m, u], idx) => `<div class="col${idx === 0 ? ' win' : ''}" style="--team:${TEAMS[t].c}">
+          ${idx === 0 ? '<span class="crownl e8">الفائز</span>' : ''}<b class="e7" style="font-size:22px">${num(fmt(l + m + u))}</b>
+          <div class="stack">${seg(t, 1, u, tone[2])}${seg(t, 2, m, tone[1])}${seg(t, 3, l, tone[0])}</div>
+          <div class="tm" style="--team:${TEAMS[t].c};border-top-width:1px;padding:4px 10px;font-size:14px">${bannerSVG(t, 20)}${TN(t)}</div></div>`).join('')}</div>`;
+    })(),
+  ];
+  return h('div', { class: 'hs', 'aria-hidden': 'true', html: `<div class="in">${scenes[i]}</div>` });
+}
 function showHelp(i = 0) {
   document.getElementById('help')?.remove();
   if (scene === 'play') { state.paused = true; renderHeader(); }
   const last = i === HELP.length - 1, close = () => { document.getElementById('help')?.remove(); if (scene === 'play') { state.paused = false; renderHeader(); } };
   ui.append(h('div', { class: 'ov', id: 'help' }, h('div', { class: 'modal', style: 'width:640px;justify-items:center' },
     h('div', { class: 'muted', style: 'font-size:14px' }, 'شرح اللعبة · ', N(`${i + 1} / ${HELP.length}`)),
-    h('div', { style: 'height:120px;display:grid;place-items:center', html: HELP_FIG[HELP[i][0]]() }),
+    helpScene(i),
     h('b', { style: 'font-size:24px' }, HELP[i][1]), h('div', { style: 'font-size:17px;line-height:1.75;min-height:90px' }, HELP[i][2]),
     h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('السابق', '', () => showHelp(i - 1), { disabled: i === 0 }),
       B(last ? 'إغلاق' : 'التالي', 'pri', last ? close : () => showHelp(i + 1), { 'data-primary': '1' }), last ? null : B('إغلاق', '', close)))));

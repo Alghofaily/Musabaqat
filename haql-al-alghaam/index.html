@@ -131,6 +131,99 @@
   .ov { position: absolute; inset: 0; background: rgba(10,8,6,.66); display: flex; align-items: center; justify-content: center; z-index: 20; }
   .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 22px 26px; min-width: 380px; max-width: calc(100% - 24px); box-sizing: border-box; display: grid; gap: 14px; text-align: center; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } .pbanner { animation: none !important; } .plot.shake { animation: none !important; } }
+
+  /* how-to-play scenes: one looping motion graphic per step, built from the game's own squares, mine, pennant and team rows. Each element's plain style
+     is its end state, so reduced motion (animations off) shows the finished picture; the keyframes only lead into it. */
+  .hs { position: relative; width: 616px; height: 347px; max-width: 100%; box-sizing: border-box; border-radius: 8px; border: 1px solid var(--line); overflow: hidden; direction: rtl; text-align: right; background: var(--bg); --d: 6s; }
+  .hs > .in { position: absolute; inset: 0; animation: hs-cycle var(--d) linear infinite both; }
+  .hs .ab { position: absolute; }
+  .hs .e1 { animation: hs-e1 var(--d) infinite both; } .hs .e2 { animation: hs-e2 var(--d) infinite both; } .hs .e3 { animation: hs-e3 var(--d) infinite both; }
+  .hs .e4 { animation: hs-e4 var(--d) infinite both; } .hs .e5 { animation: hs-e5 var(--d) infinite both; } .hs .e6 { animation: hs-e6 var(--d) infinite both; }
+  .hs .e7 { animation: hs-e7 var(--d) infinite both; } .hs .e8 { animation: hs-e8 var(--d) infinite both; }
+  @keyframes hs-cycle { 0% { opacity: 0; } 3%, 94% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes hs-e1 { 0%, 4% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 12%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e2 { 0%, 10% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 18%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e3 { 0%, 16% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 24%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e4 { 0%, 22% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 30%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e5 { 0%, 30% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 38%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e6 { 0%, 38% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 46%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e7 { 0%, 50% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 58%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e8 { 0%, 70% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 78%, 100% { opacity: 1; transform: none; } }
+  /* the field: raised turf covers over dug squares; a cover lifts away to open its square */
+  .hs .hf { right: 22px; top: 70px; padding: 8px; border-radius: 14px; background: var(--ground2); box-shadow: 0 0 0 3px var(--line), 0 10px 26px rgba(0,0,0,.22); }
+  .hs .hg { display: grid; grid-template-columns: repeat(6, 44px); grid-auto-rows: 44px; gap: 5px; }
+  .hs .hc { position: relative; display: grid; place-items: center; border-radius: 13%; background: var(--dug); box-shadow: inset 0 0 0 1px var(--dug-rim), inset 0 3px 5px var(--dug-sh); font-weight: 700; font-size: 24px; line-height: 1; color: var(--text); }
+  .hs .hc.hit { background: var(--hit); box-shadow: inset 0 0 0 3px var(--accent); }
+  .hs .hc.bl { background: var(--scorch); box-shadow: none; outline: 2px dashed var(--scorch-line); outline-offset: -5px; }
+  .hs .hc.late { background: var(--ground); box-shadow: none; outline: 2px dashed var(--scorch-line); outline-offset: -5px; }
+  .hs .hc.late .mine { opacity: .6; }
+  .hs .hc .mine { width: 72%; height: 72%; display: block; }
+  .hs .cv { position: absolute; inset: 0; z-index: 2; border-radius: inherit; opacity: 0; transform: translateY(-2px);
+    background: radial-gradient(circle at 22% 28%, var(--tuft) 0 3%, transparent 4%), radial-gradient(circle at 72% 62%, var(--tuft) 0 2.5%, transparent 3.5%), radial-gradient(circle at 44% 82%, var(--tuft) 0 2%, transparent 3%), linear-gradient(var(--turf-hi), var(--turf));
+    box-shadow: 0 3px 0 var(--turf-lo), inset 0 2px 0 var(--turf-edge); }
+  .hs .cv.k, .hs .cv.u { opacity: 1; }
+  .hs .cv.u { animation: hs-un var(--d) infinite both; }
+  @keyframes hs-un { 0%, 62% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 70%, 100% { opacity: 1; transform: translateY(-2px); } }
+  .hs .cv.l10 { animation: hs-l10 var(--d) infinite both; } @keyframes hs-l10 { 0%, 10% { opacity: 1; transform: translateY(-2px); animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 16%, 100% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); } }
+  .hs .cv.l12 { animation: hs-l12 var(--d) infinite both; } @keyframes hs-l12 { 0%, 12% { opacity: 1; transform: translateY(-2px); animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 18%, 100% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); } }
+  .hs .cv.l14 { animation: hs-l14 var(--d) infinite both; } @keyframes hs-l14 { 0%, 14% { opacity: 1; transform: translateY(-2px); animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 20%, 100% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); } }
+  .hs .cv.l28 { animation: hs-l28 var(--d) infinite both; } @keyframes hs-l28 { 0%, 28% { opacity: 1; transform: translateY(-2px); animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 34%, 100% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); } }
+  .hs .cv.l32 { animation: hs-l32 var(--d) infinite both; } @keyframes hs-l32 { 0%, 32% { opacity: 1; transform: translateY(-2px); animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 38%, 100% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); } }
+  .hs .cv.l36 { animation: hs-l36 var(--d) infinite both; } @keyframes hs-l36 { 0%, 36% { opacity: 1; transform: translateY(-2px); animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 42%, 100% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); } }
+  .hs .cv.l40 { animation: hs-l40 var(--d) infinite both; } @keyframes hs-l40 { 0%, 40% { opacity: 1; transform: translateY(-2px); animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 46%, 100% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); } }
+  .hs .cv.l44 { animation: hs-l44 var(--d) infinite both; } @keyframes hs-l44 { 0%, 44% { opacity: 1; transform: translateY(-2px); animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 50%, 100% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); } }
+  .hs .cv.l48 { animation: hs-l48 var(--d) infinite both; } @keyframes hs-l48 { 0%, 48% { opacity: 1; transform: translateY(-2px); animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 54%, 100% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); } }
+  .hs .cv.l52 { animation: hs-l52 var(--d) infinite both; } @keyframes hs-l52 { 0%, 52% { opacity: 1; transform: translateY(-2px); animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 58%, 100% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); } }
+  .hs .cv.l54 { animation: hs-l54 var(--d) infinite both; } @keyframes hs-l54 { 0%, 54% { opacity: 1; transform: translateY(-2px); animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 60%, 100% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); } }
+  .hs .cv.l62 { animation: hs-l62 var(--d) infinite both; } @keyframes hs-l62 { 0%, 62% { opacity: 1; transform: translateY(-2px); animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 68%, 100% { opacity: 0; transform: translateY(-30%) scale(1.2) rotate(4deg); } }
+  .hs .flg { position: absolute; inset: 0; z-index: 1; animation: hs-flag var(--d) infinite both; transform-origin: 30% 100%; }
+  .hs .flg .pen { position: absolute; top: 8%; inset-inline-start: 10%; width: 17px; height: 22px; overflow: visible; filter: drop-shadow(0 1px 1px rgba(0,0,0,.3)); }
+  .hs .flg .pen path { stroke: var(--text); stroke-width: 1.6; stroke-linejoin: round; }
+  @keyframes hs-flag { 0%, 22% { opacity: 0; transform: translateY(12px) scale(.3); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 32%, 100% { opacity: 1; transform: none; } }
+  .hs .mn { display: grid; place-items: center; width: 100%; height: 100%; animation: hs-shell var(--d) infinite both; }
+  @keyframes hs-shell { 0%, 12% { opacity: 0; transform: scale(.2); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 20%, 100% { opacity: 1; transform: none; } }
+  .hs .fl { position: absolute; inset: 0; z-index: 3; border-radius: inherit; background: var(--flame2); opacity: 0; animation: hs-flash var(--d) infinite both; }
+  @keyframes hs-flash { 0%, 11% { opacity: 0; } 12% { opacity: .9; } 24%, 100% { opacity: 0; } }
+  .hs .rg { position: absolute; inset: 0; z-index: 3; border-radius: 50%; border: 6px solid var(--dust); opacity: 0; animation: hs-ring var(--d) infinite both; }
+  @keyframes hs-ring { 0%, 11% { opacity: 0; transform: scale(.3); } 12% { opacity: .9; transform: scale(.3); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 36%, 100% { opacity: 0; transform: scale(3.4); } }
+  /* team rows and score swaps */
+  .hs .lbp { min-height: 46px; }
+  .hs .sx { display: inline-grid; } .hs .sx > * { grid-area: 1 / 1; text-align: end; }
+  .hs .so { opacity: 0; } .hs .sn.neg { color: var(--bad); }
+  .hs .so2 { animation: hs-so2 var(--d) infinite both; } .hs .sn2 { animation: hs-sn2 var(--d) infinite both; }
+  @keyframes hs-so2 { 0%, 48% { opacity: 1; transform: none; } 54%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-sn2 { 0%, 48% { opacity: 0; transform: translateY(10px); } 54%, 100% { opacity: 1; transform: none; } }
+  .hs .so3 { animation: hs-so3 var(--d) infinite both; } .hs .sn3 { animation: hs-sn3 var(--d) infinite both; }
+  @keyframes hs-so3 { 0%, 22% { opacity: 1; transform: none; } 28%, 100% { opacity: 0; transform: translateY(10px); } }
+  @keyframes hs-sn3 { 0%, 22% { opacity: 0; transform: translateY(-10px); } 28%, 100% { opacity: 1; transform: none; } }
+  .hs .fy { left: 438px; top: 136px; padding: 1px 10px; border-radius: 999px; background: var(--c); color: var(--onteam); font-size: 22px; font-weight: 700; line-height: 1.3; opacity: 0; animation: hs-fy var(--d) infinite both; }
+  @keyframes hs-fy { 0%, 28% { opacity: 0; transform: translate(0, 8px) scale(.6); } 34%, 38% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.6, 0, .3, 1); } 47% { opacity: 1; transform: translate(-400px, -52px) scale(.85); } 49%, 100% { opacity: 0; transform: translate(-400px, -52px) scale(.85); } }
+  /* small parts */
+  .hs .note { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); font-size: 15px; font-weight: 700; }
+  .hs .note.ok { border-color: var(--good); background: var(--goodbg); color: var(--good); }
+  .hs .note.no { border-color: var(--bad); background: var(--badbg); color: var(--bad); animation: hs-no var(--d) infinite both; }
+  @keyframes hs-no { 0%, 12% { background: var(--panel); border-color: var(--line); color: var(--text); } 20%, 100% { background: var(--badbg); border-color: var(--bad); color: var(--bad); } }
+  .hs .tk path { stroke-dasharray: 24; animation: hs-tk var(--d) infinite both; } .hs .bar path { stroke-dasharray: 12; animation: hs-bar var(--d) infinite both; }
+  @keyframes hs-tk { 0%, 40% { stroke-dashoffset: 24; } 48%, 100% { stroke-dashoffset: 0; } }
+  @keyframes hs-bar { 0%, 14% { stroke-dashoffset: 12; } 22%, 100% { stroke-dashoffset: 0; } }
+  .hs .mkr { left: 22px; top: 192px; width: 236px; height: 46px; box-sizing: border-box; border: 3px solid var(--t1); border-radius: 8px; background: color-mix(in srgb, var(--t1) 18%, transparent); animation: hs-slide var(--d) infinite both; }
+  @keyframes hs-slide { 0%, 36% { transform: translateY(-52px); border-color: var(--t0); background: color-mix(in srgb, var(--t0) 18%, transparent); animation-timing-function: cubic-bezier(.5, 0, .2, 1); } 54%, 100% { transform: none; border-color: var(--t1); background: color-mix(in srgb, var(--t1) 18%, transparent); } }
+  .hs .hdr { left: 0; right: 0; top: 0; height: 44px; box-sizing: border-box; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: var(--panel); border-bottom: 1px solid var(--line); }
+  .hs .hdr .sp { flex: 1; } .hs .hdr .chip.stat { font-size: 13px; padding: 3px 10px; }
+  .hs .dots { display: grid; place-items: center; width: 44px; height: 36px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel2); animation: hs-pd var(--d) infinite both; }
+  @keyframes hs-pd { 0%, 5% { transform: none; box-shadow: 0 0 0 0 transparent; } 8% { transform: scale(.86); box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 30%, transparent); } 14%, 100% { transform: none; box-shadow: 0 0 0 0 transparent; } }
+  .hs .menu { left: 12px; top: 48px; width: 250px; box-sizing: border-box; padding: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,.28); animation: hs-drop var(--d) infinite both; transform-origin: top; }
+  @keyframes hs-drop { 0%, 9% { opacity: 0; transform: translateY(-10px) scaleY(.9); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 17%, 100% { opacity: 1; transform: none; } }
+  .hs .mrow { display: flex; align-items: center; justify-content: space-between; height: 30px; padding: 0 10px; font-size: 14px; font-weight: 700; border-radius: 6px; }
+  .hs .kb { padding: 1px 7px; border-radius: 4px; border: 1px solid var(--line); background: var(--panel2); color: var(--muted); font-size: 12px; }
+  .hs .tst { left: 22px; top: 276px; width: 236px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px 8px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.28); font-weight: 700; font-size: 15px; }
+  .hs .ubtn { padding: 6px 12px; border-radius: 6px; background: var(--panel2); border: 1px solid var(--line); font-size: 15px; font-weight: 700; animation: hs-pu var(--d) infinite both; }
+  @keyframes hs-pu { 0%, 60% { transform: none; box-shadow: 0 0 0 0 transparent; } 64% { transform: scale(.92); box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 30%, transparent); } 71%, 100% { transform: none; box-shadow: 0 0 0 0 transparent; } }
+  .hs .oldf { animation: hs-oldf var(--d) infinite both; opacity: 0; pointer-events: none; }
+  .hs .newf { animation: hs-newf var(--d) infinite both; }
+  @keyframes hs-oldf { 0%, 50% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.5, 0, .8, .5); } 60%, 100% { opacity: 0; transform: translateX(-60px); } }
+  @keyframes hs-newf { 0%, 54% { opacity: 0; transform: translateX(80px); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 68%, 100% { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .hs, .hs * { animation: none !important; } }
   /* title, setup, bank, results */
   .screen { position: absolute; inset: 0; padding: 8px 40px; display: flex; flex-direction: column; gap: 8px; box-sizing: border-box; overflow-y: auto; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -942,11 +1035,57 @@ const HELP = [
   ['حقل جديد', 'حين تُفتح كل المربعات الآمنة يُطهَّر الحقل وتنكشف الألغام الباقية: في نهاية «عند تطهير الحقل» تنتهي المسابقة، وفي الأنواع الأخرى يُجهَّز حقل جديد وتبقى النقاط.'],
   ['أدوات المقدّم', 'من ⋯ في الأعلى: تعديل النقاط يدوياً، سجل التغييرات، إخفاء النقاط (H)، إيقاف مؤقت (P)، كتم الصوت (M). زر «تراجع» (Z) يلغي آخر حكم أو مربع.'],
 ];
+// The how-to-play scenes, one per HELP step: small looping motion graphics built from the game's own squares, mine, pennant and team rows.
+function helpScene(i) {
+  const num = v => `<span class="num">${v}</span>`, neg = v => num(MINUS + v);
+  const lbp = (t, pts, cls = '') => `<div class="lbp ${cls}" style="--c:${tcol(t)}">${badge(t, 26).outerHTML}<span class="nm">الفريق ${num(t + 1)}</span><span class="pts num">${pts}</span></div>`;
+  const col = (top, html, cls = '') => `<div class="ab ${cls}" style="left:22px;top:${top}px;width:236px">${html}</div>`;
+  const swap = (a, b, n, bad) => `<span class="sx"><span class="so so${n}">${a}</span><span class="sn sn${n}${bad ? ' neg' : ''}">${b}</span></span>`;
+  const note = (cls, top, txt, ico = '') => col(top, `<div class="note ${cls.split(' ')[0]}">${ico}${txt}</div>`, cls.split(' ')[1] || '');
+  // tokens: k closed, o open blank, 1-8 open number, m covered mine, h the mine that was hit, bN a blast-opened number; :lNN = its cover lifts at NN% of the loop, :u = its cover drops back (undo)
+  const field = (rows, { cls = '', x = {}, ent = false } = {}) => `<div class="ab hf ${cls}"><div class="hg">${rows.join(' ').split(' ').map((tok, n) => {
+    const [kind, ...mods] = tok.split(':'), lift = mods.find(m => /^l\d+$/.test(m)), d = /^\d$/.test(kind), b = kind[0] === 'b';
+    const body = kind === 'h' ? `<span class="fl"></span><span class="rg"></span><span class="mn">${MINE}</span>` : kind === 'm' ? MINE : b ? num(kind[1]) : d ? num(kind) : '';
+    const cover = lift ? `<i class="cv ${lift}"></i>` : kind === 'k' || kind === 'm' ? '<i class="cv k"></i>' : mods.includes('u') ? '<i class="cv u"></i>' : '';
+    return `<div class="hc${kind === 'h' ? ' hit' : kind === 'm' ? ' late' : b ? ' bl' : ''}${ent ? ' e' + (2 + Math.floor(n / 6)) : ''}">${body}${x[n] || ''}${cover}</div>`;
+  }).join('')}</div></div>`;
+  const flag = `<span class="flg">${PENNANT(tcol(0))}</span>`;
+  const tick = '<svg class="tk" width="22" height="22" viewBox="0 0 24 24" style="flex:none"><path d="M4 12.5 L9.5 18 L20 6.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const bar = '<svg class="bar" width="22" height="22" viewBox="0 0 24 24" style="flex:none"><path d="M6 12 H18" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/></svg>';
+  const mid = ['2 k k 1 o o', 'k k 2 1 1 o', 'k 1 1 k k k', 'k k 1 o 1 k'];
+  const scenes = [
+    // 1 the goal: a right answer opens one square
+    field(['k k k k k k', 'k k k k k k', 'k k k k k k', 'k k k k k k'].map((r, k) => k === 1 ? 'k k 1:l54 k k k' : r), { cls: 'e1', ent: true })
+      + col(70, lbp(0, num('0')), 'e1') + note('ok e6', 134, `${tick}إجابة صحيحة`)
+      + col(190, '<div class="note"><span class="hc" style="width:26px;height:26px;font-size:16px;flex:none"><span class="num">1</span></span>مربع واحد يُفتح</div>', 'e7'),
+    // 2 a safe square: its number, the team's pennant, points to the score; a zero opens alone
+    field(['k k k k k k', 'k k 2:l14 k k k', 'k k o:l62 k k k', 'k k k k k k'], { x: { 8: flag } })
+      + col(70, lbp(0, swap(num('20'), num('50'), 2)), 'e1') + `<div class="ab fy" style="--c:${tcol(0)}">${num('+30')}</div>`
+      + note('note e8', 250, 'الصفر يفتح مربعه وحده'),
+    // 3 a mine: flash, the score drops below zero, the blast opens four neighbours without points
+    field(['k k b1:l40 k k k', 'k b2:l52 h:l12 b2:l44 k k', 'k k b1:l48 k k k', 'k k k k k k'])
+      + col(70, lbp(0, swap(num('20'), neg('30'), 3, 1)), 'e1') + note('note e8', 250, 'الانفجار بلا نقاط'),
+    // 4 a wrong answer: the answer turns red with a bar, the turn passes on, the field stays
+    field(mid) + col(70, `<div class="note no">${bar}إجابة الفريق ${num(1)}</div>`)
+      + col(140, lbp(0, num('30')), 'e1') + col(192, lbp(1, num('10')), 'e1') + '<div class="ab mkr"></div>' + note('note e8', 258, 'الحقل لا يتغيّر'),
+    // 5 a new field: the last safe square opens, the mines show, the field clears, a fresh one comes in, scores stay
+    field(['1 m:l28 1 o o o', '1 1 1 o 1 1', 'o o o o 1 m:l32', 'm:l36 1 o o 1 1:l10'], { cls: 'oldf' }) + field(Array(4).fill('k k k k k k'), { cls: 'newf' })
+      + col(70, lbp(0, num('40')), 'e1') + col(122, lbp(1, neg('10')), 'e2') + col(174, lbp(2, num('20')), 'e3') + note('note e8', 250, 'النقاط تبقى كما هي'),
+    // 6 the host's tools: the menu drops with its keys, then undo closes the last opened square
+    `<div class="ab hdr"><span class="chip stat">الحقل <b>${num(24)}</b></span><span class="chip stat">ألغام متبقية <b>${num(6)}</b></span><span class="sp"></span>`
+      + '<span class="dots"><svg width="26" height="26" viewBox="0 0 26 26"><g fill="currentColor"><circle cx="5" cy="13" r="2.4"/><circle cx="13" cy="13" r="2.4"/><circle cx="21" cy="13" r="2.4"/></g></svg></span></div>'
+      + field(mid.map((r, k) => k === 1 ? 'k k 2 1:u 1 o' : r))
+      + `<div class="ab menu">${[['تعديل النقاط يدوياً', ''], ['سجل النقاط', ''], ['إخفاء النقاط', 'H'], ['إيقاف مؤقت', 'P'], ['كتم الصوت', 'M']].map(([t, k], n) => `<div class="mrow e${n + 2}">${t}${k ? `<span class="kb">${num(k)}</span>` : ''}</div>`).join('')}</div>`
+      + `<div class="ab tst e5"><span>فُتح مربع</span><span class="ubtn">تراجع ${num('(Z)')}</span></div>`,
+  ];
+  return h('div', { class: 'hs', 'aria-hidden': 'true', html: `<div class="in">${scenes[i]}</div>` });
+}
 function showHelp(i = 0) {
   document.getElementById('help')?.remove();
   const last = i === HELP.length - 1, close = () => document.getElementById('help')?.remove();
   ui.append(h('div', { class: 'ov', id: 'help' }, h('div', { class: 'modal', style: 'max-width:680px;justify-items:center' },
     h('div', { class: 'muted', style: 'font-size:14px' }, 'شرح اللعبة · ', N(`${i + 1} / ${HELP.length}`)),
+    helpScene(i),
     h('b', { style: 'font-size:24px' }, HELP[i][0]), h('div', { style: 'font-size:18px;line-height:1.8;max-width:600px;min-height:110px' }, HELP[i][1]),
     h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('السابق', '', () => showHelp(i - 1), { disabled: i === 0 }),
       B(last ? 'إغلاق' : 'التالي', 'pri', last ? close : () => showHelp(i + 1), { 'data-primary': '1' }), last ? null : B('إغلاق', '', close)))));

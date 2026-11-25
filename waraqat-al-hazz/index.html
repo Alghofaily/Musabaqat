@@ -165,6 +165,94 @@
   .delta { position: absolute; top: -40px; left: 50%; font-weight: 900; font-size: 30px; animation: rise 1.8s ease-out forwards; pointer-events: none; text-shadow: 0 2px 6px rgba(0,0,0,.5); z-index: 3; }
   .ov { position: absolute; inset: 0; background: rgba(3,8,30,.7); display: flex; align-items: center; justify-content: center; z-index: 20; }
   .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px 26px; min-width: min(400px, 100%); max-width: min(640px, calc(100% - 24px)); box-sizing: border-box; display: grid; gap: 14px; justify-items: center; text-align: center; }
+  /* how-to-play scenes: one looping motion graphic per photo step, drawn from the game's own parts. Each element's plain style is its end
+     state, so reduced motion (animations off) shows the finished picture; the keyframes only lead into it. */
+  .hs { position: relative; width: 704px; height: 396px; max-width: 100%; box-sizing: border-box; border-radius: 8px; border: 1px solid var(--line); overflow: hidden; direction: rtl; text-align: right; background: var(--bg); --d: 6s; }
+  .hs, .hs * { pointer-events: none; }
+  .hs > .in { position: absolute; inset: 0; animation: hs-cycle var(--d) linear infinite both; }
+  .hs .ab { position: absolute; }
+  .hs .e1 { animation: hs-e1 var(--d) infinite both; } .hs .e2 { animation: hs-e2 var(--d) infinite both; } .hs .e3 { animation: hs-e3 var(--d) infinite both; } .hs .e4 { animation: hs-e4 var(--d) infinite both; }
+  .hs .e5 { animation: hs-e5 var(--d) infinite both; } .hs .e6 { animation: hs-e6 var(--d) infinite both; } .hs .e7 { animation: hs-e7 var(--d) infinite both; } .hs .e8 { animation: hs-e8 var(--d) infinite both; }
+  @keyframes hs-cycle { 0% { opacity: 0; } 3%, 94% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes hs-e1 { 0%, 4% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 12%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e2 { 0%, 10% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 18%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e3 { 0%, 16% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 24%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e4 { 0%, 22% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 30%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e5 { 0%, 30% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 38%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e6 { 0%, 38% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 46%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e7 { 0%, 50% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 58%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e8 { 0%, 70% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 78%, 100% { opacity: 1; transform: none; } }
+  .hs .sw { display: inline-grid; } .hs .sw > * { grid-area: 1 / 1; }
+  .hs .c3 { cursor: default; }
+  .hs .pod { flex: none; width: 210px; box-sizing: border-box; }
+  .hs .gain { opacity: 0; font-weight: 900; line-height: 1; color: var(--good); text-shadow: 0 2px 6px rgba(0,0,0,.35); }
+  .hs .tick path { stroke-dasharray: 30; }
+  /* 1 level: the team's three tiles, then its pick lifts */
+  .hs .lvl { padding: 12px 8px; gap: 4px; } .hs .lvl b { font-size: 46px; } .hs .lvl > span { font-size: 22px; } .hs .lvl small { font-size: 15px; }
+  .hs .lvl.dimmed { animation: hs-dim var(--d) infinite both; opacity: .5; }
+  .hs .lvl.pick { animation: hs-pick var(--d) infinite both; transform: translateY(-14px) scale(1.06); box-shadow: 0 6px 0 rgba(0,0,0,.25), 0 0 0 4px var(--gold), 0 0 28px rgba(246,195,67,.7); }
+  .hs .lvl.pick b { display: inline-block; animation: hs-pts var(--d) infinite both; transform: scale(1.14); }
+  @keyframes hs-dim { 0%, 50% { opacity: 1; } 60%, 100% { opacity: .5; } }
+  @keyframes hs-pick { 0%, 50% { transform: none; box-shadow: 0 6px 0 rgba(0,0,0,.25), 0 0 0 0 transparent, 0 0 0 transparent; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
+    62%, 100% { transform: translateY(-14px) scale(1.06); box-shadow: 0 6px 0 rgba(0,0,0,.25), 0 0 0 4px var(--gold), 0 0 28px rgba(246,195,67,.7); } }
+  @keyframes hs-pts { 0%, 56% { transform: none; } 66%, 100% { transform: scale(1.14); } }
+  /* 2 question: the clock runs down, the right answer turns green, the points fly into the score */
+  .hs .rg circle:last-child { animation: hs-clock var(--d) infinite both; }
+  @keyframes hs-clock { 0%, 8% { stroke-dashoffset: 0; } 46%, 100% { stroke-dashoffset: 94.25; } }
+  .hs .opt { display: flex; align-items: center; gap: 10px; padding: 0 12px; height: 42px; box-sizing: border-box; border-radius: 10px; background: var(--panel2); border: 2px solid var(--line); font-size: 18px; font-weight: 700; }
+  .hs .opt .k { flex: none; width: 28px; height: 28px; font-size: 16px; border-radius: 6px; background-color: var(--gold); background-image: linear-gradient(#ffe08a, var(--gold)); color: var(--ink); display: grid; place-items: center; }
+  .hs .opt.ok { animation: hs-ok var(--d) infinite both; border-color: var(--good); background: rgba(47,212,122,.18); }
+  .hs .opt.no { animation: hs-fade var(--d) infinite both; opacity: .5; }
+  @keyframes hs-ok { 0%, 46% { border-color: var(--line); background: var(--panel2); } 52%, 100% { border-color: var(--good); background: rgba(47,212,122,.18); } }
+  @keyframes hs-fade { 0%, 46% { opacity: 1; } 52%, 100% { opacity: .5; } }
+  .hs .tick path { animation: hs-tick var(--d) infinite both; }
+  @keyframes hs-tick { 0%, 48% { stroke-dashoffset: 30; } 56%, 100% { stroke-dashoffset: 0; } }
+  .hs .g2 { animation: hs-fly2 var(--d) infinite both; }
+  @keyframes hs-fly2 { 0%, 54% { opacity: 0; transform: translate(0, 8px) scale(.7); } 60% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.6, 0, .3, 1); } 62% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.6, 0, .3, 1); }
+    72% { opacity: .9; transform: translate(40px, 140px) scale(.5); } 75%, 100% { opacity: 0; transform: translate(40px, 140px) scale(.45); } }
+  .hs .o2 { animation: hs-out72 var(--d) infinite both; opacity: 0; } .hs .n2 { animation: hs-in72 var(--d) infinite both; }
+  @keyframes hs-out72 { 0%, 71% { opacity: 1; transform: none; } 76%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-in72 { 0%, 72% { opacity: 0; transform: translateY(10px); } 78%, 100% { opacity: 1; transform: none; } }
+  /* 3 pick a card: ten face-down cards are dealt, the team says a number, that card lifts out */
+  .hs .cw { width: 82px; height: 110px; position: relative; }
+  .hs .cs { width: 132px; height: 178px; transform: scale(.62); transform-origin: 0 0; }
+  .hs .dm { animation: hs-dimc var(--d) infinite both; opacity: .5; }
+  .hs .lf { animation: hs-lift var(--d) infinite both; position: relative; z-index: 3; transform: translateY(-16px) scale(1.12); filter: drop-shadow(0 0 10px var(--gold)); }
+  @keyframes hs-dimc { 0%, 56% { opacity: 1; } 64%, 100% { opacity: .5; } }
+  @keyframes hs-lift { 0%, 56% { transform: none; filter: none; animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 66%, 100% { transform: translateY(-16px) scale(1.12); filter: drop-shadow(0 0 10px var(--gold)); } }
+  .hs .say { animation: hs-say var(--d) infinite both; transform-origin: 100% 50%; }
+  @keyframes hs-say { 0%, 42% { opacity: 0; transform: translateX(14px) scale(.8); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 50%, 100% { opacity: 1; transform: none; } }
+  .hs .dl1 { animation: hs-dl1 var(--d) infinite both; } @keyframes hs-dl1 { 0%, 2% { opacity: 0; transform: translate(150px, -80px) rotate(10deg) scale(.7); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 9%, 100% { opacity: 1; transform: none; } }
+  .hs .dl2 { animation: hs-dl2 var(--d) infinite both; } @keyframes hs-dl2 { 0%, 5% { opacity: 0; transform: translate(150px, -80px) rotate(10deg) scale(.7); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 12%, 100% { opacity: 1; transform: none; } }
+  .hs .dl3 { animation: hs-dl3 var(--d) infinite both; } @keyframes hs-dl3 { 0%, 8% { opacity: 0; transform: translate(150px, -80px) rotate(10deg) scale(.7); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 15%, 100% { opacity: 1; transform: none; } }
+  .hs .dl4 { animation: hs-dl4 var(--d) infinite both; } @keyframes hs-dl4 { 0%, 11% { opacity: 0; transform: translate(150px, -80px) rotate(10deg) scale(.7); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 18%, 100% { opacity: 1; transform: none; } }
+  .hs .dl5 { animation: hs-dl5 var(--d) infinite both; } @keyframes hs-dl5 { 0%, 14% { opacity: 0; transform: translate(150px, -80px) rotate(10deg) scale(.7); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 21%, 100% { opacity: 1; transform: none; } }
+  .hs .dl6 { animation: hs-dl6 var(--d) infinite both; } @keyframes hs-dl6 { 0%, 17% { opacity: 0; transform: translate(150px, -80px) rotate(10deg) scale(.7); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 24%, 100% { opacity: 1; transform: none; } }
+  .hs .dl7 { animation: hs-dl7 var(--d) infinite both; } @keyframes hs-dl7 { 0%, 20% { opacity: 0; transform: translate(150px, -80px) rotate(10deg) scale(.7); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 27%, 100% { opacity: 1; transform: none; } }
+  .hs .dl8 { animation: hs-dl8 var(--d) infinite both; } @keyframes hs-dl8 { 0%, 23% { opacity: 0; transform: translate(150px, -80px) rotate(10deg) scale(.7); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 30%, 100% { opacity: 1; transform: none; } }
+  .hs .dl9 { animation: hs-dl9 var(--d) infinite both; } @keyframes hs-dl9 { 0%, 26% { opacity: 0; transform: translate(150px, -80px) rotate(10deg) scale(.7); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 33%, 100% { opacity: 1; transform: none; } }
+  .hs .dl10 { animation: hs-dl10 var(--d) infinite both; } @keyframes hs-dl10 { 0%, 29% { opacity: 0; transform: translate(150px, -80px) rotate(10deg) scale(.7); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 36%, 100% { opacity: 1; transform: none; } }
+  /* 4 luck card: card 7 flips face up to a +100 card, the +100 lands in the score */
+  .hs .flip .cin { animation: hs-flip var(--d) infinite both; }
+  @keyframes hs-flip { 0%, 14% { transform: rotateY(0); animation-timing-function: cubic-bezier(.3, 1.2, .5, 1); } 36%, 100% { transform: rotateY(180deg); } }
+  .hs .glow { animation: hs-glow var(--d) infinite both; }
+  @keyframes hs-glow { 0%, 30% { filter: none; } 40%, 100% { filter: drop-shadow(0 0 14px var(--gold)); } }
+  .hs .g4 { animation: hs-fly4 var(--d) infinite both; }
+  @keyframes hs-fly4 { 0%, 38% { opacity: 0; transform: scale(.7); } 44% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.6, 0, .3, 1); } 48% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(.6, 0, .3, 1); }
+    60% { opacity: .9; transform: translate(190px, 10px) scale(.55); } 63%, 100% { opacity: 0; transform: translate(190px, 10px) scale(.5); } }
+  .hs .o4 { animation: hs-out60 var(--d) infinite both; opacity: 0; } .hs .n4 { animation: hs-in60 var(--d) infinite both; }
+  @keyframes hs-out60 { 0%, 59% { opacity: 1; transform: none; } 64%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-in60 { 0%, 60% { opacity: 0; transform: translateY(10px); } 66%, 100% { opacity: 1; transform: none; } }
+  /* 5 winner: bars rise, totals appear, the highest is crowned */
+  .hs .bars { display: flex; align-items: flex-end; justify-content: center; gap: 44px; }
+  .hs .col { display: grid; justify-items: center; gap: 8px; width: 150px; }
+  .hs .bar { width: 96px; border-radius: 8px 8px 0 0; background: var(--tc); transform-origin: 50% 100%; animation: hs-grow var(--d) infinite both; }
+  @keyframes hs-grow { 0%, 10% { transform: scaleY(0); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 40%, 100% { transform: none; } }
+  .hs .tot { font-size: 36px; font-weight: 900; line-height: 1; animation: hs-e7 var(--d) infinite both; }
+  .hs .win .bar { animation: hs-grow var(--d) infinite both, hs-gold var(--d) infinite both; box-shadow: 0 0 0 4px var(--gold); }
+  @keyframes hs-gold { 0%, 66% { box-shadow: 0 0 0 0 transparent; } 74%, 100% { box-shadow: 0 0 0 4px var(--gold); } }
+  .hs .crown { display: flex; align-items: center; gap: 6px; background: var(--gold); color: var(--ink); font-weight: 900; font-size: 17px; padding: 2px 12px; border-radius: 8px; animation: hs-e8 var(--d) infinite both; }
+  @media (prefers-reduced-motion: reduce) { .hs, .hs * { animation: none !important; } }
   .notes { font-size: 14px; color: var(--muted); }
 
   /* title, setup, bank, results */
@@ -907,6 +995,37 @@ function cardHelp(type) { // what a card does, in full, with the numbers the gam
     stop: `تمنع فريقاً يختاره صاحب الورقة من اللعب ${turnsWord(tune.stopTurns)}، ولا تصدّها حمامة السلام.`,
     nuke: `أقوى الأوراق: تخصم ${tune.nukeHit} درجة من كل فريق آخر دفعة واحدة.` }[type];
 }
+function helpScene(n) { // the how-to-play scene for a photo step (1-5), built from the game's own cards, tiles, pods and ring
+  const sh = (t, sz = 22) => shield(t, sz).outerHTML, num = v => `<span class="num">${/^[+\-−]/.test(v) ? '‎' : ''}${v}</span>`;
+  const name = t => `الفريق ${t + 1}`, tc = t => `--tc:${TEAM_COLORS[t]}`;
+  const tchip = (t, cls = '', st = '') => `<span class="tchip ${cls}" style="min-height:44px;font-size:20px;padding:6px 18px 6px 12px;${st}">${sh(t, 24)}${name(t)}</span>`;
+  const pod = (t, a, b, cls, c1, c2) => `<div class="pod ${cls}" style="${tc(t)}"><div class="nm">${sh(t, 20)}${name(t)}</div><div class="sc"><span class="sw"><span class="${c1}">${num(a)}</span><span class="${c2}">${num(b)}</span></span></div></div>`;
+  const back = k => cardEl(null, 'static', k).outerHTML, tick = '<svg class="tick" width="26" height="26" viewBox="0 0 26 26"><path d="M5 13.5 L10.5 19 L21 7.5" fill="none" stroke="var(--good)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const R = 25, C = 2 * Math.PI * R, ring = `<svg width="64" height="64" viewBox="0 0 64 64" style="transform:rotate(-90deg);display:block"><circle cx="32" cy="32" r="${R}" fill="none" stroke="var(--line)" stroke-width="7"/><circle cx="32" cy="32" r="${R}" fill="none" stroke="var(--gold)" stroke-width="7" stroke-linecap="round" stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${(C * .6).toFixed(2)}"/></svg>`;
+  const scenes = [
+    `<div class="ab e1" style="top:28px;right:40px;display:flex;align-items:center;gap:12px"><span class="muted" style="font-size:18px">الدور على</span>${tchip(0)}</div>
+     <div class="ab" style="top:160px;right:40px;left:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">${[1, 2, 3].map(l =>
+       `<div class="e${l + 1}"><div class="lvl lvl${l} ${l === 3 ? 'pick' : 'dimmed'}"><span class="stars">${STARS(l)}</span><span>${LEVEL_NAMES[l]}</span><b>${num(String(levelPts(l)))}</b><small>درجة</small></div></div>`).join('')}</div>`,
+    `<div class="ab e1" style="top:28px;right:40px"><span class="chip" style="font-size:16px;padding:6px 16px">${LEVEL_NAMES[3]} · ${num(String(levelPts(3)))} درجة</span></div>
+     <div class="ab e1 rg" style="top:16px;left:40px">${ring}</div>
+     <div class="ab panel e2" style="top:92px;right:40px;left:40px;padding:14px 18px;display:grid;gap:10px"><b style="font-size:21px">من أول من رأى الشيب؟</b>
+       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+         <div class="opt ok"><span class="k">1</span><span style="flex:1">إبراهيم عليه السلام</span>${tick}</div><div class="opt no"><span class="k">2</span>هود عليه السلام</div>
+         <div class="opt no"><span class="k">3</span>نوح عليه السلام</div><div class="opt no"><span class="k">4</span>داود عليه السلام</div></div></div>
+     <div class="ab g2 gain" style="top:130px;left:420px;width:110px;text-align:center;font-size:40px">${num('+' + levelPts(3))}</div>
+     <div class="ab e3" style="top:268px;right:40px">${pod(0, '150', String(150 + levelPts(3)), '', 'o2', 'n2')}</div>`,
+    `<div class="ab e1" style="top:24px;right:40px">${tchip(0)}</div>
+     <div class="ab say" style="top:24px;right:250px"><span class="tchip" style="min-height:44px;font-size:30px;padding:2px 22px;border-color:var(--gold)"><span class="muted" style="font-size:16px">الورقة</span>${num('7')}</span></div>
+     <div class="ab" style="top:135px;left:123px;width:458px;display:grid;grid-template-columns:repeat(5,82px);gap:12px;direction:ltr">${[...Array(10).keys()].map(k =>
+       `<div class="cw dl${k + 1}"><div class="${k === 6 ? 'lf' : 'dm'}"><div class="cs">${back(k + 1)}</div></div></div>`).join('')}</div>`,
+    `<div class="ab e1" style="top:90px;left:130px;width:165px;height:222px"><div class="glow"><div class="flip" style="width:165px;height:222px"><div class="cs" style="transform:scale(1.25)">${cardEl('plus100', 'open static', 7).outerHTML}</div></div></div></div>
+     <div class="ab g4 gain" style="top:170px;left:300px;width:120px;text-align:center;font-size:52px">${num('+100')}</div>
+     <div class="ab e2" style="top:142px;right:48px">${pod(0, '250', '350', '', 'o4', 'n4')}</div>`,
+    `<div class="ab bars" style="inset:0 40px 28px">${[[0, 450, 122], [1, 700, 190], [2, 250, 68]].map(([t, v, ht]) =>
+       `<div class="col ${v === 700 ? 'win' : ''}" style="${tc(t)}">${v === 700 ? `<span class="crown">الفائز</span>` : '<span style="height:28px"></span>'}<span class="tot">${num(String(v))}</span><div class="bar" style="height:${ht}px"></div>${tchip(t, '', 'min-height:40px;font-size:18px')}</div>`).join('')}</div>`,
+  ];
+  return h('div', { class: 'hs', 'aria-hidden': 'true', html: `<div class="in">${scenes[n - 1]}</div>` });
+}
 function showHelp(i = 0) { // the how-to-play dialog: one step at a time, with its photo or its cards
   document.getElementById('help')?.remove();
   const [title, text, show] = HELP[i], last = i === HELP.length - 1, close = () => document.getElementById('help')?.remove();
@@ -915,7 +1034,7 @@ function showHelp(i = 0) { // the how-to-play dialog: one step at a time, with i
         h('div', { style: 'display:flex;gap:14px;align-items:center' },
           h('div', { style: 'width:79px;height:107px;flex:none;direction:ltr' }, h('div', { style: 'transform:scale(.6);transform-origin:0 0' }, cardEl(t, 'open static'))), // the real card, at 60%
           h('div', {}, h('b', { style: 'font-size:17px' }, CARDS[t].name), h('div', { style: 'font-size:14.5px;line-height:1.6;margin-top:2px' }, cardHelp(t))))))
-    : h('img', { src: `assets/help-${show}.png`, alt: title, width: '704', height: '396', style: 'border-radius:8px;border:1px solid var(--line);display:block;max-width:100%;height:auto' });
+    : helpScene(show);
   ui.append(h('div', { class: 'ov', id: 'help' }, h('div', { class: 'modal', style: 'max-width:780px;justify-items:center;background:var(--panel2)' },
     h('div', { class: 'muted', style: 'font-size:14px' }, 'شرح اللعبة · ', N(`${i + 1} / ${HELP.length}`)), body,
     h('b', { style: 'font-size:22px' }, title), h('div', { style: 'font-size:16px;line-height:1.7;max-width:680px;min-height:54px' }, text),

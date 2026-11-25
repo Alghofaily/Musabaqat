@@ -186,6 +186,104 @@
   .ov { position: absolute; inset: 0; background: rgba(10,8,6,.66); display: flex; align-items: center; justify-content: center; z-index: 20; }
   .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 22px 26px; min-width: 380px; max-width: calc(100% - 24px); box-sizing: border-box; display: grid; gap: 14px; text-align: center; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; } .pbanner { animation: none !important; } }
+  /* how-to-play scenes: one looping motion graphic per step, drawn from the game's own parts. Each element's plain style is its end
+     state, so reduced motion (animations off) shows the finished picture; the keyframes only lead into it. */
+  .hs { position: relative; width: 616px; height: 347px; max-width: 100%; box-sizing: border-box; border-radius: 8px; border: 1px solid var(--line); overflow: hidden; direction: rtl; text-align: right;
+    background: var(--bg); background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 32px 32px; --d: 6s; --ez: cubic-bezier(.4, 0, .2, 1); }
+  .hs svg { display: block; }
+  .hs > .in { position: absolute; inset: 0; animation: hs-cycle var(--d) linear infinite both; }
+  .hs .ab { position: absolute; }
+  .hs .e1 { animation: hs-e1 var(--d) infinite both; } .hs .e2 { animation: hs-e2 var(--d) infinite both; } .hs .e3 { animation: hs-e3 var(--d) infinite both; }
+  .hs .e4 { animation: hs-e4 var(--d) infinite both; } .hs .e5 { animation: hs-e5 var(--d) infinite both; } .hs .e6 { animation: hs-e6 var(--d) infinite both; }
+  @keyframes hs-cycle { 0% { opacity: 0; } 3%, 94% { opacity: 1; } 100% { opacity: 0; } }
+  @keyframes hs-e1 { 0%, 4% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 12%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e2 { 0%, 10% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 18%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e3 { 0%, 16% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 24%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e4 { 0%, 22% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 30%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e5 { 0%, 30% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 38%, 100% { opacity: 1; transform: none; } }
+  @keyframes hs-e6 { 0%, 38% { opacity: 0; transform: translateY(14px) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 46%, 100% { opacity: 1; transform: none; } }
+  .hs .cd { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+  .hs .lab { color: var(--muted); font-size: 14px; font-weight: 700; }
+  .hs .val { font-size: 34px; font-weight: 700; line-height: 1.1; }
+  .hs .sw { display: inline-grid; } .hs .sw > * { grid-area: 1 / 1; }
+  .hs .pl { display: inline-block; padding: 3px 16px; border-radius: 999px; background: var(--accent); color: var(--onaccent); font-size: 26px; font-weight: 700; box-shadow: 0 6px 16px rgba(0,0,0,.3); }
+  /* 1 the goal */
+  .hs .s1run { opacity: 0; animation: hs-s1r var(--d) infinite both; animation-timing-function: var(--ez); }
+  @keyframes hs-s1r { 0%, 3% { opacity: 0; transform: scale(.6); } 8%, 12% { opacity: 1; transform: none; } 17%, 22% { opacity: 1; transform: translateY(-44px); } 27%, 32% { opacity: 1; transform: translateY(-88px); }
+    37%, 42% { opacity: 1; transform: translateY(-132px); } 47%, 50% { opacity: 1; transform: translateY(-176px); } 56% { opacity: 1; transform: translateY(-165px) scale(.3); } 58%, 100% { opacity: 0; transform: translateY(-165px) scale(.3); } }
+  .hs .s1dot { animation: hs-s1d var(--d) infinite both; }
+  @keyframes hs-s1d { 0%, 50% { opacity: 0; transform: scale(.2); } 58% { opacity: 1; transform: scale(1.35); } 63%, 100% { opacity: 1; transform: none; } }
+  .hs .s1gl { opacity: 0; animation: hs-s1g var(--d) infinite both; }
+  @keyframes hs-s1g { 0%, 44% { opacity: 0; } 50% { opacity: .9; } 62%, 100% { opacity: 0; } }
+  .hs .s1new { animation: hs-s1n var(--d) infinite both; }
+  @keyframes hs-s1n { 0%, 72% { opacity: 0; transform: scale(.6); } 80%, 100% { opacity: 1; transform: none; } }
+  .hs .s1plus { opacity: 0; animation: hs-s1p var(--d) infinite both; }
+  @keyframes hs-s1p { 0%, 48% { opacity: 0; transform: translateY(10px) scale(.7); } 52%, 56% { opacity: 1; transform: none; animation-timing-function: var(--ez); } 68% { opacity: .95; transform: translate(-286px, 128px) scale(.6); } 71%, 100% { opacity: 0; transform: translate(-286px, 128px) scale(.6); } }
+  .hs .s1o { opacity: 0; animation: hs-s1o var(--d) infinite both; } .hs .s1n { animation: hs-s1w var(--d) infinite both; }
+  @keyframes hs-s1o { 0%, 68% { opacity: 1; transform: none; } 74%, 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes hs-s1w { 0%, 69% { opacity: 0; transform: translateY(10px); } 75%, 100% { opacity: 1; transform: none; } }
+  .hs .s1pn { animation: hs-s1f var(--d) infinite both; }
+  @keyframes hs-s1f { 0%, 67% { background: var(--panel); } 72% { background: color-mix(in srgb, var(--accent) 30%, var(--panel)); } 90%, 100% { background: var(--panel); } }
+  /* 2 a right answer buys one action */
+  .hs .qchip { font-size: 18px; padding: 6px 16px; gap: 10px; background: var(--goodbg); border-color: var(--good); animation: hs-s2q var(--d) infinite both; }
+  @keyframes hs-s2q { 0%, 8% { background: var(--panel2); border-color: var(--line); } 18%, 100% { background: var(--goodbg); border-color: var(--good); } }
+  .hs .tick path { stroke-dasharray: 30; animation: hs-tick var(--d) infinite both; }
+  @keyframes hs-tick { 0%, 9% { stroke-dashoffset: 30; } 18%, 100% { stroke-dashoffset: 0; } }
+  .hs .cp { height: 68px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border-radius: 8px; background: var(--accent); color: var(--onaccent); border: 1px solid transparent; font-size: 15px; font-weight: 700; white-space: nowrap; }
+  .hs .cp.off { background: var(--panel2); color: var(--text); border-color: var(--line); opacity: .45; animation: hs-s2d var(--d) infinite both; }
+  .hs .cp.on { animation: hs-s2l var(--d) infinite both; }
+  @keyframes hs-s2d { 0%, 50% { opacity: 1; } 57%, 100% { opacity: .45; } }
+  @keyframes hs-s2l { 0%, 49% { background: var(--panel2); color: var(--text); border-color: var(--line); transform: none; } 53% { transform: scale(.94); } 58%, 100% { background: var(--accent); color: var(--onaccent); border-color: transparent; transform: none; } }
+  .hs .s2ring { opacity: 0; animation: hs-s2r var(--d) infinite both; }
+  @keyframes hs-s2r { 0%, 50% { opacity: 0; transform: scale(.6); } 55%, 66% { opacity: 1; transform: none; } 70%, 100% { opacity: 0; transform: none; } }
+  .hs .s2run { animation: hs-s2m var(--d) infinite both; animation-timing-function: var(--ez); }
+  @keyframes hs-s2m { 0%, 62% { transform: translateY(44px); } 72%, 100% { transform: none; } }
+  /* 3 the jump */
+  .hs .lab3 { color: var(--muted); font-size: 15px; font-weight: 700; }
+  .hs .s3a1 { animation: hs-s3a var(--d) infinite both; }
+  @keyframes hs-s3a { 0%, 14% { transform: translateY(88px); animation-timing-function: cubic-bezier(.3, 0, .3, 1); } 20% { transform: translate(20px, 44px) scale(1.2); animation-timing-function: cubic-bezier(.3, 0, .6, 1); } 27%, 100% { transform: none; } }
+  .hs .s3arc1 { opacity: .75; animation: hs-s3r var(--d) infinite both; }
+  @keyframes hs-s3r { 0%, 14% { opacity: 0; } 22%, 100% { opacity: .75; } }
+  .hs .s3g2 { animation: hs-s3g var(--d) infinite both; }
+  @keyframes hs-s3g { 0%, 46% { opacity: 0; } 52%, 100% { opacity: 1; } }
+  .hs .s3w { animation: hs-s3w var(--d) infinite both; }
+  @keyframes hs-s3w { 0%, 54% { opacity: 0; transform: translateY(-10px); } 60%, 100% { opacity: 1; transform: none; } }
+  .hs .s3a2 { animation: hs-s3b var(--d) infinite both; }
+  @keyframes hs-s3b { 0%, 68% { transform: translate(-44px, 44px); animation-timing-function: cubic-bezier(.3, 0, .3, 1); } 73% { transform: translate(-22px, 22px) scale(1.2); animation-timing-function: cubic-bezier(.3, 0, .6, 1); } 79%, 100% { transform: none; } }
+  .hs .s3arc2 { animation: hs-s3r2 var(--d) infinite both; }
+  @keyframes hs-s3r2 { 0%, 68% { opacity: 0; } 76%, 100% { opacity: .75; } }
+  /* 4 walls */
+  .hs .kb { display: inline-block; }
+  .hs .key { display: grid; place-items: center; width: 60px; height: 60px; box-sizing: border-box; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); border-bottom-width: 5px; font: 700 28px Plex, Arial; color: var(--text); animation: hs-s4k var(--d) infinite both; }
+  @keyframes hs-s4k { 0%, 38% { transform: none; background: var(--panel2); color: var(--text); } 41% { transform: translateY(4px); background: var(--accent); color: var(--onaccent); } 48%, 100% { transform: none; background: var(--panel2); color: var(--text); } }
+  .hs .s4p { opacity: 0; animation: hs-s4p var(--d) infinite both; }
+  @keyframes hs-s4p { 0%, 3% { opacity: 0; transform: translate(80px, -64px); } 7% { opacity: 1; transform: translate(80px, -64px); animation-timing-function: var(--ez); } 17%, 58% { opacity: 1; transform: none; } 64%, 100% { opacity: 0; transform: none; } }
+  .hs .s4g { opacity: 0; animation: hs-s4g var(--d) infinite both; }
+  @keyframes hs-s4g { 0%, 13% { opacity: 0; transform: rotate(-90deg) scale(.85); } 19%, 38% { opacity: 1; transform: rotate(-90deg); animation-timing-function: cubic-bezier(.3, 1.4, .5, 1); } 46%, 61% { opacity: 1; transform: none; } 63%, 100% { opacity: 0; transform: none; } }
+  .hs .s4w { opacity: 1; animation: hs-s4w var(--d) infinite both; }
+  @keyframes hs-s4w { 0%, 61% { opacity: 0; transform: translateY(-8px) scale(1.04); } 65% { opacity: 1; transform: translateY(2px); } 71%, 100% { opacity: 1; transform: none; } }
+  .hs .s4fl { opacity: 0; animation: hs-s4f var(--d) infinite both; }
+  @keyframes hs-s4f { 0%, 13% { opacity: 0; } 19%, 60% { opacity: .14; } 64% { opacity: .4; } 76%, 100% { opacity: 0; } }
+  /* 5 hidden squares */
+  .hs .s5run { animation: hs-s5m var(--d) infinite both; animation-timing-function: var(--ez); }
+  @keyframes hs-s5m { 0%, 9% { transform: translateY(44px); } 17%, 100% { transform: none; } }
+  .hs .s5d { opacity: 0; animation: hs-s5d var(--d) infinite both; }
+  @keyframes hs-s5d { 0%, 20% { opacity: 0; transform: scale(0, 1); } 27% { opacity: 1; transform: scale(1.12); } 31%, 40% { opacity: 1; transform: none; } 46%, 100% { opacity: 0; transform: scale(.5); } }
+  .hs .s5h { opacity: 0; animation: hs-s5h var(--d) infinite both; }
+  @keyframes hs-s5h { 0%, 38% { opacity: 0; transform: none; } 41% { opacity: 1; transform: none; animation-timing-function: var(--ez); } 47% { opacity: 1; transform: translate(34px, -22px) rotate(-40deg); } 50% { opacity: 1; transform: translate(34px, -22px) rotate(-40deg); animation-timing-function: cubic-bezier(.6, 0, 1, 1); } 53% { opacity: 1; transform: translate(40px, -22px) rotate(30deg); } 58%, 100% { opacity: 0; transform: translate(40px, -22px) rotate(30deg); } }
+  .hs .s5t { opacity: 0; animation: hs-s5t var(--d) infinite both; } .hs .s5b { opacity: 0; animation: hs-s5u var(--d) infinite both; }
+  @keyframes hs-s5t { 0%, 52% { opacity: 1; transform: none; } 54% { opacity: 1; transform: translateX(2px); } 56% { opacity: 1; transform: translateX(-2px); animation-timing-function: var(--ez); } 68%, 100% { opacity: 0; transform: translate(12px, -18px) rotate(16deg); } }
+  @keyframes hs-s5u { 0%, 52% { opacity: 1; transform: none; } 54% { opacity: 1; transform: translateX(2px); } 56% { opacity: 1; transform: translateX(-2px); animation-timing-function: var(--ez); } 68%, 100% { opacity: 0; transform: translate(12px, 18px) rotate(-16deg); } }
+  .hs .lgd { display: grid; place-items: center; width: 40px; height: 40px; box-sizing: border-box; border-radius: 50%; background: var(--panel); border: 2.5px solid; }
+  /* 6 the win */
+  .hs .dt { display: block; width: 26px; height: 26px; box-sizing: border-box; border-radius: 50%; background: var(--c); border: 2px solid var(--night); }
+  .hs .tot { font-size: 36px; font-weight: 700; animation: hs-s6t var(--d) infinite both; }
+  @keyframes hs-s6t { 0%, 52% { opacity: 0; transform: translateY(8px); } 60%, 100% { opacity: 1; transform: none; } }
+  .hs .wr { animation: hs-s6w var(--d) infinite both; }
+  @keyframes hs-s6w { 0%, 66% { background: var(--panel); border-color: var(--line); } 74%, 100% { background: color-mix(in srgb, var(--accent) 16%, var(--panel)); border-color: var(--accent); } }
+  .hs .wl { display: inline-block; padding: 4px 16px; border-radius: 6px; background: var(--accent); color: var(--onaccent); font-size: 20px; font-weight: 700; animation: hs-s6l var(--d) infinite both; }
+  @keyframes hs-s6l { 0%, 64% { opacity: 0; transform: translateY(8px) scale(.9); } 72%, 100% { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .hs, .hs * { animation: none !important; } }
 
   /* title, setup, bank, results */
   .screen { position: absolute; inset: 0; padding: 8px 40px; display: flex; flex-direction: column; gap: 8px; box-sizing: border-box; overflow-y: auto; }
@@ -1079,12 +1177,105 @@ const HELP = [
   ['المربعات الخفية', 'خانات مخفية في داخل اللوحة: مطرقة تهدم حاجزاً، أو خطوتان في حركة واحدة، أو فخ يرجع بالعدّاء خطوتين، أو تجميد لا يتحرك الفريق بعده حتى يلعب فريق آخر.'],
   ['الفوز', 'تنتهي المسابقة بحسب ما اخترت: يدوياً، أو بعد مدة، أو بعد جولات، أو لمن يصل أولاً إلى عدد النقاط. صاحب أكثر نقاط يفوز.'],
 ];
+// The how-to-play scenes, one per HELP step: small looping motion graphics built from the game's own drawing (the carved tiles, the
+// slab walls, the team discs and dots, the power glyphs). Each element's plain style is its end state, so reduced motion shows the
+// finished picture; the CSS keyframes only lead into it.
+function helpScene(i) {
+  const C = 44, SL = 18, tc = t => `var(--t${t})`, num = v => `<span class="num">${/^[+\-−]/.test(v) ? '‎' : ''}${v}</span>`;
+  const px = (o, c) => o + c * C + C / 2;
+  const defs = '<defs><filter id="hs-soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.4"/></filter>'
+    + '<linearGradient id="hs-stn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".07"/><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient></defs>';
+  const sv = inner => `<svg class="ab" style="left:0;top:0" width="616" height="347" viewBox="0 0 616 347" aria-hidden="true">${defs}${inner}</svg>`;
+  const bd = (ox, oy, cols, rows, top, bot) => { // plate, goal bars, carved tiles, start squares: the board as the game draws it
+    const W = cols * C, H = rows * C, p = [];
+    p.push(`<rect x="${ox - 14}" y="${oy - 10}" width="${W + 28}" height="${H + 28}" rx="12" style="fill:#000;opacity:.4" filter="url(#hs-soft)"/><rect x="${ox - 14}" y="${oy - 14}" width="${W + 28}" height="${H + 28}" rx="12" style="fill:var(--plate);stroke:var(--line);stroke-width:2"/>`);
+    if (top != null) p.push(`<rect x="${ox}" y="${oy - 11}" width="${W}" height="5" rx="2.5" style="fill:${tc(top)}"/>`);
+    if (bot != null) p.push(`<rect x="${ox}" y="${oy + H + 6}" width="${W}" height="5" rx="2.5" style="fill:${tc(bot)}"/>`);
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const x = ox + c * C, y = oy + r * C, X = x + 1.5, Y = y + 1.5, S = C - 3;
+      p.push(`<rect x="${X}" y="${Y}" width="${S}" height="${S}" rx="6" style="fill:${(r + c) % 2 ? 'var(--tile2)' : 'var(--tile)'}"/><rect x="${X}" y="${Y}" width="${S}" height="${S}" rx="6" style="fill:url(#hs-stn)"/>`
+        + `<rect x="${X + 1.4}" y="${Y + 1.4}" width="${S - 2.8}" height="${S - 2.8}" rx="5" style="fill:none;stroke:var(--tile-lo);stroke-width:2.8"/><path d="M${X + 7} ${Y + 4.4} H${X + S - 7}" style="stroke:var(--tile-hi);stroke-width:1.8;fill:none;stroke-linecap:round"/>`);
+      const st = r === rows - 1 && top != null ? [top, y + C - 9] : r === 0 && bot != null ? [bot, y + 5] : null;
+      if (st) p.push(`<rect x="${x + 5}" y="${y + 5}" width="${C - 10}" height="${C - 10}" rx="4" style="fill:none;stroke:${tc(st[0])};stroke-width:2;opacity:.9"/><rect x="${x + C / 2 - 9}" y="${st[1]}" width="18" height="4" rx="2" style="fill:${tc(st[0])}"/>`);
+    }
+    return p.join('');
+  };
+  const disc = (x, y, t) => `<circle cx="${x}" cy="${y + 3}" r="20" style="fill:#000;opacity:.45" filter="url(#hs-soft)"/><circle cx="${x}" cy="${y}" r="20" style="fill:${tc(t)};stroke:var(--night);stroke-width:3.5"/>`
+    + `<path d="M${x - 12} ${y - 8} A14 14 0 0 1 ${x + 8} ${y - 13}" style="fill:none;stroke:#fff;stroke-opacity:.38;stroke-width:2.5;stroke-linecap:round"/><text x="${x}" y="${y + 8.5}" text-anchor="middle" style="font:700 25px Plex, Arial;fill:var(--onteam)">${t + 1}</text>`;
+  const dot = (x, y, t) => `<circle cx="${x}" cy="${y}" r="6" style="fill:${tc(t)};stroke:var(--night);stroke-width:1.5"/>`;
+  const slab = (x, y, w, h, col) => { // a wall: cast shadow, darker side face, lit top face
+    const hi = w > h ? `<rect x="${x + 5}" y="${y + 2.5}" width="${w - 10}" height="3" rx="1.5" style="fill:#fff;opacity:.36"/>` : `<rect x="${x + 2.5}" y="${y + 5}" width="3" height="${h - 10}" rx="1.5" style="fill:#fff;opacity:.36"/>`;
+    return `<rect x="${x + 3}" y="${y + 9}" width="${w}" height="${h}" rx="6" style="fill:#000;opacity:.5" filter="url(#hs-soft)"/><rect x="${x}" y="${y + 5}" width="${w}" height="${h}" rx="5" style="fill:color-mix(in srgb, ${col} 42%, #000);stroke:var(--night);stroke-width:1.5"/>`
+      + `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" style="fill:${col};stroke:var(--night);stroke-width:1.5"/>${hi}`;
+  };
+  const wallH = (ox, oy, r, c, col) => slab(ox + c * C + 3, oy + (r + 1) * C - SL / 2, 2 * C - 6, SL, col);
+  const wallV = (ox, oy, r, c, col) => slab(ox + (c + 1) * C - SL / 2, oy + r * C + 3, SL, 2 * C - 6, col);
+  const gly = (k, size, fill) => `<svg viewBox="0 0 24 24" width="${size}" height="${size}" style="fill:${fill};display:block">${ICON[k]}</svg>`;
+  const bg = (t, s) => badge(t, s).outerHTML;
+  const scenes = [
+    // 1 the goal: a runner crosses the board, the team scores, the runner stays as a dot, a new one starts
+    () => { const ox = 244, oy = 64, x = px(ox, 3), y = r => oy + r * C + C / 2, dy = oy + C - 11;
+      return sv(bd(ox, oy, 7, 5, 0, null)
+        + `<rect class="s1gl" x="${ox - 4}" y="${oy - 15}" width="${7 * C + 8}" height="13" rx="6" style="fill:${tc(0)}" filter="url(#hs-soft)"/>`
+        + `<g class="s1dot" style="transform-origin:${x}px ${dy}px">${dot(x, dy, 0)}</g>`
+        + `<g class="s1run" style="transform-origin:${x}px ${y(4)}px">${disc(x, y(4), 0)}</g>`
+        + `<g class="s1new" style="transform-origin:${x}px ${y(4)}px">${disc(x, y(4), 0)}</g>`)
+        + `<div class="ab e1" style="left:28px;top:128px;width:184px"><div class="cd s1pn" style="padding:14px 16px;display:flex;align-items:center;gap:12px">${bg(0, 36)}<span style="display:grid;gap:2px"><span class="lab">النقاط</span><span class="sw val"><span class="s1o">${num('0')}</span><span class="s1n">${num('1')}</span></span></span></div></div>`
+        + `<div class="ab s1plus" style="left:372px;top:24px"><span class="pl">${num('+1')}</span></div>`; },
+    // 2 a right answer buys one action: five choices, the step lights, the runner makes exactly one step
+    () => { const ox = 154, oy = 172, x = px(ox, 3), y = r => oy + r * C + C / 2;
+      const chip = (cls, k, label, on) => `<div class="${cls}" style="flex:1"><div class="cp ${on ? 'on' : 'off'}">${k}<span>${label}</span></div></div>`;
+      const g = (k) => gly(k, 24, 'currentColor');
+      const relo = '<svg viewBox="0 0 24 24" width="24" height="24" style="fill:currentColor;display:block"><rect x="2" y="15" width="15" height="5" rx="1.4"/><path d="M12 3 L21 8.5 L12 14 Z"/></svg>';
+      return sv(bd(ox, oy, 7, 3, 0, 1)
+        + `<g class="s2ring" style="transform-origin:${x}px ${y(1)}px"><circle cx="${x}" cy="${y(1)}" r="14" style="fill:${tc(0)};fill-opacity:.7;stroke:${tc(0)};stroke-width:3.5"/></g>`
+        + `<g class="s2run">${disc(x, y(1), 0)}</g>`)
+        + `<div class="ab e1" style="top:16px;right:28px"><span class="chip qchip">${bg(0, 26)}سؤال<svg class="tick" width="28" height="28" viewBox="0 0 26 26"><path d="M5 13.5 L10.5 19 L21 7.5" fill="none" stroke="var(--good)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>`
+        + `<div class="ab" style="left:24px;right:24px;top:76px;display:flex;gap:12px">${chip('e2', g('enter'), 'إدخال عدّاء')}${chip('e3', g('step'), 'خطوة', true)}${chip('e4', g('wall'), 'حاجز')}${chip('e5', relo, 'نقل حاجز')}${chip('e6', g('hammer'), 'قوة')}</div>`; },
+    // 3 the jump: over the adjacent runner, and to the side when a wall stands behind it
+    () => { const ox = 154, oy = 64, y = r => oy + r * C + C / 2, a = px(ox, 1), b = px(ox, 5), b2 = px(ox, 6);
+      const w = oy + 5 * C + 24;
+      return sv(bd(ox, oy, 7, 5, 0, 1)
+        + `<path class="s3arc1" d="M${a} ${y(4)} C${a + 42} ${y(4) - 8} ${a + 42} ${y(2) + 8} ${a} ${y(2)}" style="fill:none;stroke:var(--text);stroke-width:2.5;stroke-dasharray:7 6;stroke-linecap:round"/>`
+        + `<g>${disc(a, y(3), 1)}</g><g class="s3a1">${disc(a, y(2), 0)}</g>`
+        + `<g class="s3g2"><path class="s3arc2" d="M${b} ${y(4)} C${b + 22} ${y(4)} ${b2} ${y(3) + 24} ${b2} ${y(3)}" style="fill:none;stroke:var(--text);stroke-width:2.5;stroke-dasharray:7 6;stroke-linecap:round"/>`
+        + `<g>${disc(b, y(3), 1)}</g><g class="s3w">${wallH(ox, oy, 2, 4, 'var(--stone)')}</g><g class="s3a2">${disc(b2, y(3), 0)}</g></g>`)
+        + `<div class="ab e3 lab3" style="left:${a - 70}px;top:${w}px;width:140px;text-align:center">يقفز فوقه</div><div class="ab s3g2 lab3" style="left:${b - 70}px;top:${w}px;width:140px;text-align:center">يتحرك لجانبه</div>`; },
+    // 4 walls: the pointer picks a point between four squares, R turns the preview, a click locks it
+    () => { const ox = 244, oy = 64, jx = ox + 4 * C, jy = oy + 2 * C, o = `transform-origin:${jx}px ${jy}px`;
+      const vx = jx - SL / 2, vy = jy - C + 3, vh = 2 * C - 6, ghost = `<rect x="${vx + 3}" y="${vy + 9}" width="${SL}" height="${vh}" rx="6" style="fill:#000;opacity:.3" filter="url(#hs-soft)"/><rect x="${vx}" y="${vy}" width="${SL}" height="${vh}" rx="5" style="fill:${tc(0)};fill-opacity:.7"/><rect x="${vx - 1.5}" y="${vy - 1.5}" width="${SL + 3}" height="${vh + 3}" rx="6.5" style="fill:none;stroke:var(--night);stroke-width:6.4"/><rect x="${vx - 1.5}" y="${vy - 1.5}" width="${SL + 3}" height="${vh + 3}" rx="6.5" style="fill:none;stroke:#fff;stroke-width:2.8"/>`;
+      return sv(bd(ox, oy, 7, 5, 0, 1)
+        + `<rect class="s4fl" x="${ox + 3 * C + 1.5}" y="${oy + C + 1.5}" width="${2 * C - 3}" height="${2 * C - 3}" rx="6" style="fill:${tc(0)}"/>`
+        + `<g class="s4w" style="${o}">${wallV(ox, oy, 1, 3, tc(0))}</g>`
+        + `<g class="s4g" style="${o}">${ghost}</g>`
+        + `<g class="s4p"><circle cx="${jx}" cy="${jy}" r="11" style="fill:none;stroke:var(--night);stroke-width:6"/><circle cx="${jx}" cy="${jy}" r="11" style="fill:none;stroke:var(--text);stroke-width:2.8"/><circle cx="${jx}" cy="${jy}" r="2.6" style="fill:var(--text)"/></g>`)
+        + `<div class="ab e2" style="left:62px;top:116px;display:grid;justify-items:center;gap:10px"><span class="kb"><span class="key">R</span></span><span class="lab" style="font-size:16px">تدوير</span></div>`; },
+    // 5 hidden squares: a step reveals a hammer, which breaks a wall; the other three powers wait in the legend
+    () => { const ox = 244, oy = 64, x = px(ox, 3), y = r => oy + r * C + C / 2, wx = ox + 5 * C - SL / 2, wy = oy + C + 3, hh = C - 4, col = tc(1);
+      const half = (cls, yy, cy) => `<g class="${cls}" style="transform-origin:${wx + SL / 2}px ${cy}px">${slab(wx, yy, SL, hh, col)}</g>`;
+      const leg = (cls, k, label, c) => `<div class="${cls}" style="display:flex;align-items:center;gap:12px"><span class="lgd" style="border-color:${c}">${gly(k, 22, c)}</span><span style="font-size:18px;font-weight:700">${label}</span></div>`;
+      return sv(bd(ox, oy, 7, 5, 0, 1)
+        + half('s5t', wy, wy + hh / 2) + half('s5b', wy + hh + 2, wy + hh + 2 + hh / 2)
+        + `<g class="s5run">${disc(x, y(2), 0)}</g>`
+        + `<g class="s5d" style="transform-origin:${x}px ${y(2)}px"><circle cx="${x}" cy="${y(2) + 3}" r="26" style="fill:#000;opacity:.4" filter="url(#hs-soft)"/><circle cx="${x}" cy="${y(2)}" r="26" style="fill:var(--panel);stroke:var(--good);stroke-width:4"/>`
+        + `<g transform="translate(${x - 17} ${y(2) - 17}) scale(1.42)" style="fill:var(--good)">${ICON.hammer}</g></g>`
+        + `<g class="s5h" style="transform-origin:${x}px ${y(2)}px"><g transform="translate(${x - 17} ${y(2) - 17}) scale(1.42)" style="fill:var(--text)">${ICON.hammer}</g></g>`)
+        + `<div class="ab" style="left:28px;top:86px;width:190px;display:grid;gap:16px"><span class="lab e1" style="font-size:15px">قوى أخرى</span>${leg('e2', 'double', 'خطوتان', 'var(--good)')}${leg('e3', 'back', 'فخ', 'var(--bad)')}${leg('e4', 'freeze', 'تجميد', 'var(--bad)')}</div>`; },
+    // 6 the win: finished runners stack up as dots per team, the totals land, the highest wins
+    () => { const rows = [[0, 3, ['e1', 'e4', 'e6'], 'wr'], [1, 2, ['e2', 'e5'], ''], [2, 1, ['e3'], '']];
+      return rows.map(([t, n, es, w], k) => `<div class="ab cd ${w}" style="left:44px;right:44px;top:${52 + k * 86}px;height:70px;display:flex;align-items:center;gap:16px;padding:0 22px">${bg(t, 38)}`
+        + `<span style="display:flex;gap:10px">${es.map(e => `<span class="${e}" style="display:inline-block"><span class="dt" style="--c:${tc(t)}"></span></span>`).join('')}</span>`
+        + `<span class="tot" style="margin-inline-start:auto">${num(String(n))}</span><span style="width:104px;display:grid;justify-items:end">${w ? '<span class="wl">الفائز</span>' : ''}</span></div>`).join(''); },
+  ];
+  return h('div', { class: 'hs', 'aria-hidden': 'true', html: `<div class="in">${scenes[i]()}</div>` });
+}
 function showHelp(i = 0) {
   document.getElementById('help')?.remove();
   const last = i === HELP.length - 1, close = () => document.getElementById('help')?.remove();
   ui.append(h('div', { class: 'ov', id: 'help' }, h('div', { class: 'modal', style: 'max-width:680px;justify-items:center' },
     h('div', { class: 'muted', style: 'font-size:14px' }, 'شرح اللعبة · ', N(`${i + 1} / ${HELP.length}`)),
-    h('b', { style: 'font-size:24px' }, HELP[i][0]), h('div', { style: 'font-size:18px;line-height:1.8;max-width:600px;min-height:110px' }, HELP[i][1]),
+    helpScene(i),
+    h('b', { style: 'font-size:22px' }, HELP[i][0]), h('div', { style: 'font-size:16px;line-height:1.7;max-width:616px;min-height:54px' }, HELP[i][1]),
     h('div', { style: 'display:flex;gap:10px;justify-content:center' }, B('السابق', '', () => showHelp(i - 1), { disabled: i === 0 }),
       B(last ? 'إغلاق' : 'التالي', 'pri', last ? close : () => showHelp(i + 1), { 'data-primary': '1' }), last ? null : B('إغلاق', '', close)))));
 }

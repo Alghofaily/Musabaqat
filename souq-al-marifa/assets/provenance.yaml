@@ -64,36 +64,6 @@
   date: 2026-11-15
   ships: true
 
-- path: assets/help-1.png
-  origin: code
-  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
-  date: 2026-11-23 # retaken from the current build (header menu, one market layout)
-  ships: true
-
-- path: assets/help-2.png
-  origin: code
-  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
-  date: 2026-11-23 # retaken from the current build (header menu, one market layout)
-  ships: true
-
-- path: assets/help-3.png
-  origin: code
-  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
-  date: 2026-11-23 # retaken from the current build (header menu, one market layout)
-  ships: true
-
-- path: assets/help-4.png
-  origin: code
-  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
-  date: 2026-11-23 # retaken from the current build (header menu, one market layout)
-  ships: true
-
-- path: assets/help-5.png
-  origin: code
-  tool: "headless Chromium screenshot of this game's own screen (960x540), shown in the how-to-play dialog"
-  date: 2026-11-23 # retaken from the current build (header menu, one market layout)
-  ships: true
-
 - path: vendor/qrcode.js
   origin: licensed
   tool: "npm pack qrcode-generator@2.0.4, dist/qrcode.js unchanged (md5 fbb6b69bce6abf116d6eb147ad5484a5); read for network, eval and storage calls: none"
