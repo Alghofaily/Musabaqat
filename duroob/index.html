@@ -250,13 +250,20 @@
   .tall .pods { width: 100%; gap: 8px !important; } .tall .pod { width: auto !important; flex: 1; min-width: 0; }
   .tall .winner { height: auto; min-height: 78px; }
 
-  /* intro: the logo's lockup rises and fades; every timing is a share of --t (config introTime) */
+  /* intro: the lantern lights, the road's tiles come up one by one from it to the far corner, then the name is written in, right to left.
+     Every timing is a share of --t (config introTime), so one value sets the whole length. */
   #intro { position: fixed; inset: 0; z-index: 9999; display: grid; place-content: center; background: var(--bg); animation: intro-out var(--t) linear both; }
   #intro.i-skip { animation: intro-skip .2s linear both; }
-  #intro img { width: 46vmin; height: auto; animation: intro-rise var(--t) both; }
+  #intro .i-lk { width: 46vmin; height: auto; display: block; overflow: visible; }
+  #intro .i-lan, #intro .i-tile { transform-box: fill-box; }
+  #intro .i-wm { animation: intro-write var(--t) both; }
   @keyframes intro-out { 0%, 86% { opacity: 1; } 100% { opacity: 0; } }
   @keyframes intro-skip { to { opacity: 0; } }
-  @keyframes intro-rise { 0% { opacity: 0; transform: translateY(3vmin) scale(.96); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 40%, 100% { opacity: 1; transform: none; } }
+  #intro .i-lan { transform-origin: 50% 50%; animation: duroob-lan var(--t) both; }
+  #intro .i-tile { transform-origin: 50% 50%; animation: duroob-tile calc(var(--t) * .16) calc(var(--t) * (.18 + var(--i) * .045)) cubic-bezier(.16, 1, .3, 1) both; }
+  @keyframes duroob-lan { 0%, 3% { opacity: 0; transform: scale(.3); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 14% { opacity: 1; transform: scale(1.14); } 22%, 100% { opacity: 1; transform: none; } }
+  @keyframes duroob-tile { from { opacity: 0; transform: scale(.55); } to { opacity: 1; transform: none; } }
+  @keyframes intro-write { 0%, 52% { clip-path: inset(0 0 0 100%); animation-timing-function: cubic-bezier(.16, 1, .3, 1); } 74%, 100% { clip-path: inset(0); } }
   @media (prefers-reduced-motion: reduce) { #intro, #intro * { animation: none !important; } }
   /* Musabaqat family link, top-left of the title and results screens */
   .family { position: absolute; top: 20px; left: 26px; z-index: 2; display: block; height: 62px; padding: 6px; box-sizing: border-box; border-radius: 10px; line-height: 0; }
@@ -1548,9 +1555,11 @@ reset();
 go(params.get('scene') || 'title');
 last = clock.now();
 // ---- Intro: the logo lockup for introTime seconds on load (config.js); any key or click skips it ----
+// The lockup-stacked master inlined with its parts tagged for the intro; fills are the theme tokens, so it follows light and dark.
+const INTRO_SVG = `<svg class="i-lk" viewBox="0 0 506 443"><g transform="translate(125.117 9)"><g fill="var(--text)"><rect class="i-tile" style="--i:5" x="41" y="41" width="50" height="50" rx="7"/><rect class="i-tile" style="--i:4" x="103" y="41" width="50" height="50" rx="7"/><rect class="i-tile" style="--i:3" x="165" y="41" width="50" height="50" rx="7"/><rect class="i-tile" style="--i:2" x="165" y="103" width="50" height="50" rx="7"/><rect class="i-tile" style="--i:0" x="103" y="165" width="50" height="50" rx="7"/><rect class="i-tile" style="--i:1" x="165" y="165" width="50" height="50" rx="7"/></g><g fill="var(--accent)"><circle class="i-lan" cx="66" cy="190" r="22"/></g></g><path class="i-wm" fill="var(--text)" transform="matrix(0.17778 0 0 0.17778 45.56 355.78)" d="M410 208Q386 208 369.0 191.0Q352 174 352 150Q352 126 369.0 109.0Q386 92 410 92Q434 92 451.0 109.0Q468 126 468 150Q468 174 451.0 191.0Q434 208 410 208ZM25 0 109 -140H685V0ZM605 0V-140H685V-309L825 -340V-23Q825 -11 815.0 -6.0Q805 -1 795.0 -0.5Q785 0 785 0ZM910 132Q967 147 1000.5 140.5Q1034 134 1050.0 116.0Q1066 98 1070.5 79.5Q1075 61 1075 52V-128L1215 -170V22Q1215.0 81.18333333333334 1190.0 118.59166666666667Q1165 156 1126.5 173.5Q1088 191 1045.5 191.0Q1003 191 966.5 175.5Q930 160 910 132ZM1215 -170 1046 -340Q1059 -340 1083.0 -341.5Q1107 -343 1133.5 -348.5Q1160 -354 1182.5 -365.5Q1205 -377 1215 -396ZM1046.26 0.0Q999.52 0.0 960.76 -23.0Q922 -46 898.5 -84.8125Q875.0 -123.625 875.0 -169.75Q875 -217 898.5091743119266 -255.72222222222223Q922.0183486238532 -294.44444444444446 961.0091743119266 -317.22222222222223Q1000 -340 1046.5 -340.0Q1093 -340 1131.0 -317.0Q1169 -294 1192.0 -255.6727272727273Q1215.0 -217.34545454545454 1215 -170Q1215 -123 1192.0 -84.5Q1169 -46 1131.0 -23.0Q1093 0 1046.26 0.0ZM1045.9859154929577 -140.0Q1059 -140 1067.0 -148.7Q1075.0 -157.4 1075 -170Q1075.0 -182.6 1067.0 -191.3Q1059 -200 1045.9859154929577 -200.0Q1032.9718309859154 -200.0 1023.9859154929577 -191.3Q1015.0 -182.6 1015 -170Q1015.0 -157.4 1023.9859154929577 -148.7Q1032.9718309859154 -140.0 1045.9859154929577 -140.0ZM1155 150Q1199 162 1227.5 159.0Q1256 156 1272.0 142.0Q1288 128 1294.0 106.5Q1300 85 1300 60V-309L1440 -340V60Q1440 113 1417.5 146.5Q1395 180 1359.0 195.5Q1323 211 1283.5 210.0Q1244 209 1209.5 193.5Q1175 178 1155 150ZM1490 0 1574 -140H2170Q2171 -167 2153.5 -183.5Q2136 -200 2080 -200H1600L1756 -460L1766 -453L1714 -340H2080Q2154 -340 2199.0 -319.0Q2244 -298 2267.5 -263.0Q2291 -228 2300.0 -186.0Q2309 -144 2309.5 -101.5Q2310 -59 2310 -23Q2310 -11 2300.0 -6.0Q2290 -1 2280.0 -0.5Q2270 0 2270 0Z"/></svg>`;
 function intro() {
   if (!tune.introTime || params.get('manual') === '1') return;
-  const el = h('div', { id: 'intro', 'aria-hidden': 'true', style: `--t:${tune.introTime}s` }, h('img', { src: logoSrc('lockup-stacked'), alt: '', 'data-logo': 'lockup-stacked' }));
+  const el = h('div', { id: 'intro', 'aria-hidden': 'true', style: `--t:${tune.introTime}s`, html: INTRO_SVG });
   const end = () => { removeEventListener('keydown', skip, true); removeEventListener('pointerdown', skip, true); el.remove(); };
   const skip = e => {
     if (!el.isConnected) return end();
