@@ -170,6 +170,8 @@
   .hs .row b { font-size: 17px; } .hs .row .pr { font-size: 20px; font-weight: 700; text-align: center; }
   .hs .buyb { animation: hs-buy var(--d) infinite both; }
   @keyframes hs-buy { 0%, 30% { transform: none; } 33% { transform: scale(.9); } 37%, 100% { transform: none; } }
+  .hs .sellb { animation: hs-sell var(--d) infinite both; }
+  @keyframes hs-sell { 0%, 58% { transform: none; } 61% { transform: scale(.9); } 65%, 100% { transform: none; } }
   .hs .o1 { animation: hs-out34 var(--d) infinite both; opacity: 0; } .hs .n1 { animation: hs-in34 var(--d) infinite both; }
   @keyframes hs-out34 { 0%, 33% { opacity: 1; transform: none; } 38%, 100% { opacity: 0; transform: translateY(-10px); } }
   @keyframes hs-in34 { 0%, 34% { opacity: 0; transform: translateY(10px); } 40%, 100% { opacity: 1; transform: none; } }
@@ -969,7 +971,8 @@ const HELP = [ // the game explained in steps: a title and a line each, beside h
   ['الإعداد', 'يحدد المقدّم عدد الفرق وأسماءها، والرصيد الابتدائي، وأوقات الإجابة والتداول، وطريقة عرض الأسئلة، ومتى تنتهي المسابقة.'],
   ['السؤال', 'يُطرح سؤال على الفريق صاحب الدور، وعليه أن يجيب قبل انتهاء الوقت.'],
   ['الإجابة الصحيحة تربح مالاً', 'الإجابة الصحيحة تضيف مكافأة نقدية إلى رصيد الفريق وتفتح له السوق. الإجابة الخاطئة تنقل الدور إلى الفريق التالي.'],
-  ['التداول', 'يشتري الفريق أسهماً أو يبيعها خلال وقت التداول. كل صفقة تحرّك سعر السهم، والأخبار العاجلة قد ترفع قطاعاً كاملاً أو تهبط به.'],
+  ['التداول: الصعود والهبوط', 'يشتري الفريق أسهماً أو يبيعها خلال وقت التداول. كل صفقة تحرّك سعر السهم: الشراء يرفعه والبيع يخفضه، ومع كل جولة تتحرك الأسعار قليلاً.'],
+  ['الأخبار العاجلة', 'قد يظهر خبر عاجل قبل التداول: يرفع قطاعاً كاملاً أو يهبط به، أو توزّع شركة أرباحاً على من يملك أسهمها، أو يُوقَف التداول للفريق صاحب الدور.'],
   ['الفائز', 'عند نهاية المسابقة تُقيَّم الأسهم بسعر السوق، ويفوز الفريق صاحب أعلى صافي ثروة: الرصيد مع قيمة الأسهم.'],
 ];
 // The how-to-play scenes, one per HELP step: small looping motion graphics built from the game's own parts (shields, rows, pills).
@@ -977,7 +980,7 @@ function helpScene(i) {
   const sh = (t, s = 22) => shield(t, s).outerHTML, num = v => `<span class="num">${/^[+\-−]/.test(v) ? '‎' : ''}${v}</span>`;
   const tm = (t, cls, extra = '') => `<div class="tm ${cls}" style="--team:${TEAM_COLORS[t]}">${sh(t)}${['الصقور', 'النمور', 'الفهود'][t]}${extra}</div>`;
   const sw = (pairs) => `<span class="sw">${pairs.map(([v, c]) => `<span class="${c}">${v}</span>`).join('')}</span>`;
-  const pill = v => `<span class="pill up">${num(v)}</span>`;
+  const pill = v => `<span class="pill up">${num(v)}</span>`, down = v => `<span class="pill down">${num(v)}</span>`;
   const scenes = [
     // 1 setup
     `<div class="ab" style="inset:30px 40px;display:grid;gap:20px;align-content:center">
@@ -1012,16 +1015,25 @@ function helpScene(i) {
        ${[0, 1, 2].map(t => `<div class="tm ${t ? '' : 'flash3'}" style="--team:${TEAM_COLORS[t]};flex:1;justify-content:space-between">
          <span style="display:flex;align-items:center;gap:8px">${sh(t)}${['الصقور', 'النمور', 'الفهود'][t]}</span>
          <span style="font-size:22px">${t ? num('10,000') : sw([[num('10,000'), 'old3'], [num('10,305'), 'new3']])}</span></div>`).join('')}</div>`,
-    // 4 trading
+    // 4 trading: a buy lifts the price, a sell drops it
+    `<div class="ab card" style="top:110px;right:40px;left:40px">
+       <div class="rw e1"><div class="row">${secIcon('طاقة').outerHTML}<b>شمس للطاقة</b>
+         <span class="pr">${sw([[num('61'), 'o1'], [num('64'), 'n1']])}</span><span>${sw([[pill('+5.17%'), 'o1'], [pill('+10.34%'), 'n1']])}</span>
+         <span class="btn buy buyb" style="display:inline-grid;place-items:center;min-height:36px;padding:6px 12px;border-radius:6px;font-size:16px">شراء</span></div></div>
+       <div class="rw e2"><div class="row">${secIcon('بنوك').outerHTML}<b>بنك الأمانة</b>
+         <span class="pr">${sw([[num('143'), 'o2'], [num('137'), 'n2']])}</span><span>${sw([[pill('+2.14%'), 'o2'], [down('−2.14%'), 'n2']])}</span>
+         <span class="btn sell sellb" style="display:inline-grid;place-items:center;min-height:36px;padding:6px 12px;border-radius:6px;font-size:16px">بيع</span></div></div></div>
+     <div class="ab e4" style="bottom:22px;right:40px;left:40px;text-align:center" ><span class="lab" style="font-size:15px">كل صفقة تحرّك السعر: الشراء يرفعه والبيع يخفضه</span></div>`,
+    // 5 breaking news: a sector jumps together; dividends and halts are the other kinds
     `<div class="ab newsb" style="top:22px;right:40px;left:40px"><span class="tag">عاجل</span>قطاع الطاقة يرتفع بعد اكتشاف حقل جديد</div>
      <div class="ab card" style="top:96px;right:40px;left:40px">
        <div class="rw e1"><div class="row newsr">${secIcon('طاقة').outerHTML}<b>نفط الواحة</b>
          <span class="pr">${sw([[num('56'), 'o2'], [num('61'), 'n2']])}</span><span>${sw([[pill('+9.80%'), 'o2'], [pill('+19.61%'), 'n2']])}</span><span></span></div></div>
        <div class="rw e2"><div class="row newsr">${secIcon('طاقة').outerHTML}<b>شمس للطاقة</b>
-         <span class="pr">${sw([[num('61'), 'o1'], [num('64'), 'm1'], [num('69'), 'n2']])}</span><span>${sw([[pill('+5.17%'), 'o1'], [pill('+10.34%'), 'm1'], [pill('+18.97%'), 'n2']])}</span>
-         <span class="btn buy buyb" style="display:inline-grid;place-items:center;min-height:36px;padding:6px 12px;border-radius:6px;font-size:16px">شراء</span></div></div>
+         <span class="pr">${sw([[num('61'), 'o2'], [num('69'), 'n2']])}</span><span>${sw([[pill('+5.17%'), 'o2'], [pill('+18.97%'), 'n2']])}</span><span></span></div></div>
        <div class="rw e3"><div class="row">${secIcon('بنوك').outerHTML}<b>بنك الأمانة</b><span class="pr">${num('143')}</span><span>${pill('+3.62%')}</span><span></span></div></div></div>
-     <div class="ab e4" style="bottom:22px;right:40px;left:40px;text-align:center" ><span class="lab" style="font-size:15px">كل صفقة تحرّك السعر: الشراء يرفعه والبيع يخفضه</span></div>`,
+     <div class="ab e8" style="bottom:22px;right:40px;left:40px;display:flex;gap:10px;justify-content:center">
+       <span class="chip" style="font-size:15px;padding:6px 12px">خبر قطاع: يرفع أو يهبط</span><span class="chip" style="font-size:15px;padding:6px 12px">توزيع أرباح</span><span class="chip" style="font-size:15px;padding:6px 12px">إيقاف التداول</span></div>`,
     // 5 the winner
     `<div class="ab key e1" style="top:22px;left:0;right:0"><span><i style="background:color-mix(in srgb, var(--muted) 45%, var(--panel))"></i>الرصيد</span><span><i style="background:var(--muted)"></i>قيمة الأسهم</span></div>
      <div class="ab bars" style="top:56px;bottom:22px;left:0;right:0">
